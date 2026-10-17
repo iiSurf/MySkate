@@ -26,6 +26,7 @@ export function defaultState(now = new Date()) {
       onboarded: false,
       tourSeen: false,
       defaultCost: null,
+      badgesSeen: null,
     },
     blades: { name: "", limitHours: 25, baseHours: 0, countedFrom: now.toISOString() },
     sharpenings: [],
@@ -163,6 +164,7 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
       onboarded: p.onboarded === true,
       tourSeen: p.tourSeen === true,
       defaultCost: sanitizeCost(p.defaultCost),
+      badgesSeen: Array.isArray(p.badgesSeen) ? [...new Set(p.badgesSeen.map((x) => str(x, 60)).filter(Boolean))].slice(0, 100) : null,
     },
     blades: {
       name: str(b.name, MAX.name),

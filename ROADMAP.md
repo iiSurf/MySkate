@@ -33,7 +33,7 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 3. Time-budget planner: split the booked slot across the chosen skills (done, shared evenly)
 4. Friend cards and a local friends board
 5. Connect devices by code, in both directions (small payload by QR; full history by backup file)
-6. Cost per session and per month
+6. Cost per session and per month (done)
 7. Test readiness against the 2026-27 Singles chart
 8. Passphrase-protected backups (Web Crypto, AES-GCM)
 9. Self-host the fonts (needs the owner's yes to download them)
@@ -87,6 +87,20 @@ Level n to n+1 costs `100 + 50 * (n - 1)` XP. XP is effort relative to your own 
 - Only the present and the future are kept: one-day sessions that have passed and repeats that have ended are removed automatically (on load, on restore, and on the Ice page). The week starts at this week, the earlier-weeks arrow is off, and days before today are not shown. Sessions that finished earlier today are dimmed.
 - Saved data: `rinks` (with `updated`, the day a file was last imported), `iceSessions` (with `skip` dates, `every` n weeks, and `imported`), and `iceView` (your filters), all optional with defaults, so `schemaVersion` stays 1. Limits: 20 rinks, 500 sessions.
 - Later: "Find rinks near me" from OpenStreetMap (opt-in, sends your location to OpenStreetMap; the free public servers were down when tried, so it could never be the only way), a starter list for an area, and live schedules (would need a server and a parser for each rink).
+
+### Ice cost
+
+- Each saved session can have a cost (0 to 999, to the cent). Saving a session asks "What did this ice cost?", starting from the price of the Ice time it was planned from ("Plan this"), or your usual cost from Me. A cost can be added or changed later on the Sessions tab. No cost is "unknown", not free: free ice is 0, and unknown sessions are left out of every total and average.
+- Progress shows this month, per session, per hour on ice, and in all, then each month with its sessions, hours, total and cost per hour (dollars per hour use only the sessions that have a cost). Home has an Ice cost tile once any session has a cost.
+- Saved data: `session.cost`, `profile.defaultCost`, and `plan.cost`, all optional. The spreadsheet export has a `session_cost` column at the end.
+
+### Badges
+
+- 29 badges in five groups (On the ice, Skills, Jumps, Habits, Levels): first session, sessions, a full month, time on ice up to a marathon (26.2 hours), skills earned, five skates, personal bests, a level complete, jumps landed, a jump landed 80 percent of 20 tries, weekly streaks, notes, an all-rounder session, a sharpening, a backup, and levels 3, 5, and 10.
+- Like XP, badges are worked out from the saved sessions every time and never stored, so merging, restoring, and fixing sessions always give the right trophy case. Replaying the sessions in order finds the day each was earned and how many sessions and days it took. A skill counts at its best rating, so a bad day cannot take a badge away.
+- Progress has a Badges tab (a trophy case: gold medals earned, dashed ghosts with a progress bar for the rest, an "Almost there" list) and tapping a badge shows what it takes and when you earned it. Home has a Badges tile.
+- A full-screen "New badge!" celebration (after the level-up one) follows saving a session, logging a sharpening, or saving a backup. `profile.badgesSeen` remembers which badges you were told about; the first time (and after a restore) it only notes what is already earned, so old progress does not set off a pile of celebrations.
+- Share: a picture of the badge is drawn on this device and handed to the phone's share sheet, or saved as a file when the device cannot share files. Nothing is uploaded. The same picture idea is the base for friend cards.
 
 ### Friend cards
 

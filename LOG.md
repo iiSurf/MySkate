@@ -301,3 +301,35 @@ The owner liked the calendar-file idea and asked for three things: uploading a r
 ### Not verified
 
 A real rink's calendar file or Google calendar. Opening an exported file in a real calendar app. A real phone and Safari. Nothing is pushed.
+
+---
+
+## 2026-10-17 (Saturday, evening): ice cost and badges
+
+### Planned
+
+Next on the owner's list after Ice times: cost per session and per month, then badges and a trophy case. Do not push.
+
+### Ice cost
+
+- A session can have a cost (0 to 999, to the cent). A missing cost is unknown, not free (free is 0), and unknown sessions are left out of every total and average, including dollars per hour (which uses only the hours of sessions that have a cost).
+- Saving a session asks "What did this ice cost?", starting from the price of the Ice time it was planned from ("Plan this" now carries the price), or the usual cost set in Me. The Sessions tab on Progress can add or change a cost later.
+- Progress has an Ice cost card (this month, per session, per hour on ice, in all, and each month with sessions, hours, total, and cost per hour; months with no sessions are left out). Home has an Ice cost tile once a session has a cost. The spreadsheet export has a `session_cost` column at the end.
+- Saved data: `session.cost`, `profile.defaultCost`, `plan.cost`, all optional (`schemaVersion` stays 1).
+
+### Badges
+
+- `js/badges.js`: 29 badges in five groups. Like XP they are worked out from the saved sessions every time and never stored. Replaying the sessions in order finds the day each was earned and how many sessions and days it took. A skill counts at its best rating, so a bad day cannot take a badge away. A sharpening or a backup earns its badge on its own day. The weekly streak uses a running count that is tested to give the same answer as the streak on Home.
+- Progress has a Badges tab (trophy case: earned medals in gold, the rest as dashed ghosts with progress bars, an "Almost there" list). Tapping a badge shows what it takes and when it was earned. Home has a Badges tile.
+- A full-screen "New badge!" celebration comes after the level-up one when a session is saved, and after logging a sharpening or saving a backup. `profile.badgesSeen` remembers which badges the skater has been told about. The first time, and after a restore, it only notes what is already earned, so old progress does not set off a pile of celebrations.
+- Share: a 1080 by 1350 picture of the badge is drawn on a canvas on this device (JPEG, so it is small enough to send), handed to the phone's share sheet, or saved as a file when the device cannot share files. Nothing is uploaded.
+- The Progress tabs row now has four tabs and fits at 320 pixels wide. The quick tour mentions cost and the Badges tab.
+
+### Verified
+
+- 113 tests pass in four time zones. New ones: cost cleaning and formatting, monthly totals, unknown versus free, merging; 30 for badges (every badge's icon exists in the page, replay order, earned day and sessions and days taken, months, hours, a long session, best rating, personal bests, level complete, landed jumps and 80 percent, streaks including a gap, running streak equal to the Home streak, notes, all-rounder, sharpening and backup days, XP levels, no mutation, not reusing the last answer); the tour's button labels still exist on screen.
+- In the browser: set a usual cost in Me, saved two real sessions (the cost started at the usual cost and was changed on one), the Progress and Home cost cards were right, a cost was changed and cleared on the Sessions tab (and 2000 was refused). A real session earned First session, First skill earned, and All-rounder, and the celebrations came in order (level up, then badges). The share picture rendered at 1080 by 1350 and the save-as-file fallback worked. Trophy case and badge sheets at 1024, 390, and 320 wide; every route at 390 has no sideways scroll; no console errors.
+
+### Not verified
+
+Sharing through a real phone's share sheet (only the save-as-file path was exercised). A real phone and Safari. Nothing is pushed.

@@ -202,3 +202,17 @@ test("restoring a backup counts as having seen the tour, and a merge keeps this 
   incoming.profile.tourSeen = false;
   assert.equal(mergeStates(current, incoming).state.profile.tourSeen, true);
 });
+
+test("the badges you have already been told about are saved, cleaned, and unknown until the first look", () => {
+  assert.equal(defaultState().profile.badgesSeen, null);
+  assert.deepEqual(sanitizeState({ profile: { badgesSeen: ["a", "a", "", 5, "b"] } }).profile.badgesSeen, ["a", "b"]);
+  assert.equal(sanitizeState({ profile: { badgesSeen: "all" } }).profile.badgesSeen, null);
+  const old = JSON.parse(exportJSON(defaultState()));
+  delete old.profile.badgesSeen;
+  assert.equal(parseBackup(JSON.stringify(old)).state.profile.badgesSeen, null);
+  const mine = defaultState();
+  mine.profile.badgesSeen = ["first-session"];
+  const theirs = defaultState();
+  theirs.profile.badgesSeen = ["first-session", "sessions-5"];
+  assert.deepEqual(mergeStates(mine, theirs).state.profile.badgesSeen, ["first-session"], "a merge keeps this device's answer");
+});

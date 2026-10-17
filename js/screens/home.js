@@ -1,7 +1,9 @@
 /* Home: your level, your streak, your blades, and what to do next. */
 
 import { html, fmtMinutes, fmtDate, fmtNum, fmt1, fmtClock, todayISO, daysBetween, addDays } from "../util.js";
-import { icon, medallion, bar, bladeArt, skateSvg, weekBarsHtml } from "../ui/parts.js";
+import { icon, medallion, medal, bar, bladeArt, skateSvg, weekBarsHtml } from "../ui/parts.js";
+import { showBadges } from "./progress.js";
+import { badgeRatio, progressText } from "../badges.js";
 import { bladeInfo, bladeHours, logSharpening } from "../blades.js";
 import { levelProgress, suggestNext, isSkating, isAir } from "../stats.js";
 import { levelLabel } from "../catalog.js";
@@ -115,6 +117,22 @@ function bladeTile(ctx) {
   </section>`;
 }
 
+/* How many badges, the latest ones, and the next one you are closest to. Only shown once there is a session or a badge. */
+function badgeTile(ctx) {
+  const list = ctx.badges();
+  const earned = list.filter((b) => b.earned);
+  if (!earned.length && !ctx.state.sessions.length) return "";
+  const recent = [...earned].sort((a, b) => (b.earnedOn || "").localeCompare(a.earnedOn || "")).slice(0, 4);
+  const next = list.filter((b) => !b.earned && badgeRatio(b) > 0).sort((a, b) => badgeRatio(b) - badgeRatio(a))[0];
+  return html`<section class="card tile" aria-labelledby="badge-title">
+    <div class="tile__head"><p class="eyebrow" id="badge-title">Badges</p></div>
+    <div class="hours"><span class="num">${earned.length}</span><span class="dim">of ${list.length} earned</span></div>
+    ${recent.length ? html`<div class="medals" role="img" aria-label="Latest badges: ${recent.map((b) => b.name).join(", ")}">${recent.map((b) => medal(b))}</div>` : ""}
+    ${next ? html`<p class="note">Next: <strong>${next.name}</strong>, ${progressText(next)}</p>` : ""}
+    <button class="btn btn--glass btn--small" type="button" data-action="go-badges">Trophy case</button>
+  </section>`;
+}
+
 /* The next few sessions you starred on the Ice tab. Only shown once you have added a rink. */
 function iceTile(ctx, d) {
   const { state } = ctx;
@@ -199,7 +217,7 @@ export function renderHome(ctx) {
     </header>
     ${nudge(ctx)}
     ${heroCard(ctx, d)}
-    <div class="tiles">${xpTile(ctx, d)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
+    <div class="tiles">${xpTile(ctx, d)}${badgeTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
     ${recent(ctx, d)}`;
 }
 
@@ -241,6 +259,10 @@ export function homeActions(ctx) {
   return {
     "go-plan": () => ctx.go("plan"),
     "go-ice": () => ctx.go("ice"),
+    "go-badges": () => {
+      showBadges();
+      ctx.go("progress");
+    },
     "go-skate": () => ctx.go("skate"),
     "go-progress": () => ctx.go("progress"),
     tour: () => ctx.showTour(),
@@ -275,6 +297,7 @@ export function homeActions(ctx) {
       const art = $("#blade-tile .blade");
       if (art) twinkle(art, 14);
       toast("Sharpening logged. Blade life is back to full.");
+      ctx.checkBadges();
     },
   };
 }

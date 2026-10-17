@@ -1095,3 +1095,161 @@ select.input {
   color: var(--text-dim);
   font-size: 0.95rem;
 }
+
+/* Badges (js/badges.js): gold medals for what you have earned, dashed ghosts for what you have not. */
+
+.medal {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border: 2px solid rgba(255, 244, 205, 0.95);
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 26%, #fff4c9, #ffd98a 42%, #f5a742);
+  color: #4a2f00;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.7), inset 0 -3px 6px rgba(120, 70, 0, 0.35), 0 6px 14px rgba(0, 8, 34, 0.4);
+}
+
+.medal .ic {
+  width: 28px;
+  height: 28px;
+  stroke-width: 2;
+}
+
+.medal--locked {
+  border: 1.5px dashed var(--glass-edge);
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-faint);
+  box-shadow: none;
+}
+
+.medal--xl {
+  width: 124px;
+  height: 124px;
+}
+
+.medal--xl .ic {
+  width: 56px;
+  height: 56px;
+}
+
+.cele .medal--pop {
+  animation: badge-in 1s var(--spring-soft) both;
+}
+
+.cele .cluster {
+  position: relative;
+  justify-content: center;
+}
+
+.medals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.medals .medal {
+  width: 44px;
+  height: 44px;
+}
+
+.medals .medal .ic {
+  width: 20px;
+  height: 20px;
+}
+
+.trophies {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: var(--sp-3);
+}
+
+.trophy {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+  padding: var(--sp-3) var(--sp-2);
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.trophy:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.trophy__name {
+  font-weight: 600;
+  line-height: 1.2;
+  overflow-wrap: break-word;
+}
+
+.trophy__sub {
+  color: var(--text-dim);
+  font-size: 0.88rem;
+}
+
+.trophy:not(.is-earned) .trophy__name {
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.trophy__bar {
+  width: 70%;
+  height: 5px;
+  border-radius: 99px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.trophy__bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--ice), var(--sun));
+}
+
+.row--btn {
+  width: 100%;
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.badge-sheet {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-2);
+  text-align: center;
+}
+
+/* Four tabs on Progress (Overview, Badges, Skills, Sessions) have to fit on a small phone. */
+.seg {
+  max-width: 100%;
+}
+
+@media (max-width: 420px) {
+  .seg button {
+    padding: 8px 11px;
+  }
+}
+
+@media (max-width: 340px) {
+  .seg button {
+    padding: 8px 6px;
+    font-size: 0.9rem;
+  }
+}

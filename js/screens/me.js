@@ -122,6 +122,7 @@ async function restoreFile(ctx, file) {
   ctx.syncIce({});
   ctx.applySettings();
   ctx.update();
+  ctx.checkBadges({ silent: true });
 }
 
 export function meActions(ctx) {

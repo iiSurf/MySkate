@@ -52,3 +52,6 @@ export function ratingControl(value, label = "Rating, in skates") {
 }
 
 export const clockText = (ms) => fmtClock(ms / 1000);
+
+/* A badge medal: gold when earned, a dashed ghost when not. */
+export const medal = (b, { locked = false, xl = false } = {}) => html`<span class="medal ${locked ? "medal--locked" : ""} ${xl ? "medal--xl" : ""}" aria-hidden="true">${icon(b.icon)}</span>`;

@@ -10,7 +10,7 @@ import { addDays, daysBetween, todayISO, weekKey } from "./util.js";
 export const GROUPS = ["On the ice", "Skills", "Jumps", "Habits", "Levels"];
 
 /* id, group, name, text (what it takes), icon (a symbol in index.html), goal, of (the count the goal is measured on), and
-   optionally scale and unit for showing minutes as hours. */
+   optionally scale, unit, and prefix for showing minutes as hours or "Level 2 of 3". */
 export const BADGES = [
   { id: "first-session", group: "On the ice", name: "First session", text: "Save your first session.", icon: "skate", goal: 1, of: (a) => a.sessions },
   { id: "sessions-5", group: "On the ice", name: "Getting regular", text: "Save 5 sessions.", icon: "check", goal: 5, of: (a) => a.sessions },
@@ -42,9 +42,9 @@ export const BADGES = [
   { id: "sharpened", group: "Habits", name: "Fresh edge", text: "Log a blade sharpening.", icon: "ice", goal: 1, of: (a) => a.sharpened },
   { id: "backup", group: "Habits", name: "Safe and sound", text: "Save a backup file.", icon: "check", goal: 1, of: (a) => a.backup },
 
-  { id: "level-3", group: "Levels", name: "Level 3", text: "Reach level 3.", icon: "up", goal: 3, of: (a) => a.level },
-  { id: "level-5", group: "Levels", name: "Level 5", text: "Reach level 5.", icon: "up", goal: 5, of: (a) => a.level },
-  { id: "level-10", group: "Levels", name: "Level 10", text: "Reach level 10.", icon: "up", goal: 10, of: (a) => a.level },
+  { id: "level-3", group: "Levels", name: "Level 3", text: "Reach level 3.", icon: "up", goal: 3, prefix: "Level ", of: (a) => a.level },
+  { id: "level-5", group: "Levels", name: "Level 5", text: "Reach level 5.", icon: "up", goal: 5, prefix: "Level ", of: (a) => a.level },
+  { id: "level-10", group: "Levels", name: "Level 10", text: "Reach level 10.", icon: "up", goal: 10, prefix: "Level ", of: (a) => a.level },
 ];
 
 const practiced = (e) => e.stars > 0 || e.attempts > 0;
@@ -172,5 +172,5 @@ export const badgeRatio = (b) => (b.earned ? 1 : Math.max(0, Math.min(1, b.value
 export function progressText(b) {
   const scale = b.scale || 1;
   const round = (n) => Math.round((n / scale) * 10) / 10;
-  return `${round(Math.min(b.value, b.goal))} of ${round(b.goal)}${b.unit ? " " + b.unit : ""}`;
+  return `${b.prefix || ""}${round(Math.min(b.value, b.goal))} of ${round(b.goal)}${b.unit ? " " + b.unit : ""}`;
 }

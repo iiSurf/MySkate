@@ -7,7 +7,9 @@ import { skillStats, activeAsSession, iceSkills, totals } from "./stats.js";
 import { todayISO, html } from "./util.js";
 import { $, render, delegate, toast, download } from "./ui/dom.js";
 import { createIce } from "./ui/ice.js";
-import { levelUp as celebrateLevelUp, reducedMotion } from "./ui/celebrate.js";
+import { levelUp as celebrateLevelUp, badgeUnlock, reducedMotion } from "./ui/celebrate.js";
+import { shareBadge } from "./ui/share.js";
+import { evaluateBadges, newlyEarned } from "./badges.js";
 import { runOnboarding } from "./ui/onboard.js";
 import { openTour } from "./ui/tour.js";
 import { newActive } from "./timer.js";
@@ -199,6 +201,7 @@ function buildContext(state, catalog, status) {
       save();
       toast("Backup saved. Look in your downloads.");
       renderRoute({ keepScroll: true });
+      ctx.checkBadges();
     },
     exportCSV() {
       /* The byte-order mark makes Excel read accents and curly quotes in notes correctly. */
@@ -206,12 +209,32 @@ function buildContext(state, catalog, status) {
       toast("Spreadsheet saved. Look in your downloads.");
     },
     levelUp: (level) => celebrateLevelUp(level),
+    /* Every badge with whether it is earned and when, worked out from the saved sessions. */
+    badges: () => evaluateBadges({ sessions: ctx.state.sessions, sharpenings: ctx.state.sharpenings, backupAt: ctx.state.backup.lastExportAt, catalog: ctx.catalog }),
+    /* Tell the skater about badges earned since the last look. The first time (and after a restore) it only notes what is
+       already earned, so old progress does not set off a pile of celebrations. */
+    async checkBadges({ silent = false } = {}) {
+      const list = ctx.badges();
+      const ids = list.filter((b) => b.earned).map((b) => b.id);
+      const p = ctx.state.profile;
+      if (silent || p.badgesSeen === null) {
+        p.badgesSeen = [...new Set([...(p.badgesSeen || []), ...ids])];
+        save();
+        return;
+      }
+      const fresh = newlyEarned(list, p.badgesSeen);
+      if (!fresh.length) return;
+      p.badgesSeen = [...new Set([...p.badgesSeen, ...ids])];
+      save();
+      await badgeUnlock(fresh, { onShare: (b) => shareBadge(b, p.name) });
+    },
     async startOnboarding() {
       await runOnboarding(ctx);
       applySettings();
       syncIce({});
       renderRoute();
       requestPersistence();
+      await ctx.checkBadges({ silent: true });
       await ctx.showTour({ firstTime: true });
     },
     /* The quick tour. With firstTime it only opens if it has not been seen on this device. Closing it either way counts as seen. */
@@ -283,6 +306,7 @@ async function boot() {
   if (status === "recovered") toast("Your saved data could not be read. A copy was kept aside and MySkate started fresh.", 8000);
   if (!ctx.state.profile.onboarded) ctx.startOnboarding();
   else if (!ctx.state.active) ctx.showTour({ firstTime: true });
+  ctx.checkBadges({ silent: true });
   window.myskate = ctx;
 }
 

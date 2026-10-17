@@ -11,6 +11,8 @@ Live: https://iisurf.github.io/MySkate/
 - **Skate.** A clock that counts only your time on ice and cannot drift, one skill at a time, a one to five skate rating, notes, and a landed or missed counter for jumps.
 - **Progress.** Time on ice by week, level progress, every skill you have tried, and every session.
 - **XP and levels.** XP rewards time, practice, personal bests, and earning skills, with a level-up celebration and weekly streaks.
+- **Badges.** 29 badges, from your first session to a marathon of ice time, in a trophy case on Progress. Each one shows the day you earned it and how many sessions it took, and you can share a picture of it.
+- **Ice cost.** Add what each session cost (or set your usual cost). See it by month, per session, and per hour on ice.
 - **Blade life.** Set your own sharpening interval (20, 25, 30, 35 hours, or any number). Your on-ice time counts toward it.
 - **Your ice.** The background draws each skill's marks as you rate it: swizzles weave, three-turns leave tiny 3s, jumps leave a takeoff and landing, spins leave spirals.
 - **Skill lists.** Learn to Skate USA Basic 1-6, Pre-Free Skate and Free Skate 1-6, Adult 1-6, U.S. Figure Skating Skating Skills tests, and a jump, spin, and element library.

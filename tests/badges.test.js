@@ -200,3 +200,7 @@ test("new badges are the earned ones you have not seen, and progress is a ratio"
   assert.equal(badgeRatio(one(list, "sessions-5")), 0.2);
   assert.equal(badgeRatio(one(got([]), "sessions-5")), 0);
 });
+
+test("level badges read as 'Level 2 of 3'", () => {
+  assert.equal(progressText(one(got([session("2026-10-01", { onIceSec: min(10) })]), "level-3")), "Level 1 of 3");
+});

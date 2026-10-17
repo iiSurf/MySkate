@@ -35,16 +35,8 @@ export function floatText(container, anchor, label) {
   tag.addEventListener("animationend", () => tag.remove());
 }
 
-/* The level-up takeover. Resolves when the skater taps Keep skating (or presses Escape). */
-export function levelUp(newLevel, { title = "Level up!", message } = {}) {
-  const tapped = !navigator.userActivation || navigator.userActivation.hasBeenActive;
-  if (navigator.vibrate && tapped && !reducedMotion()) navigator.vibrate([30, 40, 90]);
-
-  const overlay = el("div", "cele");
-  overlay.setAttribute("role", "dialog");
-  overlay.setAttribute("aria-modal", "true");
-  overlay.setAttribute("aria-label", `Level ${newLevel} reached`);
-
+/* The confetti and stars that fly out of the middle of a full-screen reward. */
+function makeBurst() {
   const burst = el("div", "cele__burst");
   const colors = ["#ffd98a", "#ffc35a", "#a6f1ff", "#ffffff", "#5fd8e6", "#ffb98a"];
   const reach = Math.min(innerWidth, 700) * 0.42;
@@ -61,6 +53,20 @@ export function levelUp(newLevel, { title = "Level up!", message } = {}) {
     piece.style.setProperty("--dl", Math.random() * 0.25 + "s");
     burst.appendChild(piece);
   }
+  return burst;
+}
+
+/* The level-up takeover. Resolves when the skater taps Keep skating (or presses Escape). */
+export function levelUp(newLevel, { title = "Level up!", message } = {}) {
+  const tapped = !navigator.userActivation || navigator.userActivation.hasBeenActive;
+  if (navigator.vibrate && tapped && !reducedMotion()) navigator.vibrate([30, 40, 90]);
+
+  const overlay = el("div", "cele");
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-label", `Level ${newLevel} reached`);
+
+  const burst = makeBurst();
 
   const keep = el("button", "btn btn--gold", "Keep skating");
   keep.type = "button";
@@ -93,6 +99,62 @@ export function levelUp(newLevel, { title = "Level up!", message } = {}) {
     overlay.addEventListener("click", (event) => {
       if (event.target === overlay) close();
     });
+    document.addEventListener("keydown", onKey);
+  });
+}
+
+/* The new-badge takeover: the first badge big, the rest listed. onShare(badge) is called when the skater taps Share.
+   Resolves when it is closed. */
+export function badgeUnlock(badges, { onShare } = {}) {
+  const first = badges[0];
+  const tapped = !navigator.userActivation || navigator.userActivation.hasBeenActive;
+  if (navigator.vibrate && tapped && !reducedMotion()) navigator.vibrate([30, 40, 90]);
+
+  const overlay = el("div", "cele");
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-label", badges.length === 1 ? `New badge: ${first.name}` : `${badges.length} new badges`);
+
+  const medal = el("div", "medal medal--xl medal--pop");
+  medal.innerHTML = `<svg class="ic" aria-hidden="true"><use href="#i-${first.icon}"/></svg>`;
+  const rest = badges.slice(1);
+  const buttons = el("div", "cluster");
+  const keep = el("button", "btn btn--gold", "Nice!");
+  keep.type = "button";
+  if (onShare) {
+    const share = el("button", "btn btn--glass", "Share");
+    share.type = "button";
+    share.addEventListener("click", () => onShare(first));
+    buttons.append(share);
+  }
+  buttons.append(keep);
+  overlay.append(
+    el("div", "cele__rays"),
+    makeBurst(),
+    medal,
+    el("h2", "cele__title", badges.length === 1 ? "New badge!" : `${badges.length} new badges!`),
+    el("p", "cele__sub", `${first.name}. ${first.text}`),
+    ...(rest.length ? [el("p", "cele__sub", `Also: ${rest.map((b) => b.name).join(", ")}`)] : []),
+    buttons
+  );
+  document.body.appendChild(overlay);
+  keep.focus();
+
+  return new Promise((resolve) => {
+    function close() {
+      document.removeEventListener("keydown", onKey);
+      const done = () => {
+        overlay.remove();
+        resolve();
+      };
+      if (reducedMotion()) return done();
+      overlay.classList.add("out");
+      overlay.addEventListener("animationend", done, { once: true });
+    }
+    function onKey(event) {
+      if (event.key === "Escape") close();
+    }
+    keep.addEventListener("click", close);
     document.addEventListener("keydown", onKey);
   });
 }

@@ -178,6 +178,7 @@ async function finish(ctx) {
   ctx.go("home");
   toast(`Session saved. +${gain.xp} XP`);
   if (levelAfter > levelBefore) await ctx.levelUp(levelAfter);
+  await ctx.checkBadges();
 }
 
 export function skateActions(ctx) {

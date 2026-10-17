@@ -1,19 +1,27 @@
 /* Progress: totals, levels, every skill you have tried, and every session. */
 
 import { html, raw, fmtMinutes, fmtDate, fmt1, addDays, weekKey } from "../util.js";
-import { catDot, catName, miniSkates, bar, medallion } from "../ui/parts.js";
+import { catDot, catName, miniSkates, bar, medallion, medal } from "../ui/parts.js";
 import { openSheet, confirmSheet, toast, $ } from "../ui/dom.js";
 import { levelProgress, landedPct, minutesOnIce, EARNED_AT } from "../stats.js";
 import { nextLevelKey, levelLabel } from "../catalog.js";
 import { fmtMoney, costSummary, costByMonth, sanitizeCost } from "../cost.js";
+import { GROUPS, badgeRatio, progressText } from "../badges.js";
+import { shareBadge } from "../ui/share.js";
 
 const ui = { tab: "overview", open: null, filter: "all" };
 
 const TABS = [
   ["overview", "Overview"],
+  ["badges", "Badges"],
   ["skills", "Skills"],
   ["sessions", "Sessions"],
 ];
+
+/* Open Progress on the trophy case (used by the Badges tile on Home). */
+export function showBadges() {
+  ui.tab = "badges";
+}
 
 function weeklyChart(ctx, d) {
   const start = weekKey(d.today);
@@ -103,6 +111,54 @@ function overview(ctx, d) {
     </div>`;
 }
 
+function trophy(b) {
+  const label = b.earned ? `earned ${fmtDate(b.earnedOn)}` : `${progressText(b)}, not earned yet`;
+  return html`<button class="trophy ${b.earned ? "is-earned" : ""}" type="button" data-action="badge" data-id="${b.id}" aria-label="${b.name}, ${label}">
+    ${medal(b, { locked: !b.earned })}
+    <span class="trophy__name">${b.name}</span>
+    ${b.earned ? html`<span class="trophy__sub">${fmtDate(b.earnedOn, { month: "short", day: "numeric" })}</span>` : html`<span class="trophy__sub">${progressText(b)}</span><span class="trophy__bar" aria-hidden="true"><i style="width:${Math.round(badgeRatio(b) * 100)}%"></i></span>`}
+  </button>`;
+}
+
+/* The trophy case: how many badges, the ones closest to done, and every badge by group. */
+function badgesTab(ctx) {
+  const list = ctx.badges();
+  const earned = list.filter((b) => b.earned).length;
+  const next = list.filter((b) => !b.earned && badgeRatio(b) > 0).sort((a, b) => badgeRatio(b) - badgeRatio(a)).slice(0, 3);
+  return html`<div class="tiles">
+    <section class="card card--glow tile">
+      <div class="tile__head"><p class="eyebrow">Trophy case</p></div>
+      <div class="hours"><span class="num">${earned}</span><span class="dim">of ${list.length} badges earned</span></div>
+      ${bar({ pct: (earned / list.length) * 100, label: "Badges earned" })}
+      ${earned ? "" : html`<p class="note">Save a session and your first badge is waiting.</p>`}
+    </section>
+    ${next.length
+      ? html`<section class="card tile"><div class="tile__head"><p class="eyebrow">Almost there</p></div>${next.map((b) => html`<button class="row row--btn" type="button" data-action="badge" data-id="${b.id}">${medal(b, { locked: true })}<span class="grow">${b.name}<br><span class="dim">${progressText(b)}</span></span></button>`)}</section>`
+      : ""}
+    ${GROUPS.map((g) => html`<section class="card tile wide"><div class="tile__head"><p class="eyebrow">${g}</p></div><div class="trophies">${list.filter((b) => b.group === g).map(trophy)}</div></section>`)}
+  </div>`;
+}
+
+function openBadge(ctx, id) {
+  const b = ctx.badges().find((x) => x.id === id);
+  if (!b) return;
+  const took = b.sessionsTaken > 0 ? `It took ${b.sessionsTaken} ${b.sessionsTaken === 1 ? "session" : "sessions"}${b.daysTaken > 1 ? ` over ${b.daysTaken} days` : ""}.` : "";
+  const sheet = openSheet(
+    html`<div class="badge-sheet">
+      ${medal(b, { locked: !b.earned, xl: true })}
+      <h2 class="sheet__title sheet__title--small">${b.name}</h2>
+      <p class="note">${b.text}</p>
+      ${b.earned
+        ? html`<p><strong>Earned ${fmtDate(b.earnedOn, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}</strong></p>${took ? html`<p class="dim">${took}</p>` : ""}`
+        : html`${bar({ pct: badgeRatio(b) * 100, label: `${b.name} progress` })}<p class="dim">${progressText(b)}</p>`}
+    </div>
+    <div class="sheet__foot">${b.earned ? html`<button class="btn btn--glass btn--small" type="button" id="badge-share">Share</button>` : html`<span></span>`}<button class="btn btn--small" type="button" data-close="done">Done</button></div>`,
+    { label: b.name }
+  );
+  const share = $("#badge-share", sheet.dialog);
+  if (share) share.addEventListener("click", () => shareBadge(b, ctx.state.profile.name));
+}
+
 function skillsTab(ctx, d) {
   const { catalog } = ctx;
   let list = [...d.stats.values()].filter((s) => catalog.skills.has(s.skillId));
@@ -150,7 +206,7 @@ function sessionsTab(ctx, d) {
 
 export function renderProgress(ctx) {
   const d = ctx.derive();
-  const body = ui.tab === "overview" ? overview(ctx, d) : ui.tab === "skills" ? skillsTab(ctx, d) : sessionsTab(ctx, d);
+  const body = ui.tab === "overview" ? overview(ctx, d) : ui.tab === "badges" ? badgesTab(ctx) : ui.tab === "skills" ? skillsTab(ctx, d) : sessionsTab(ctx, d);
   return html`
     <header class="screen-head"><div><p class="eyebrow">Look how far you have come</p><h1>Progress</h1></div></header>
     <div class="seg" role="group" aria-label="Section">${TABS.map(([key, label]) => html`<button type="button" data-action="ptab" data-tab="${key}" aria-pressed="${ui.tab === key}">${label}</button>`)}</div>
@@ -214,6 +270,7 @@ export function progressActions(ctx) {
       ctx.update();
     },
     skill: (el) => openSkill(ctx, el.dataset.id),
+    badge: (el) => openBadge(ctx, el.dataset.id),
     "open-session": (el) => {
       ui.open = ui.open === el.dataset.id ? null : el.dataset.id;
       ctx.update();
