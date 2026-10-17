@@ -5,7 +5,7 @@ import { icon, catDot, miniSkates, bar } from "../ui/parts.js";
 import { $$ } from "../ui/dom.js";
 import { openPicker } from "../ui/picker.js";
 import { SLOTS, splitMinutes, move } from "../plan.js";
-import { suggestNext } from "../stats.js";
+import { suggestNext, isSkating } from "../stats.js";
 import { levelSkillIds, levelLabel } from "../catalog.js";
 
 function pickRow(ctx, d, id, extra = "") {
@@ -44,10 +44,11 @@ function summary(ctx) {
       </span>
     </li>`;
   });
+  const over = planned > state.plan.slotMin;
   const startLabel = state.active ? "Back to the ice" : "Start session";
   return html`<aside class="card card--ice plan-summary" aria-labelledby="plan-title">
     <div class="split"><h2 id="plan-title">Your plan</h2><span class="chip chip--on">${state.plan.slotMin} min slot</span></div>
-    ${ids.length ? html`<ol class="plan-list">${items}</ol>${bar({ pct: (planned / state.plan.slotMin) * 100, label: "Minutes planned" })}<p class="note">${planned} of ${state.plan.slotMin} minutes planned, shared evenly. You can change the order.</p>` : html`<p class="dim">Nothing yet. Tap a skill on the left to add it.</p>`}
+    ${ids.length ? html`<ol class="plan-list">${items}</ol>${bar({ pct: (planned / state.plan.slotMin) * 100, label: "Minutes planned" })}${over ? html`<p class="status status--warn">That is ${planned - state.plan.slotMin} minutes more than your slot. Every skill gets at least 5 minutes, so drop a few or pick a longer slot.</p>` : html`<p class="note">${planned} of ${state.plan.slotMin} minutes planned, shared evenly. You can change the order.</p>`}` : html`<p class="dim">Nothing yet. Tap a skill on the left to add it.</p>`}
     <div class="cluster">
       <button class="btn" type="button" data-action="${state.active ? "resume" : "start"}" ${ids.length || state.active ? "" : "disabled"}>${startLabel}</button>
       ${ids.length ? html`<button class="btn btn--glass btn--small" type="button" data-action="clear">Clear</button>` : ""}
@@ -64,10 +65,10 @@ export function renderPlan(ctx) {
   const suggested = picks.length
     ? html`<section class="card"><p class="eyebrow">Suggested for you</p>${picks.map((p) => pickRow(ctx, d, p.skillId, html` <span class="chip chip--tag">${p.reason}</span>`))}</section>`
     : "";
-  const sameKey = state.profile.levels.skills === state.profile.levels.jumps;
-  const lists = sameKey
-    ? [levelList(ctx, d, state.profile.levels.skills, (s) => s.cat === "skills", "Skating skills"), levelList(ctx, d, state.profile.levels.jumps, (s) => s.cat !== "skills", "Jumps and spins")]
-    : [levelList(ctx, d, state.profile.levels.skills, (s) => s.cat === "skills", "Skating skills"), levelList(ctx, d, state.profile.levels.jumps, (s) => s.cat !== "skills", "Jumps and spins")];
+  const lists = [
+    levelList(ctx, d, state.profile.levels.skills, isSkating, "Skating skills"),
+    levelList(ctx, d, state.profile.levels.jumps, (s) => !isSkating(s), "Jumps and spins"),
+  ];
   return html`
     <header class="screen-head"><div><p class="eyebrow">Before you go on the ice</p><h1>Plan your session</h1></div></header>
     <div class="plan-grid">
@@ -141,8 +142,7 @@ export function planInputs(ctx) {
       if (el.value !== "" && n >= 5 && n <= 300) {
         ctx.state.plan.slotMin = Math.round(n);
         ctx.save();
-        const chips = $$("[data-action='slot']");
-        chips.forEach((c) => c.setAttribute("aria-pressed", "false"));
+        $$("[data-action='slot']").forEach((c) => c.setAttribute("aria-pressed", String(Number(c.dataset.min) === ctx.state.plan.slotMin)));
       }
     },
   };

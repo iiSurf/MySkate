@@ -207,6 +207,18 @@ select {
    or less transparency (in their device settings or in the app) get solid, brighter surfaces.
    Support for the transparency query is patchy, so the glass is already tinted dark underneath. */
 
+/* On the Skate screen the phone may be running on battery for an hour, so the background holds still. */
+[data-route="skate"] .sp,
+[data-route="skate"] .fleck,
+[data-route="skate"] .bar > i::before {
+  animation: none;
+}
+
+[data-route="skate"] .sp {
+  opacity: 0.7;
+  filter: none;
+}
+
 @media (prefers-contrast: more) {
   :root {
     --text-dim: #ffffff;

@@ -3,7 +3,7 @@
 import { html, fmtMinutes, fmtDate, fmtNum, fmt1, fmtClock, todayISO, daysBetween } from "../util.js";
 import { icon, medallion, bar, bladeArt, skateSvg, weekBarsHtml } from "../ui/parts.js";
 import { bladeInfo, bladeHours, logSharpening } from "../blades.js";
-import { levelProgress, suggestNext } from "../stats.js";
+import { levelProgress, suggestNext, isSkating, isAir } from "../stats.js";
 import { levelLabel } from "../catalog.js";
 import { confirmSheet, toast, $ } from "../ui/dom.js";
 import { twinkle } from "../ui/celebrate.js";
@@ -11,8 +11,6 @@ import { elapsedMs } from "../timer.js";
 
 const ui = { bladeOpen: false };
 const LIMITS = [20, 25, 30, 35];
-const isSkating = (sk) => sk.cat === "skills";
-const isAir = (sk) => sk.cat === "jumps" || sk.cat === "spins";
 
 function greeting() {
   const h = new Date().getHours();

@@ -147,3 +147,40 @@ The animated carve was seen by its result, not watched. Reduced motion, a real p
 ### Next
 
 Owner reviews round three. Then build the app shell (index.html, JavaScript modules) that loads the catalog, with first-run setup and the tiles, followed by the plan screen and the Pages deploy.
+
+## 2026-10-16 to 2026-10-17 (Friday night): the app
+
+### Plan
+
+Build the real app from the approved style tile, in this order: logic with tests first (so progress and saved data are trustworthy), then the screens (Home, Plan, Skate, Progress, Me), first-run setup, backups, and a review pass.
+
+### Changes
+
+- Logic in `js/`, with 46 tests (`npm test`, Node's built-in runner, reading the real catalog):
+  - `store.js`: the saved-data shape (`schemaVersion` 1), loading and saving that survive blocked or full storage, sanitizing everything that comes from storage or a file, JSON and CSV export, restore by merge or replace, and a CSV that guards against spreadsheet formulas.
+  - `xp.js`: XP is replayed from the sessions, never stored (session, minutes, skills practiced, personal bests, first time at 4 and 5 skates, weekly streak), level costs, and streak weeks.
+  - `stats.js`, `blades.js`, `timer.js`, `plan.js`, `catalog.js`, `util.js`: per-skill history, level progress, what to practice next, which skills show on the ice, blade life against the skater's own limit, an on-ice clock built from timestamps, slot splitting, and a safe `html` template tag.
+- Screens: Home (greeting, plan or session card, XP tile, level tiles, editable blade life, week tile, recent sessions, backup reminder), Plan (slot chips, suggestions, level lists, browse every skill, minutes per skill, reorder), Skate (clock with pause, skill queue, rating, notes, landed and missed counter with undo, add a skill, finish sheet with the XP breakdown, level-up celebration), Progress (overview, skills, sessions, skill sheet with a trend and personal cues), and Me (name, levels, usual slot, light and contrast, backup and restore, keep-my-data request, sources, delete everything).
+- First-run setup sheet with backup restore. The ice behind everything carves each skill as it is first rated, and the colors follow learning, earned, and stale.
+- `index.html`, `css/app.css`, `assets/favicon.svg`, `README.md`, `tools/serve.py`.
+
+### Verified
+
+- Browser pane, desktop and 375px wide: no horizontal overflow on any screen after fixing a column that stretched past the phone (long select options), no console errors from the app.
+- Driven end to end with real clicks: first-run setup saved the profile and blade settings; planning five skills, reordering, removing, changing the slot; starting a session, rating, clearing a rating, notes, pausing (clock froze) and resuming, the jump counter and undo; a reload mid-session restored the session with the clock still running; finishing with Keep skating, then Save; the session saved with its note, XP replayed, and the level-up appeared when the level changed; blade limit chips, custom limit, hours, plus and minus, sharpening reset with a confirm sheet; export, merge of the same file (nothing doubled), a bad file, replace with a confirm that cancelled cleanly; light and high contrast.
+- A code review of `js/` (15 findings) turned up real issues, all fixed: empty ARIA states, lost keyboard focus after every re-render, the jump library showing 0 of 0, the usual ice slot setting doing nothing, a plan over the slot reporting more minutes than the slot, NaN times in a damaged saved session, the screen wake lock outliving a wiped session, the custom slot not marking a matching chip, background animations running through a session, an unused XP calculation on every tap, duplicated filters, no byte-order mark in the CSV, no tests for escaping or ice patterns, and this log being behind.
+
+### Found and fixed along the way
+
+- Python's `http.server` has a tiny connection queue and dropped requests while the browser loaded the module graph, leaving a blank page. `tools/serve.py` queues more and sends no-cache headers. GitHub Pages is not affected.
+- The `dialog` close event did not always arrive in a background tab, so sheets now settle their promise when they are closed directly.
+- Dates for the backup reminder and sharpening used the UTC day, which was a day ahead in the evening. They now use the local day.
+- Bodoni numerals lost their thin strokes at everyday sizes (a 4 looked like a 1). Numerals now use a sturdier optical size.
+
+### Not verified
+
+A real phone, Safari, the screen wake lock, vibration, and reduced motion. Restoring a very large backup. The Pages deploy and the Portfolio card (see Next). Friend cards, connecting devices by code, and the 3D reference are not built; the 3D area is a labeled placeholder.
+
+### Next
+
+Turn on GitHub Pages for `MySkate`, check the live site, fill in the Artifact 2 card in the Portfolio, and then the stretch items in `ROADMAP.md`.

@@ -1,7 +1,7 @@
 /* MySkate: loads your saved data and the skill catalog, draws the ice, and shows one screen at a time. */
 
 import { loadCatalog } from "./catalog.js";
-import { loadState, saveState, defaultState, exportJSON, exportCSV, requestPersistence } from "./store.js";
+import { loadState, saveState, exportJSON, exportCSV, requestPersistence } from "./store.js";
 import { replayXp, levelFromXp, streakWeeks, weekBars } from "./xp.js";
 import { skillStats, activeAsSession, iceSkills, totals } from "./stats.js";
 import { todayISO, html } from "./util.js";
@@ -10,6 +10,7 @@ import { createIce } from "./ui/ice.js";
 import { levelUp as celebrateLevelUp, reducedMotion } from "./ui/celebrate.js";
 import { runOnboarding } from "./ui/onboard.js";
 import { newActive } from "./timer.js";
+import { keepAwake } from "./wake.js";
 import { renderHome, homeActions, homeInputs } from "./screens/home.js";
 import { renderPlan, planActions, planInputs } from "./screens/plan.js";
 import { renderSkate, mountSkate, skateActions, skateInputs } from "./screens/skate.js";
@@ -93,10 +94,20 @@ function placeLens(instant) {
   }
 }
 
+/* A selector that finds the same control again after the screen is rebuilt. */
+function focusSelector(el) {
+  if (!el || !screenEl.contains(el)) return null;
+  const control = el.closest("[data-action], [data-input]");
+  if (!control) return null;
+  const parts = Object.entries(control.dataset).map(([k, v]) => `[data-${k.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase())}="${CSS.escape(v)}"]`);
+  return parts.join("");
+}
+
 function renderRoute({ keepScroll = false } = {}) {
   cleanup();
   const route = ROUTES[current];
   const y = window.scrollY;
+  const refocus = keepScroll ? focusSelector(document.activeElement) : null;
   const blocked = ctx.flags.storageBlocked
     ? html`<section class="card nudge"><p><strong>Your browser is not letting MySkate save.</strong></p><p class="dim">This can happen in a private window. Everything works until you close this tab, so save a backup from the Me screen before you leave.</p></section>`
     : "";
@@ -109,7 +120,12 @@ function renderRoute({ keepScroll = false } = {}) {
   });
   placeLens(false);
   document.title = `${route.title} · MySkate`;
+  document.documentElement.dataset.route = current;
   if (keepScroll) window.scrollTo(0, y);
+  if (refocus) {
+    const again = screenEl.querySelector(refocus);
+    if (again) again.focus({ preventScroll: true });
+  }
 }
 
 function go(route) {
@@ -150,6 +166,7 @@ function buildContext(state, catalog, status) {
     setState(next) {
       ctx.state = next;
       prune(ctx.state);
+      keepAwake(Boolean(ctx.state.active && ctx.state.active.running));
     },
     togglePlan(id) {
       const ids = ctx.state.plan.skillIds;
@@ -178,7 +195,8 @@ function buildContext(state, catalog, status) {
       renderRoute({ keepScroll: true });
     },
     exportCSV() {
-      download(`myskate-ratings-${todayISO()}.csv`, exportCSV(ctx.state, ctx.catalog), "text/csv");
+      /* The byte-order mark makes Excel read accents and curly quotes in notes correctly. */
+      download(`myskate-ratings-${todayISO()}.csv`, "\uFEFF" + exportCSV(ctx.state, ctx.catalog), "text/csv");
       toast("Spreadsheet saved. Look in your downloads.");
     },
     levelUp: (level) => celebrateLevelUp(level),

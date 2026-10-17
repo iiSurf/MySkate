@@ -14,21 +14,21 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 ### Must ship by Sunday 2026-10-18
 
 - [x] Catalog data files: Learn to Skate USA Basic 1-6, Pre-Free Skate and Free Skate 1-6, Adult 1-6, U.S. Figure Skating Skating Skills tests, and a jump/spin/other library (233 skills, `data/catalog/`)
-- [ ] Level picker, separate for skating skills and free skate (owner starts at Pre-Free Skate), with suggested next skills
-- [ ] First-run setup: skates and sharpening limit, level pickers, usual ice slot, or restore from a backup file
-- [ ] Plan screen: pick skills, pick an ice slot (30, 45, 60, 75, 90, 120 minutes, or custom)
-- [ ] Skate mode: booked-slot countdown, actual on-ice timer with pause, skill checklist, 1-5 skate rating, notes, and a landed/missed counter for jumps
-- [ ] History and progress: per-skill trend, level progress, ice time totals by week and month
-- [ ] XP, level bar, and weekly streak
-- [ ] Backup: export JSON (full), export CSV (read-only), restore with Merge or Replace, reminder after 7 days without a backup
+- [x] Level picker, separate for skating skills and free skate (owner starts at Pre-Free Skate), with suggested next skills
+- [x] First-run setup: skates and sharpening limit, level pickers, usual ice slot, or restore from a backup file
+- [x] Plan screen: pick skills, pick an ice slot (30, 45, 60, 75, 90, 120 minutes, or custom)
+- [x] Skate mode: booked-slot countdown, actual on-ice timer with pause, skill checklist, 1-5 skate rating, notes, and a landed/missed counter for jumps
+- [x] History and progress: per-skill trend, level progress, ice time totals by week and month
+- [x] XP, level bar, and weekly streak
+- [x] Backup: export JSON (full), export CSV (read-only), restore with Merge or Replace, reminder after 7 days without a backup
 - [ ] Deployed on GitHub Pages, Portfolio card filled in, `CLAUDE.md` and `LOG.md` current
-- [ ] Placeholder panels where the 3D reference will go (Skate screen, Skill detail)
+- [x] Placeholder panels where the 3D reference will go (Skate screen, Skill detail)
 
 ### Stretch, in this order
 
-1. Your ice: the background draws each skill's marks as you skate (`js/ice-tracks.js` already exists)
-2. Blade life tile: editable sharpening limit (20, 25, 30, 35, or custom), hours since sharpening from logged on-ice time, a reset button
-3. Time-budget planner: split the booked slot across the chosen skills
+1. Your ice: the background draws each skill's marks as you skate (done)
+2. Blade life tile: editable sharpening limit (20, 25, 30, 35, or custom), hours since sharpening from logged on-ice time, a reset button (done)
+3. Time-budget planner: split the booked slot across the chosen skills (done, shared evenly)
 4. Friend cards and a local friends board
 5. Connect devices by code, in both directions (small payload by QR; full history by backup file)
 6. Cost per session and per month

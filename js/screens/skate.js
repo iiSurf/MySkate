@@ -23,7 +23,7 @@ function idle(ctx) {
     <section class="card"><p class="eyebrow">What happens next</p><p class="dim">The clock counts only your time on ice, and you can pause it for a rest. Rate each skill with one to five skates. For jumps, tap Landed or Missed on every try. Your progress saves as you go.</p></section>`;
 }
 
-function queue(ctx, a, d) {
+function queue(ctx, a) {
   return html`<aside class="card plan-summary" aria-label="This session">
     <p class="eyebrow">This session</p>
     <ol class="plan-list">${a.order.map((id, i) => {
@@ -56,7 +56,6 @@ function jumpCounter(e, glow) {
 export function renderSkate(ctx) {
   const a = ctx.state.active;
   if (!a) return idle(ctx);
-  const d = ctx.derive();
   const id = a.order[a.index];
   const sk = ctx.catalog.skills.get(id);
   const e = entryOf(a, id);
@@ -93,7 +92,7 @@ export function renderSkate(ctx) {
         </div>
         <button class="btn btn--coral btn--block" type="button" data-action="end">End session</button>
       </div>
-      ${queue(ctx, a, d)}
+      ${queue(ctx, a)}
     </div>`;
 }
 
@@ -166,6 +165,7 @@ async function finish(ctx) {
   draft.note = (noteEl && noteEl.value ? noteEl.value : "").slice(0, 1000);
   ctx.state.sessions.push(draft);
   ctx.state.active = null;
+  ctx.state.plan = { slotMin: ctx.state.profile.defaultSlotMin, skillIds: [] };
   keepAwake(false);
   ctx.save();
   const levelAfter = levelFromXp(after.total).level;

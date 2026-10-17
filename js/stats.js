@@ -46,13 +46,13 @@ export function activeAsSession(active, todayIso) {
 }
 
 export function levelProgress(catalog, key, stats, want = () => true) {
-  const ids = levelSkillIds(catalog, key).filter((id) => want(catalog.skills.get(id)));
+  const ids = idsFor(catalog, key).filter((id) => want(catalog.skills.get(id)));
   const earned = ids.filter((id) => ((stats.get(id) || {}).latest || 0) >= EARNED_AT).length;
   return { total: ids.length, earned, pct: ids.length ? Math.round((earned / ids.length) * 100) : 0, ids };
 }
 
-const isSkating = (sk) => sk.cat === "skills";
-const isAir = (sk) => sk.cat === "jumps" || sk.cat === "spins";
+export const isSkating = (sk) => sk.cat === "skills";
+export const isAir = (sk) => sk.cat === "jumps" || sk.cat === "spins";
 
 function idsFor(catalog, key) {
   if (key === "library") {

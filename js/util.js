@@ -19,7 +19,8 @@ export const raw = (text) => new Raw(String(text));
 function part(value) {
   if (value instanceof Raw) return value.text;
   if (Array.isArray(value)) return value.map(part).join("");
-  if (value === false || value == null) return "";
+  if (value == null) return "";
+  /* Booleans print as true or false, so ARIA state attributes such as aria-pressed are never left empty. */
   return esc(value);
 }
 

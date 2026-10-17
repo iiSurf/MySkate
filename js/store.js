@@ -65,7 +65,7 @@ function sanitizeSession(s) {
 function sanitizeActive(a) {
   if (!a || typeof a !== "object") return null;
   const id = str(a.id, MAX.id);
-  if (!id || typeof a.startedAt !== "number") return null;
+  if (!id || !Number.isFinite(a.startedAt)) return null;
   const entries = {};
   if (a.entries && typeof a.entries === "object") {
     for (const [k, v] of Object.entries(a.entries).slice(0, 200)) {
@@ -81,8 +81,8 @@ function sanitizeActive(a) {
     order,
     index: Math.round(num(a.index, 0, Math.max(0, order.length - 1), 0)),
     entries,
-    running: Boolean(a.running),
-    runStart: typeof a.runStart === "number" ? a.runStart : null,
+    running: Boolean(a.running) && Number.isFinite(a.runStart),
+    runStart: Number.isFinite(a.runStart) ? a.runStart : null,
     accumMs: num(a.accumMs, 0, 86400000, 0),
   };
 }

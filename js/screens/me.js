@@ -122,6 +122,7 @@ export function meActions(ctx) {
   return {
     "default-slot": (el) => {
       ctx.state.profile.defaultSlotMin = Number(el.dataset.min);
+      if (!ctx.state.plan.skillIds.length) ctx.state.plan.slotMin = ctx.state.profile.defaultSlotMin;
       ctx.save();
       ctx.update();
     },
