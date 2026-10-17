@@ -204,3 +204,12 @@ test("new badges are the earned ones you have not seen, and progress is a ratio"
 test("level badges read as 'Level 2 of 3'", () => {
   assert.equal(progressText(one(got([session("2026-10-01", { onIceSec: min(10) })]), "level-3")), "Level 1 of 3");
 });
+
+test("goal badges are earned on the day each goal was reached, even with no sessions, and show their progress", () => {
+  const list = got([session("2026-10-01")], { goalDates: ["2026-10-20", "2026-10-09", "2026-10-30", "2026-11-02", "2026-11-05"] });
+  assert.deepEqual([one(list, "goal-1").earned, one(list, "goal-1").earnedOn, one(list, "goal-1").sessionsTaken], [true, "2026-10-09", 1]);
+  assert.deepEqual([one(list, "goal-5").earned, one(list, "goal-5").earnedOn, one(list, "goal-5").value], [true, "2026-11-05", 5], "the fifth date, in order");
+  const three = got([], { goalDates: ["2026-10-09", "2026-10-10", "2026-10-11"] });
+  assert.deepEqual([one(three, "goal-1").earned, one(three, "goal-5").earned, progressText(one(three, "goal-5"))], [true, false, "3 of 5"]);
+  assert.equal(one(got([session("2026-10-01")]), "goal-1").earned, false);
+});

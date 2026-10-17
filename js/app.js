@@ -10,6 +10,7 @@ import { createIce } from "./ui/ice.js";
 import { levelUp as celebrateLevelUp, badgeUnlock, reducedMotion } from "./ui/celebrate.js";
 import { shareBadge } from "./ui/share.js";
 import { evaluateBadges, newlyEarned } from "./badges.js";
+import { goalStatus } from "./goals.js";
 import { makeCard, parseFriendHash } from "./friends.js";
 import { encryptBackup } from "./crypto.js";
 import { openAddFriend } from "./ui/friends.js";
@@ -251,7 +252,12 @@ function buildContext(state, catalog, status) {
       return makeCard({ id: p.cardId, name: p.name, level: d.level.level, xpTotal: d.xp.total, xpWeek: d.bars.reduce((sum, b) => sum + b.xp, 0), streak: d.streak.weeks, badges: ctx.badges().filter((b) => b.earned).length, hours: d.totals.allMin / 60 });
     },
     /* Every badge with whether it is earned and when, worked out from the saved sessions. */
-    badges: () => evaluateBadges({ sessions: ctx.state.sessions, sharpenings: ctx.state.sharpenings, backupAt: ctx.state.backup.lastExportAt, catalog: ctx.catalog }),
+    badges() {
+      const stats = skillStats(ctx.state.sessions);
+      const today = todayISO();
+      const goalDates = ctx.state.goals.map((g) => goalStatus(g, stats, today)).filter((g) => g.met).map((g) => g.metOn);
+      return evaluateBadges({ sessions: ctx.state.sessions, sharpenings: ctx.state.sharpenings, backupAt: ctx.state.backup.lastExportAt, catalog: ctx.catalog, goalDates });
+    },
     /* Tell the skater about badges earned since the last look. The first time (and after a restore) it only notes what is
        already earned, so old progress does not set off a pile of celebrations. */
     async checkBadges({ silent = false } = {}) {

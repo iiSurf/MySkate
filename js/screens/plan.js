@@ -1,8 +1,10 @@
 /* Plan: choose your ice slot, pick skills (suggested, your levels, or anything in the catalog), and see the minutes. */
 
-import { html } from "../util.js";
+import { html, uid, todayISO, fmtDate } from "../util.js";
 import { icon, catDot, miniSkates, bar } from "../ui/parts.js";
-import { $$ } from "../ui/dom.js";
+import { $, $$, openSheet, confirmSheet, toast } from "../ui/dom.js";
+import { pickSkill } from "../ui/skillpick.js";
+import { sortedGoals, addGoal, TARGETS } from "../goals.js";
 import { openPicker } from "../ui/picker.js";
 import { SLOTS, splitMinutes, move } from "../plan.js";
 import { suggestNext, isSkating } from "../stats.js";
@@ -25,6 +27,80 @@ function levelList(ctx, d, key, want, title) {
   const ids = levelSkillIds(ctx.catalog, key, { bonus: true }).filter((id) => want(ctx.catalog.skills.get(id)));
   if (!ids.length) return "";
   return html`<section class="card"><p class="eyebrow">${title}: ${levelLabel(ctx.catalog, key)}</p>${ids.map((id) => pickRow(ctx, d, id))}</section>`;
+}
+
+/* Skill goals: a skill, the rating to reach, and a date. */
+function goalRow(ctx, g) {
+  const sk = ctx.catalog.skills.get(g.skillId);
+  const skates = (n) => `${n} ${n === 1 ? "skate" : "skates"}`;
+  const chip = g.met ? html`<span class="chip chip--gold">Reached</span>` : g.countdown ? html`<span class="chip ${g.overdue ? "chip--coral" : "chip--gold"}">${g.countdown.label}</span>` : "";
+  return html`<div class="row goal-row">
+    <span class="tick" aria-hidden="true" data-on="${g.met}">${icon("check")}</span>
+    <span class="grow">${sk.name}<br><span class="dim">${g.met ? `Reached ${fmtDate(g.metOn, { month: "short", day: "numeric" })}, goal was ${skates(g.target)}` : g.tried ? `Now ${skates(g.latest)}, goal ${skates(g.target)}` : `Not tried yet, goal ${skates(g.target)}`}${g.date && !g.met ? ` by ${fmtDate(g.date, { month: "short", day: "numeric" })}` : ""}</span>${g.met ? "" : bar({ pct: g.pct, thin: true, label: `${sk.name}: ${g.pct} percent of the way to the goal` })}</span>
+    ${chip}
+    ${g.met ? "" : html`<button class="chip" type="button" data-action="goal-plan" data-id="${g.id}">${ctx.state.plan.skillIds.includes(g.skillId) ? "In plan" : "Plan it"}</button>`}
+    <button class="icon-btn icon-btn--sm" type="button" data-action="goal-remove" data-id="${g.id}" aria-label="Remove the goal for ${sk.name}">${icon("x")}</button>
+  </div>`;
+}
+
+function goalsCard(ctx, d) {
+  const rows = sortedGoals(ctx.state.goals, d.stats, d.today).filter((g) => ctx.catalog.skills.has(g.skillId));
+  return html`<section class="card" aria-labelledby="goals-title">
+    <div class="split"><p class="eyebrow" id="goals-title">Goals</p><button class="chip" type="button" data-action="add-goal">Add a goal</button></div>
+    ${rows.length ? html`<div>${rows.map((g) => goalRow(ctx, g))}</div>` : html`<p class="dim">Pick a skill, the rating you want, and a date if you have one. MySkate shows how close you are, and cheers when you get there.</p>`}
+  </section>`;
+}
+
+/* The sheet for setting a goal. */
+async function openGoalSheet(ctx) {
+  const d = ctx.derive();
+  let skillId = null;
+  let target = 4;
+  const sheet = openSheet(
+    html`<h2 class="sheet__title sheet__title--small">Set a goal</h2>
+      <div class="field"><span id="gs-skill-l">Skill</span><button class="btn btn--glass btn--small" type="button" id="gs-skill" aria-labelledby="gs-skill-l gs-skill">Choose a skill</button></div>
+      <div class="field"><span id="gs-target-l">Reach this rating</span><div class="limit-row" id="gs-target" role="group" aria-labelledby="gs-target-l">${TARGETS.map((n) => html`<button class="chip" type="button" data-n="${n}" aria-pressed="${n === target}">${n} skates</button>`)}</div></div>
+      <label class="field"><span>By this day (optional)</span><input class="input" id="gs-date" type="date" min="${todayISO()}"></label>
+      <p class="note">A goal is reached when the skill's latest rating is at or above the target. 4 skates is how MySkate counts a skill as earned.</p>
+      <p class="status status--warn" role="alert" hidden></p>
+      <div class="sheet__foot"><button class="btn btn--glass btn--small" type="button" data-close="cancel">Cancel</button><button class="btn btn--small" type="button" id="gs-save">Save goal</button></div>`,
+    { label: "Set a goal", sticky: true }
+  );
+  const root = sheet.dialog;
+  const warn = $(".status--warn", root);
+  const fail = (m) => {
+    warn.textContent = m;
+    warn.hidden = false;
+  };
+  $("#gs-skill", root).addEventListener("click", async () => {
+    const id = await pickSkill(ctx, { title: "Choose a skill for your goal" });
+    if (!id) return;
+    skillId = id;
+    $("#gs-skill", root).textContent = ctx.catalog.skills.get(id).name;
+    warn.hidden = true;
+  });
+  $("#gs-target", root).addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-n]");
+    if (!b) return;
+    target = Number(b.dataset.n);
+    $$("button", $("#gs-target", root)).forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  });
+  $("#gs-save", root).addEventListener("click", () => {
+    const date = $("#gs-date", root).value;
+    if (!skillId) return fail("Choose a skill first.");
+    if (date && date < todayISO()) return fail("That day has passed. Pick today or later, or leave it empty.");
+    const st = d.stats.get(skillId);
+    if (st && st.latest >= target) return fail(`You are already at ${st.latest} ${st.latest === 1 ? "skate" : "skates"} on that skill. Choose a higher rating.`);
+    const result = addGoal(ctx.state.goals, { skillId, target, date }, uid(), todayISO());
+    if (result.status === "full") return fail("MySkate holds up to 30 goals. Remove one first.");
+    if (result.status === "already") return fail("You already have that exact goal.");
+    ctx.state.goals = result.goals;
+    ctx.save();
+    sheet.close("saved");
+    ctx.update();
+    toast(result.status === "updated" ? "Goal changed." : "Goal set.");
+  });
+  return sheet.closed;
 }
 
 function summary(ctx) {
@@ -81,6 +157,7 @@ export function renderPlan(ctx) {
           </div>
           <button class="chip slot-link" type="button" data-action="go-ice">Find ice time</button>
         </section>
+        ${goalsCard(ctx, d)}
         ${suggested}
         ${lists}
         <button class="btn btn--glass" type="button" data-action="browse">Browse every skill</button>
@@ -127,6 +204,21 @@ export function planActions(ctx) {
     },
     clear: () => {
       ctx.state.plan.skillIds = [];
+      ctx.save();
+      ctx.update();
+    },
+    "add-goal": () => openGoalSheet(ctx),
+    "goal-plan": (el) => {
+      const g = ctx.state.goals.find((x) => x.id === el.dataset.id);
+      if (g && !ctx.state.plan.skillIds.includes(g.skillId)) ctx.togglePlan(g.skillId);
+      ctx.update();
+    },
+    "goal-remove": async (el) => {
+      const g = ctx.state.goals.find((x) => x.id === el.dataset.id);
+      if (!g) return;
+      const ok = await confirmSheet({ title: "Remove this goal?", message: `The goal for ${ctx.catalog.skills.get(g.skillId).name} goes away. Your ratings stay.`, confirmLabel: "Remove" });
+      if (!ok) return;
+      ctx.state.goals = ctx.state.goals.filter((x) => x.id !== g.id);
       ctx.save();
       ctx.update();
     },

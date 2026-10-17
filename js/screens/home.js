@@ -15,6 +15,7 @@ import { twinkle } from "../ui/celebrate.js";
 import { elapsedMs } from "../timer.js";
 import { upcomingPicks, kindName, fmtRange } from "../ice.js";
 import { costSummary, fmtMoney } from "../cost.js";
+import { sortedGoals } from "../goals.js";
 
 const ui = { bladeOpen: false };
 const LIMITS = [20, 25, 30, 35];
@@ -117,6 +118,17 @@ function bladeTile(ctx) {
       <p class="note">Most skaters sharpen between 20 and 35 hours. Use what your coach or sharpener says. MySkate adds your on-ice time after every session.${last ? ` Last sharpened ${fmtDate(last.date, { month: "short", day: "numeric" })} at ${fmtNum(last.hours)} hours.` : ""}</p>
     </div>
     <button class="btn btn--glass btn--small" type="button" data-action="blade-log">I just got them sharpened</button>
+  </section>`;
+}
+
+/* The skill goals still to reach, soonest first. Only shown while there is one. */
+function goalsTile(ctx, d) {
+  const open = sortedGoals(ctx.state.goals, d.stats, d.today).filter((g) => !g.met && ctx.catalog.skills.has(g.skillId));
+  if (!open.length) return "";
+  return html`<section class="card tile" aria-labelledby="goals-title">
+    <div class="tile__head"><p class="eyebrow" id="goals-title">Goals</p><span class="chip chip--on">${open.length} open</span></div>
+    <div>${open.slice(0, 3).map((g) => html`<div class="row"><span class="grow">${ctx.catalog.skills.get(g.skillId).name}<br><span class="dim">${g.tried ? `Now ${g.latest}` : "Not tried"}, goal ${g.target}</span></span>${g.countdown ? html`<span class="chip ${g.overdue ? "chip--coral" : "chip--gold"}">${g.countdown.label}</span>` : ""}</div>`)}</div>
+    <button class="btn btn--glass btn--small" type="button" data-action="go-plan">Plan for my goals</button>
   </section>`;
 }
 
@@ -252,7 +264,7 @@ export function renderHome(ctx) {
     </header>
     ${nudge(ctx)}
     ${heroCard(ctx, d)}
-    <div class="tiles">${xpTile(ctx, d)}${badgeTile(ctx)}${testTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
+    <div class="tiles">${xpTile(ctx, d)}${badgeTile(ctx)}${goalsTile(ctx, d)}${testTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
     ${recent(ctx, d)}`;
 }
 
