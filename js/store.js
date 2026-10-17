@@ -2,6 +2,7 @@
    Anything that comes from a file is untrusted, so every field is checked and trimmed before it is used. */
 
 import { sanitizeCost } from "./cost.js";
+import { sanitizeFriend, MAX_FRIENDS } from "./friends.js";
 import { sanitizeRink, sanitizeIceSession, sanitizeIceView, defaultIceView, LIMITS as ICE_LIMITS } from "./ice.js";
 
 export const SCHEMA_VERSION = 1;
@@ -27,6 +28,7 @@ export function defaultState(now = new Date()) {
       tourSeen: false,
       defaultCost: null,
       badgesSeen: null,
+      cardId: "",
     },
     blades: { name: "", limitHours: 25, baseHours: 0, countedFrom: now.toISOString() },
     sharpenings: [],
@@ -97,21 +99,6 @@ function sanitizeActive(a) {
   };
 }
 
-function sanitizeFriend(f) {
-  if (!f || typeof f !== "object") return null;
-  const id = str(f.id, MAX.id);
-  if (!id) return null;
-  return {
-    id,
-    name: str(f.name, MAX.name, "Friend"),
-    level: Math.round(num(f.level, 1, 999, 1)),
-    xpWeek: Math.round(num(f.xpWeek, 0, 1e6, 0)),
-    xpTotal: Math.round(num(f.xpTotal, 0, 1e7, 0)),
-    streak: Math.round(num(f.streak, 0, 999, 0)),
-    updatedAt: isoStamp(f.updatedAt) || new Date(0).toISOString(),
-  };
-}
-
 /* Rinks and their sessions: bad entries and repeats are dropped, and a session whose rink is gone goes with it. */
 function cleanIce(rawRinks, rawSessions) {
   const once = (list, clean, limit) => {
@@ -165,6 +152,7 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
       tourSeen: p.tourSeen === true,
       defaultCost: sanitizeCost(p.defaultCost),
       badgesSeen: Array.isArray(p.badgesSeen) ? [...new Set(p.badgesSeen.map((x) => str(x, 60)).filter(Boolean))].slice(0, 100) : null,
+      cardId: str(p.cardId, MAX.id),
     },
     blades: {
       name: str(b.name, MAX.name),
@@ -183,7 +171,7 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
       cost: sanitizeCost(plan.cost),
     },
     cues,
-    friends: (Array.isArray(src.friends) ? src.friends : []).map(sanitizeFriend).filter(Boolean).slice(0, 100),
+    friends: (Array.isArray(src.friends) ? src.friends : []).map(sanitizeFriend).filter(Boolean).slice(0, MAX_FRIENDS),
     rinks,
     iceSessions,
     iceView,
