@@ -44,19 +44,20 @@
   --cat-jumps: var(--sun);
   --cat-spins: #b9a6ff;
 
-  /* Text */
-  --text: #f4fbff;
-  --text-dim: rgba(234, 248, 255, 0.76);
-  --text-faint: rgba(234, 248, 255, 0.54);
+  /* Text: brighter than before so it stays readable on glass */
+  --text: #f7fcff;
+  --text-dim: rgba(242, 251, 255, 0.9);
+  --text-faint: rgba(236, 248, 255, 0.74);
   --ink: #052545;
   --ink-gold: #4a2f00;
 
-  /* Liquid glass */
-  --glass-edge: rgba(255, 255, 255, 0.34);
-  --glass-edge-soft: rgba(255, 255, 255, 0.14);
-  --glass-blur: blur(22px) saturate(1.7);
+  /* Liquid glass. The tint is a dark layer under the glass so text never sits on a bright patch. */
+  --glass-tint: rgba(5, 22, 72, 0.5);
+  --glass-edge: rgba(255, 255, 255, 0.36);
+  --glass-edge-soft: rgba(255, 255, 255, 0.16);
+  --glass-blur: blur(22px) saturate(1.5);
   --glass-shadow: 0 14px 38px rgba(0, 8, 34, 0.42);
-  --track: rgba(3, 14, 48, 0.42);
+  --track: rgba(3, 14, 48, 0.5);
 
   /* Sky behind the glass. Set by [data-light]. */
   --sky-top: #14468e;

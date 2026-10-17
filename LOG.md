@@ -111,4 +111,39 @@ Reduced-motion behavior (the CSS and JavaScript handle it but it was not exercis
 
 ### Next
 
-Owner reviews round two. Then build the app shell (index.html, JavaScript modules) that loads the catalog, followed by the level picker and the plan screen, and the Pages deploy.
+Owner reviews round two. (Feedback came back the same night; see round three below.)
+
+## 2026-10-16 (Friday night): style tile, round three
+
+### Plan
+
+Owner feedback on round two: the skate still looked like a children's-book drawing rather than a real skate like the Edea reference, and the blade matters just as much (shape and reflection); text was hard to read, so what are the best current web font practices; big tiles felt bland, and the sharpening interval should be editable (some skaters sharpen at 20 hours, some 25, some 35); wants a first-run screen to enter skate stats or restore a JSON file; wants friend cards and a QR code to move data between computer and phone, both directions; and the background should be redrawn so the skate lines depend on the skater's skills and are drawn in real time. Colors and the ice gradient were loved.
+
+### Changes
+
+- Skate art redrawn (`assets/skate.svg`, symbol `skate`): a real figure-skate profile with a high cuff and Achilles notch, tongue and crisscross laces on gold hooks, oblong mesh windows, a gold-lined sole and heel, two gold posts, and a steel blade with a hollow-grind line, moving glints, a bright edge, and a solid toe pick. A second symbol, `blade`, is the blade alone. `design/skate-lab.html` shows both large, with an ice reflection, and at small sizes.
+- Readability: brighter text colors, 17px body at weight 450, Bodoni limited to big moments (titles, numerals, medallions) and Jost for everything small, a dark tint under every glass surface, `text-wrap` balance and pretty, and a High contrast text mode (`data-contrast="high"`, also switched on by `prefers-contrast: more`). `prefers-reduced-transparency` is handled too, but its support is patchy (Safari does not support it), so legibility does not depend on it.
+- Tiles with a job: Blade life (a steel blade that is bright for the fresh part and dull for the worn part, a hours counter, a state chip that goes from Sharp to Getting dull to Time to sharpen, editable limit chips of 20, 25, 30, 35 or custom, editable hours so far, and an "I just got them sharpened" reset), XP (medallion, bar, weekly bars), curriculum (a row of skates, one per skill), and next ice slot (calendar block). Each has etched ice in the corner (`assets/tile-trace.svg`).
+- Your ice: `js/ice-tracks.js` draws each skill's marks on the background. The skill's name and category pick the pattern (swizzles weave, edges loop, crossovers scallop, three-turns leave tiny 3s, mohawks, twizzles, loops, spin spirals, jump takeoffs with toe-pick dots and landings, stops with a snow spray, spirals, step serpentines). The skill id picks the position, so a skill always lands in the same place. Blue marks are learning, gold are earned, faint are stale. "Carve the next skill" draws one live with a glint. "Peek at my ice" fades the page to show the whole sheet. The old static trace art was replaced by `assets/ice-texture.svg` (fine scratches) and both assets come from `design/make-ice-assets.py`.
+- First run: a setup sheet with Start fresh (skates and sharpening limit, level pickers filled from the real catalog, usual ice slot), Restore a backup (reads a JSON file on the device, checks it is a MySkate backup, shows the session count and date range), a sample backup, and Connect from another device.
+- Connect devices: a sample screen with Show a code and Scan a code, and both directions (computer to phone, phone to computer). The code is a sample, not real.
+
+### Research notes
+
+- Fonts: self-host WOFF2 subsets, preload only the critical face (with `crossorigin`), use `font-display: swap` with metric-adjusted fallbacks (`size-adjust`, `ascent-override`, `descent-override`), and use variable fonts only when several weights are needed. Several sources were low quality, so verify against MDN and web.dev. Self-hosting needs downloading font files, so it waits for the owner's yes. Bodoni Moda and Jost are both under the SIL Open Font License, which allows self-hosting.
+- Liquid glass legibility: translucent surfaces have no fixed contrast ratio, so solid, high-contrast surfaces should be the baseline and glass layered on top. `prefers-reduced-transparency` is in Chrome and Edge 118 and later, behind a flag in Firefox, and not in Safari.
+- QR transfer: one QR code holds about 3 KB in binary at low error correction, so a code can carry setup, plan, friends, and recent sessions. Full history moves by backup file. A live pairing over WebRTC (no server, QR to exchange the handshake) is a later option.
+
+### Verified
+
+Browser pane, desktop and 375px: no overflow and no console errors apart from a vibration call my script made without a tap (now guarded). Blade tile: edit panel, chips, custom limit, hours field, plus and minus, state and "hours left" text, and the sharpening reset all behave (Sharp under 60%, Getting dull under 90%, Time to sharpen above, "Over by" when past the limit). Ice: 38 tracks draw from the real catalog, carving adds one live and moves the slider, peek mode shows and hides the full sheet. First run: bad JSON, a wrong-shape JSON, and a sample file each give the right message; the steps, dots, level pickers (31 and 14 options from the catalog), and summary work. Connect sheet toggles mode and direction. High contrast text toggles. All four light variants still render.
+
+Found and fixed: the hidden attribute was beaten by button styles (a global `[hidden]` rule now wins), and "counterclockwise" was matching the "counter" turn pattern.
+
+### Not verified
+
+The animated carve was seen by its result, not watched. Reduced motion, a real phone, and Safari (backdrop blur, `clip-path` transitions, external SVG `use`) were not tested. The skate art was checked by eye at several sizes but not by a skater. The QR is a drawing, not an encoder, and no camera scanning exists yet. The catalog mapping to track patterns is by keyword and has not been reviewed skill by skill.
+
+### Next
+
+Owner reviews round three. Then build the app shell (index.html, JavaScript modules) that loads the catalog, with first-run setup and the tiles, followed by the plan screen and the Pages deploy.

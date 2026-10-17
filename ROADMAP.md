@@ -15,6 +15,7 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 
 - [x] Catalog data files: Learn to Skate USA Basic 1-6, Pre-Free Skate and Free Skate 1-6, Adult 1-6, U.S. Figure Skating Skating Skills tests, and a jump/spin/other library (233 skills, `data/catalog/`)
 - [ ] Level picker, separate for skating skills and free skate (owner starts at Pre-Free Skate), with suggested next skills
+- [ ] First-run setup: skates and sharpening limit, level pickers, usual ice slot, or restore from a backup file
 - [ ] Plan screen: pick skills, pick an ice slot (30, 45, 60, 75, 90, 120 minutes, or custom)
 - [ ] Skate mode: booked-slot countdown, actual on-ice timer with pause, skill checklist, 1-5 skate rating, notes, and a landed/missed counter for jumps
 - [ ] History and progress: per-skill trend, level progress, ice time totals by week and month
@@ -25,13 +26,15 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 
 ### Stretch, in this order
 
-1. Time-budget planner: split the booked slot across the chosen skills
-2. Friend cards and a local friends board
-3. Blade hours since last sharpening (reuses logged on-ice time)
-4. Cost per session and per month
-5. Send plan to phone (link or QR code)
-6. Test readiness against the 2026-27 Singles chart
-7. Passphrase-protected backups (Web Crypto, AES-GCM)
+1. Your ice: the background draws each skill's marks as you skate (`js/ice-tracks.js` already exists)
+2. Blade life tile: editable sharpening limit (20, 25, 30, 35, or custom), hours since sharpening from logged on-ice time, a reset button
+3. Time-budget planner: split the booked slot across the chosen skills
+4. Friend cards and a local friends board
+5. Connect devices by code, in both directions (small payload by QR; full history by backup file)
+6. Cost per session and per month
+7. Test readiness against the 2026-27 Singles chart
+8. Passphrase-protected backups (Web Crypto, AES-GCM)
+9. Self-host the fonts (needs the owner's yes to download them)
 
 ### Later
 
@@ -78,6 +81,32 @@ Level n to n+1 costs `100 + 50 * (n - 1)` XP. XP is effort relative to your own 
 ### Phone and desktop do not share data
 
 There is no server, so a plan made on a laptop does not appear on a phone. "Send plan to phone" (link or QR) and the JSON backup move data between devices. Hosted sync is a Later item.
+
+### Blade life
+
+- Each skater sets their own limit: 20, 25, 30, 35 hours, or a custom number. Most sharpen between 20 and 35 hours; the app suggests nothing and uses what the skater or their sharpener says.
+- Hours on the blades are editable, and grow by the on-ice time of every logged session. "I just got them sharpened" resets to zero (later: keep a history of sharpenings).
+- States by share of the limit: under 60% Sharp (blue), 60 to 89% Getting dull (gold), 90% and up Time to sharpen (coral). The tile draws the blade, bright for the fresh part and dull for the worn part.
+
+### First run
+
+- A setup sheet on the very first open: Set up my skates (names, sharpening limit, hours so far; skating-skills level and jumps-and-spins level from the catalog; usual slot), Restore a backup, or Connect from another device.
+- Restore reads the file on the device, checks `schemaVersion` and a `sessions` array, shows the session count and date range, then offers Merge or Replace.
+- The same settings stay editable afterward from the tiles and the profile.
+
+### Connect devices
+
+- Show a code and Scan a code on both devices, so data can go computer to phone or phone to computer.
+- One QR code holds about 3 KB (binary, low error correction): enough for setup, today's plan, friends, and the last 10 sessions. Full history moves by backup file (AirDrop, Files, email).
+- Needs a QR encoder and a scanner (the BarcodeDetector API where available, a small library elsewhere) and camera permission. Both are downloads, so ask before adding them.
+- Later: live pairing over WebRTC, with a QR to exchange the handshake, still without a server.
+
+### Your ice
+
+- The background is the view from under the ice. Each skill the skater has practiced leaves its own marks there, drawn by `js/ice-tracks.js`. The skill's name and category pick the pattern, and its id picks the position, so a skill always lands in the same place.
+- Patterns: glide, swizzle chain, crossover scallops, edge circles, figure eight, tiny 3s for three-turns, mohawk, twizzle loops, loop, spin spiral, jump takeoff and landing (toe-pick dots for toe jumps), stop skid with snow spray, spiral, step serpentine.
+- Color jobs: blue marks are being learned, gold marks are earned, faint marks have not been practiced lately. Logging a rating carves that skill's marks live with a glint.
+- "Peek at my ice" fades the interface to show the whole sheet. Use the real rating data instead of the demo's made-up states once the app has it.
 
 ### Test readiness
 
@@ -128,6 +157,14 @@ Round two feedback (after the first style tile): skates need to be beautiful so 
 - One glow per screen: gold when it is about reward, ice when it is about the action in front of you.
 - Motion: everything animated has a reduced-motion off state.
 - Placeholders: dashed "3D reference coming soon" panels on the Skate and Skill detail screens.
+
+Round three (after the second style tile): the skate looked like a children's book drawing and the blade matters as much as the boot; text was hard to read; big tiles felt bland; the background needed a redesign tied to skills. Colors and the ice gradient were loved.
+
+- Skate art: a real figure-skate profile (high cuff, laces on gold hooks, mesh windows, gold-lined sole, gold posts) with a steel blade that has a hollow grind, glints, and a toe pick, shown with a reflection on the ice. Source in `assets/skate.svg`, previewed in `design/skate-lab.html`.
+- Readability: Bodoni only for big moments (about 28px and up), Jost for everything small, 17px body at weight 450, brighter text colors, a dark tint under every glass surface, High contrast text mode, and text-wrap balance and pretty. Glass is layered on a readable base, not the other way around.
+- Fonts: Bodoni Moda and Jost for now (OFL, free to self-host). Self-hosting WOFF2 subsets with a preload for the critical face, `font-display: swap`, and metric-adjusted fallbacks is the recommended next step.
+- Tiles: each big tile shows its thing as a picture (blade, medallion and weekly bars, a row of skates, a calendar block) with etched ice in the corner.
+- Background: a faint scratch texture under skill tracks drawn live from the skater's own skills.
 
 ## Open questions
 

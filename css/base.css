@@ -15,8 +15,14 @@ body {
   min-height: 100vh;
   background: var(--deep-0);
   color: var(--text);
-  font: 400 1rem/1.55 var(--font-ui);
+  font: 450 1.0625rem/1.6 var(--font-ui);
+  font-synthesis: none;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+[hidden] {
+  display: none !important;
 }
 
 h1,
@@ -29,13 +35,32 @@ p {
 h1,
 h2,
 h3 {
-  font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.12;
+  text-wrap: balance;
 }
 
-button {
+p {
+  text-wrap: pretty;
+}
+
+/* Bodoni is for big moments only (titles, medallions, numerals). Anything small is Jost. */
+h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+
+h2,
+h3 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1.2;
+}
+
+button,
+input,
+select {
   font: inherit;
   color: inherit;
 }
@@ -45,7 +70,7 @@ button {
   outline-offset: 3px;
 }
 
-/* Layers, back to front: water, sun, skate traces, sparkles, vignette. */
+/* Layers, back to front: water, sun, ice texture, your skill tracks, sparkles, vignette. */
 
 .rink-bg {
   position: fixed;
@@ -65,14 +90,15 @@ button {
   background: radial-gradient(820px 500px at var(--sun-x) -10%, var(--sun-stops));
 }
 
-.rink-bg__traces {
+.rink-bg__texture {
   position: absolute;
   inset: 0;
-  background: url("../assets/ice-traces.svg") center / cover no-repeat;
+  background: url("../assets/ice-texture.svg") center / cover no-repeat;
   mix-blend-mode: screen;
-  opacity: 0.66;
+  opacity: 0.5;
 }
 
+.rink-bg__ice,
 .rink-bg__sparkles {
   position: absolute;
   inset: 0;
@@ -80,11 +106,65 @@ button {
   height: 100%;
 }
 
+.rink-bg__ice {
+  opacity: 0.62;
+}
+
 .rink-bg::after {
   content: "";
   position: absolute;
   inset: 0;
   background: radial-gradient(ellipse at 50% 38%, transparent 52%, rgba(2, 8, 30, 0.55) 100%);
+}
+
+/* The marks a skater leaves. Blue is learning, gold is earned, faint is not practiced lately. */
+
+.trk__core,
+.trk__glow {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.trk__core {
+  stroke: #d8f7ff;
+  stroke-width: 1.5;
+  opacity: 0.92;
+}
+
+.trk__glow {
+  stroke: #7fe3ff;
+  stroke-width: 6;
+  opacity: 0.2;
+}
+
+.trk__dot {
+  fill: #f2fdff;
+  opacity: 0.9;
+}
+
+.trk--earned .trk__core,
+.trk--earned .trk__dot {
+  stroke: #fff1c8;
+  fill-opacity: 1;
+}
+
+.trk--earned .trk__dot {
+  fill: #fff1c8;
+}
+
+.trk--earned .trk__glow {
+  stroke: #ffc86a;
+  opacity: 0.3;
+}
+
+.trk--stale {
+  opacity: 0.32;
+}
+
+.trk__star {
+  fill: #fff;
+  filter: drop-shadow(0 0 6px #bff3ff);
 }
 
 .sp {
@@ -120,6 +200,45 @@ button {
   }
   to {
     transform: translate3d(12px, 20px, 0);
+  }
+}
+
+/* Readability first. Glass is the default look, but people who ask for more contrast
+   or less transparency (in their device settings or in the app) get solid, brighter surfaces.
+   Support for the transparency query is patchy, so the glass is already tinted dark underneath. */
+
+@media (prefers-contrast: more) {
+  :root {
+    --text-dim: #ffffff;
+    --text-faint: rgba(255, 255, 255, 0.9);
+    --glass-tint: rgb(6, 24, 78);
+    --glass-edge: rgba(255, 255, 255, 0.7);
+  }
+
+  .rink-bg__ice,
+  .rink-bg__texture,
+  .rink-bg__sparkles {
+    opacity: 0.22;
+  }
+}
+
+:root[data-contrast="high"] {
+  --text-dim: #ffffff;
+  --text-faint: rgba(255, 255, 255, 0.9);
+  --glass-tint: rgb(6, 24, 78);
+  --glass-edge: rgba(255, 255, 255, 0.7);
+}
+
+:root[data-contrast="high"] .rink-bg__ice,
+:root[data-contrast="high"] .rink-bg__texture,
+:root[data-contrast="high"] .rink-bg__sparkles {
+  opacity: 0.22;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-tint: rgb(8, 30, 88);
+    --glass-blur: none;
   }
 }
 
