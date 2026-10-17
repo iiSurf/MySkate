@@ -1,6 +1,8 @@
 /* Saved data: the shape, loading and saving, backup files, and merging an old backup into newer progress.
    Anything that comes from a file is untrusted, so every field is checked and trimmed before it is used. */
 
+import { sanitizeRink, sanitizeIceSession, sanitizeIceView, defaultIceView, LIMITS as ICE_LIMITS } from "./ice.js";
+
 export const SCHEMA_VERSION = 1;
 export const STORAGE_KEY = "myskate.v1";
 export const LIGHTS = ["sunrise", "golden", "midday", "dusk"];
@@ -29,6 +31,9 @@ export function defaultState(now = new Date()) {
     plan: { slotMin: 60, skillIds: [] },
     cues: {},
     friends: [],
+    rinks: [],
+    iceSessions: [],
+    iceView: defaultIceView(),
     settings: { light: "golden", contrast: false },
     backup: { lastExportAt: null },
     active: null,
@@ -103,6 +108,18 @@ function sanitizeFriend(f) {
   };
 }
 
+/* Rinks and their sessions: bad entries and repeats are dropped, and a session whose rink is gone goes with it. */
+function cleanIce(rawRinks, rawSessions) {
+  const once = (list, clean, limit) => {
+    const seen = new Set();
+    return (Array.isArray(list) ? list : []).map(clean).filter((x) => x && !seen.has(x.id) && seen.add(x.id)).slice(0, limit);
+  };
+  const rinks = once(rawRinks, sanitizeRink, ICE_LIMITS.rinks);
+  const known = new Set(rinks.map((r) => r.id));
+  const iceSessions = once(rawSessions, sanitizeIceSession, ICE_LIMITS.sessions).filter((x) => known.has(x.rinkId));
+  return { rinks, iceSessions };
+}
+
 /* Build a clean state from anything: a stored copy or an imported file. Missing parts fall back to defaults. */
 export function sanitizeState(data, { keepActive = false, now = new Date() } = {}) {
   const base = defaultState(now);
@@ -125,6 +142,10 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
       if (typeof v === "string" && v.trim()) cues[str(k, MAX.skillId)] = v.slice(0, MAX.note);
     }
   }
+
+  const { rinks, iceSessions } = cleanIce(src.rinks, src.iceSessions);
+  const iceView = sanitizeIceView(src.iceView);
+  iceView.rinkIds = iceView.rinkIds.filter((id) => rinks.some((r) => r.id === id));
 
   return {
     schemaVersion: SCHEMA_VERSION,
@@ -156,6 +177,9 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
     },
     cues,
     friends: (Array.isArray(src.friends) ? src.friends : []).map(sanitizeFriend).filter(Boolean).slice(0, 100),
+    rinks,
+    iceSessions,
+    iceView,
     settings: { light: LIGHTS.includes(settings.light) ? settings.light : "golden", contrast: settings.contrast === true },
     backup: { lastExportAt: keepActive ? isoStamp(src.backup && src.backup.lastExportAt) : null },
     active: keepActive ? sanitizeActive(src.active) : null,
@@ -233,6 +257,12 @@ export function mergeStates(current, incoming) {
   merged.sharpenings = [...sharp.values()].sort((a, c) => a.date.localeCompare(c.date));
 
   merged.cues = { ...incoming.cues, ...current.cues };
+
+  /* Rinks and sessions you already have win over the file's copy of the same one; the rest are added. */
+  const ice = cleanIce([...current.rinks, ...incoming.rinks], [...current.iceSessions, ...incoming.iceSessions]);
+  merged.rinks = ice.rinks;
+  merged.iceSessions = ice.iceSessions;
+  merged.iceView = sanitizeIceView({ ...current.iceView });
 
   const friendIds = new Set(current.friends.map((f) => f.id));
   merged.friends = [...current.friends, ...incoming.friends.filter((f) => !friendIds.has(f.id))];
