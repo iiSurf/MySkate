@@ -4,6 +4,7 @@
 import { sanitizeCost } from "./cost.js";
 import { sanitizeFriend, MAX_FRIENDS } from "./friends.js";
 import { sanitizeTestGoal, sanitizeChecks } from "./testprep.js";
+import { sanitizeGoals } from "./goals.js";
 import { sanitizeRink, sanitizeIceSession, sanitizeIceView, defaultIceView, LIMITS as ICE_LIMITS } from "./ice.js";
 
 export const SCHEMA_VERSION = 1;
@@ -39,6 +40,7 @@ export function defaultState(now = new Date()) {
     cues: {},
     friends: [],
     testChecks: {},
+    goals: [],
     rinks: [],
     iceSessions: [],
     iceView: defaultIceView(),
@@ -177,6 +179,7 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
     cues,
     friends: (Array.isArray(src.friends) ? src.friends : []).map(sanitizeFriend).filter(Boolean).slice(0, MAX_FRIENDS),
     testChecks: sanitizeChecks(src.testChecks),
+    goals: sanitizeGoals(src.goals),
     rinks,
     iceSessions,
     iceView,
@@ -261,6 +264,9 @@ export function mergeStates(current, incoming) {
 
   merged.cues = { ...incoming.cues, ...current.cues };
   merged.testChecks = { ...incoming.testChecks, ...current.testChecks };
+  /* One goal per skill: yours win, and a goal for a skill you have no goal for is added. */
+  const goalSkills = new Set(current.goals.map((g) => g.skillId));
+  merged.goals = sanitizeGoals([...current.goals, ...incoming.goals.filter((g) => !goalSkills.has(g.skillId))]);
 
   /* Rinks and sessions you already have win over the file's copy of the same one; the rest are added. */
   const ice = cleanIce([...current.rinks, ...incoming.rinks], [...current.iceSessions, ...incoming.iceSessions]);
