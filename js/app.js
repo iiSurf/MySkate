@@ -15,6 +15,7 @@ import { keepAwake } from "./wake.js";
 import { renderHome, homeActions, homeInputs } from "./screens/home.js";
 import { renderPlan, planActions, planInputs } from "./screens/plan.js";
 import { renderIce, iceActions } from "./screens/ice.js";
+import { dropEnded } from "./ice.js";
 import { renderSkate, mountSkate, skateActions, skateInputs } from "./screens/skate.js";
 import { renderProgress, progressActions } from "./screens/progress.js";
 import { renderMe, mountMe, meActions, meInputs } from "./screens/me.js";
@@ -48,6 +49,8 @@ function currentRoute() {
 function prune(state) {
   const known = (id) => ctx.catalog.skills.has(id);
   state.plan.skillIds = state.plan.skillIds.filter(known);
+  /* Ice times keeps only the present and future, including after a backup is restored. */
+  state.iceSessions = dropEnded(state.iceSessions);
   if (state.active) {
     state.active.order = state.active.order.filter(known);
     if (state.active.order.length === 0) state.active = null;
@@ -268,7 +271,9 @@ async function boot() {
     return;
   }
   ctx = buildContext(state, catalog, status);
+  const iceBefore = state.iceSessions.length;
   prune(ctx.state);
+  if (ctx.state.iceSessions.length !== iceBefore) save();   // sessions that have passed are gone from storage too
   applySettings();
   ice = createIce($("#ice"), reducedMotion);
   syncIce({});

@@ -24,10 +24,20 @@ import {
   parseIcs,
   buildIcs,
   slotFor,
+  dropEnded,
+  applyImport,
 } from "../ice.js";
 
 const ui = { week: null, filtersOpen: false };
-const currentWeek = () => ui.week || weekKey(todayISO());
+/* The week on screen. Only the present and future are kept, so it is never before this week. */
+const currentWeek = () => {
+  const floor = weekKey(todayISO());
+  return ui.week && ui.week > floor ? ui.week : floor;
+};
+const nowMinutes = () => {
+  const n = new Date();
+  return n.getHours() * 60 + n.getMinutes();
+};
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 const rinkOf = (ctx, id) => ctx.state.rinks.find((r) => r.id === id);
 const dayList = (days) => days.map((d) => DAY_SHORT[d - 1]).join(", ");
@@ -70,17 +80,19 @@ function controls(ctx) {
   </section>`;
 }
 
-function sessionCard(ctx, o, clashes) {
+function sessionCard(ctx, o, clashes, today, nowMin) {
   const rink = rinkOf(ctx, o.rinkId);
   const clash = clashes.get(o.key);
+  const over = o.date === today && toMin(o.end) <= nowMin;
   const what = `${kindName(o.kind)} at ${rink.name}, ${fmtDate(o.date, { weekday: "long" })} ${rangeOf(o)}`;
-  return html`<article class="ice-card ${o.pick ? "is-pick" : ""}" style="--rk:${rink.color}">
+  return html`<article class="ice-card ${o.pick ? "is-pick" : ""} ${over ? "is-over" : ""}" style="--rk:${rink.color}">
     <button class="ice-card__main" type="button" data-action="edit-session" data-id="${o.sessionId}" aria-label="Edit: ${what}">
       <span class="ice-time">${rangeOf(o)}</span>
       <span class="ice-kind">${kindName(o.kind)}</span>
       <span class="ice-rink"><i class="dot"></i>${rink.name}</span>
       ${o.note ? html`<span class="dim ice-note">${o.note}</span>` : ""}
       ${o.price !== null ? html`<span class="chip chip--tag">$${o.price}</span>` : ""}
+      ${over ? html`<span class="dim ice-note">Finished for today</span>` : ""}
     </button>
     <button class="ice-star" type="button" data-action="pick" data-id="${o.sessionId}" aria-pressed="${o.pick}" aria-label="${o.pick ? "Remove from My picks" : "Add to My picks"}: ${what}">${icon("star", o.pick ? "ic--fill" : "")}</button>
     ${clash ? html`<p class="ice-clash">Overlaps with ${kindName(clash[0].kind)} at ${(rinkOf(ctx, clash[0].rinkId) || { name: "another rink" }).name}, ${rangeOf(clash[0])}</p>` : ""}
@@ -91,7 +103,9 @@ function weekParts(ctx) {
   const { state } = ctx;
   const today = todayISO();
   const start = currentWeek();
-  const all = occurrencesInWeek(state.iceSessions, start);
+  const thisWeek = weekKey(today);
+  const nowMin = nowMinutes();
+  const all = occurrencesInWeek(state.iceSessions, start).filter((o) => o.date >= today);
   const clashes = pickClashes(all);
   const shown = filterOccurrences(all, state.iceView);
   const byDay = new Map(weekDates(start).map((d) => [d, []]));
@@ -105,16 +119,16 @@ function weekParts(ctx) {
   else if (!shown.length) message = html`<section class="card"><p class="dim">${state.iceView.picksOnly && !state.iceSessions.some((s) => s.pick) ? "You have not picked any sessions yet. Choose All sessions and tap the star on the ones you want." : "No sessions match these filters this week."}</p></section>`;
 
   const bar = html`<div class="weekbar">
-      <button class="icon-btn" type="button" data-action="week-prev" aria-label="Previous week">${icon("left")}</button>
+      <button class="icon-btn" type="button" data-action="week-prev" aria-label="Previous week" ${start <= thisWeek ? "disabled" : ""}>${icon("left")}</button>
       <div class="weekbar__label"><strong>${fmtDate(start, md)} – ${fmtDate(addDays(start, 6), md)}</strong><span class="dim">${when} · ${plural(shown.length, "session")}</span></div>
-      <button class="icon-btn" type="button" data-action="week-next" aria-label="Next week">${icon("right")}</button>
+      <button class="icon-btn" type="button" data-action="week-next" aria-label="Next week" ${start >= addDays(thisWeek, 7 * 52) ? "disabled" : ""}>${icon("right")}</button>
       ${away !== 0 ? html`<button class="chip" type="button" data-action="week-today">This week</button>` : ""}
     </div>`;
   const body = html`${message}
     ${shown.length || !message
-      ? html`<div class="ice-week">${[...byDay].map(([date, list]) => html`<section class="ice-day ${date === today ? "is-today" : ""} ${list.length ? "" : "is-empty"}" aria-labelledby="d-${date}">
+      ? html`<div class="ice-week">${[...byDay].filter(([date]) => date >= today).map(([date, list]) => html`<section class="ice-day ${date === today ? "is-today" : ""} ${list.length ? "" : "is-empty"}" aria-labelledby="d-${date}">
           <h2 class="ice-day__head" id="d-${date}"><span>${fmtDate(date, { weekday: "short" })}</span><span class="num">${Number(date.slice(8))}</span>${date === today ? html`<span class="chip chip--on">Today</span>` : ""}</h2>
-          ${list.length ? list.map((o) => sessionCard(ctx, o, clashes)) : html`<p class="dim ice-none">Nothing</p>`}
+          ${list.length ? list.map((o) => sessionCard(ctx, o, clashes, today, nowMin)) : html`<p class="dim ice-none">Nothing</p>`}
         </section>`)}</div>`
       : ""}`;
   return { bar, body };
@@ -126,19 +140,26 @@ function manage(ctx) {
     <h2 id="rinks-title">My rinks</h2>
     <div>${state.rinks.map((r) => {
       const n = state.iceSessions.filter((s) => s.rinkId === r.id).length;
-      return html`<div class="row"><i class="dot" style="--rk:${r.color}"></i><span class="grow">${r.name}<br><span class="dim">${r.city ? r.city + " · " : ""}${plural(n, "session")}</span></span>${r.url ? html`<a class="chip" href="${r.url}" target="_blank" rel="noopener">Schedule page</a>` : ""}<button class="chip" type="button" data-action="edit-rink" data-id="${r.id}">Edit</button></div>`;
+      const age = r.updated ? daysBetween(r.updated, todayISO()) : 0;
+      return html`<div class="row ice-rinkrow"><i class="dot" style="--rk:${r.color}"></i><span class="grow">${r.name}<br><span class="dim">${r.city ? r.city + " · " : ""}${plural(n, "session")}${r.updated ? ` · file imported ${fmtDate(r.updated, { month: "short", day: "numeric" })}` : ""}</span>${age > 21 ? html`<br><span class="ice-stale">Imported ${age} days ago. Upload a fresh file to catch changes.</span>` : ""}</span><span class="cluster">${r.url ? html`<a class="chip" href="${r.url}" target="_blank" rel="noopener">Schedule page</a>` : ""}<button class="chip" type="button" data-action="import" data-id="${r.id}">Update from a file</button><button class="chip" type="button" data-action="edit-rink" data-id="${r.id}">Edit</button></span></div>`;
     })}</div>
     <div class="cluster">
       <button class="btn btn--glass btn--small" type="button" data-action="add-rink">Add a rink</button>
       <button class="btn btn--glass btn--small" type="button" data-action="import">Import a calendar file</button>
       <button class="btn btn--glass btn--small" type="button" data-action="export-picks">Add my picks to my calendar</button>
     </div>
-    <p class="note">Rinks change their schedules, especially around holidays. Check the rink's own page before you go. MySkate only knows what you put in.</p>
+    <p class="note">Rinks change their schedules, especially around holidays. Check the rink's own page before you go. MySkate only knows what you put in, and sessions that have passed are removed automatically.</p>
   </section>`;
 }
 
 export function renderIce(ctx) {
   const { state } = ctx;
+  /* Only the present and future are kept: sessions that have passed are dropped (this also catches an app left open overnight). */
+  const kept = dropEnded(state.iceSessions);
+  if (kept.length !== state.iceSessions.length) {
+    state.iceSessions = kept;
+    ctx.save();
+  }
   const head = html`<header class="screen-head"><div><p class="eyebrow">Your week of ice</p><h1>Ice times</h1></div>${state.rinks.length ? html`<button class="btn btn--small" type="button" data-action="add-session">Add a session</button>` : ""}</header>`;
   if (!state.rinks.length) return html`${head}${emptyCard()}`;
   const { bar, body } = weekParts(ctx);
@@ -201,7 +222,7 @@ export function iceActions(ctx) {
     "edit-rink": (el) => openRinkSheet(ctx, rinkOf(ctx, el.dataset.id)),
     "add-session": () => openSessionSheet(ctx, null),
     "edit-session": (el) => openSessionSheet(ctx, ctx.state.iceSessions.find((x) => x.id === el.dataset.id) || null),
-    import: () => openImportSheet(ctx),
+    import: (el) => openImportSheet(ctx, el.dataset.id),
     "export-picks": () => {
       const picks = ctx.state.iceSessions.filter((s) => s.pick);
       if (!picks.length) return toast("Star a few sessions first, then you can add them to your calendar.", 4000);
@@ -297,7 +318,7 @@ function openSessionSheet(ctx, existing) {
       <div class="field"><span id="se-kind-l">Type</span><div class="limit-row" id="se-kind" role="group" aria-labelledby="se-kind-l">${KINDS.map((k) => html`<button class="chip" type="button" data-kind="${k.id}" aria-pressed="${k.id === v.kind}">${k.name}</button>`)}</div></div>
       <div class="field"><span id="se-rep-l">Repeats</span><div class="seg" id="se-rep" role="group" aria-labelledby="se-rep-l"><button type="button" data-repeat="week" aria-pressed="${v.repeat === "week"}">Every week</button><button type="button" data-repeat="day" aria-pressed="${v.repeat === "day"}">One day only</button></div></div>
       <div class="field" id="se-days-box"><span id="se-days-l">Days</span><div class="limit-row" id="se-days" role="group" aria-labelledby="se-days-l">${DAY_SHORT.map((d, i) => html`<button class="chip" type="button" data-day="${i + 1}" aria-pressed="${v.days.includes(i + 1)}" aria-label="${DAY_NAMES[i]}">${d}</button>`)}</div></div>
-      <label class="field" id="se-date-box"><span>Date</span><input class="input" id="se-date" type="date" value="${existing && existing.date ? existing.date : todayISO()}"></label>
+      <label class="field" id="se-date-box"><span>Date</span><input class="input" id="se-date" type="date" min="${todayISO()}" value="${existing && existing.date && existing.date >= todayISO() ? existing.date : todayISO()}"></label>
       <div class="two-fields">
         <label class="field"><span>Starts</span><input class="input" id="se-start" type="time" step="300" value="${existing ? existing.start : "14:00"}"></label>
         <label class="field"><span>Ends</span><input class="input" id="se-end" type="time" step="300" value="${existing ? existing.end : "15:00"}"></label>
@@ -310,7 +331,7 @@ function openSessionSheet(ctx, existing) {
         <summary>Only some weeks? Set dates</summary>
         <div class="two-fields">
           <label class="field"><span>From</span><input class="input" id="se-from" type="date" value="${existing && existing.from ? existing.from : ""}"></label>
-          <label class="field"><span>Until</span><input class="input" id="se-to" type="date" value="${existing && existing.to ? existing.to : ""}"></label>
+          <label class="field"><span>Until</span><input class="input" id="se-to" type="date" min="${todayISO()}" value="${existing && existing.to ? existing.to : ""}"></label>
         </div>
         <p class="note">For a seasonal or holiday schedule. Leave both empty if it runs all year.</p>
       </details>
@@ -369,6 +390,8 @@ function openSessionSheet(ctx, existing) {
     if (toMin(end) <= toMin(start)) return showError(sheet, "The end time has to be after the start time. For a session past midnight, add it as two sessions.");
     if (v.repeat === "week" && !v.days.length) return showError(sheet, "Tap the days this session runs.");
     if (v.repeat === "day" && !isDay(date)) return showError(sheet, "Pick the date.");
+    if (v.repeat === "day" && date < todayISO()) return showError(sheet, "That date has passed. MySkate keeps today and later.");
+    if (v.repeat === "week" && to && to < todayISO()) return showError(sheet, "That “Until” date has passed. MySkate keeps today and later.");
     if (v.repeat === "week" && from && to && from > to) return showError(sheet, "“From” has to be before “Until”.");
     if (price !== null && !(price >= 0 && price <= LIMITS.price)) return showError(sheet, `The price should be between 0 and ${LIMITS.price}.`);
     const base = { rinkId: $("#se-rink", root).value, kind: v.kind, start, end, price, note: $("#se-note", root).value.trim(), pick: v.pick };
@@ -407,20 +430,31 @@ function openSessionSheet(ctx, existing) {
   }
 }
 
-function openImportSheet(ctx) {
+function openImportSheet(ctx, preselect) {
   const { state } = ctx;
   if (!state.rinks.length) {
     toast("Add a rink first, then import its calendar.");
     return openRinkSheet(ctx, null);
   }
+  const startRink = rinkOf(ctx, preselect) || (state.iceView.rinkIds.length === 1 ? rinkOf(ctx, state.iceView.rinkIds[0]) : null) || state.rinks[0];
   const sheet = formSheet(
     html`<h2 class="sheet__title sheet__title--small">Import a calendar file</h2>
-      <p class="note">Some rinks, and Google or Apple Calendar, can save a schedule as a calendar file (.ics). MySkate reads it on this device and nothing is uploaded. A holiday closure inside the file is not read, so check the rink's page.</p>
+      <p class="note">Pick a calendar file (.ics) from a rink. MySkate reads it on this device and nothing is uploaded. Upload a newer file later and your sessions update.</p>
+      <details class="note-box">
+        <summary>How do I get a calendar file?</summary>
+        <ul class="howto">
+          <li><strong>On a rink's website:</strong> look for “Add to calendar”, “Download”, “iCal”, or “.ics” near its schedule.</li>
+          <li><strong>A rink that uses Google Calendar:</strong> if it shares the calendar, open the calendar's settings and copy “Public address in iCal format”. Paste that address into your browser's address bar and it downloads a .ics file. On a calendar you own, use Settings, then Import &amp; export, then Export, and unzip the file it gives you.</li>
+          <li><strong>Apple Calendar:</strong> File, then Export, then Export… saves a .ics file.</li>
+        </ul>
+      </details>
       <label class="choice" for="ic-file"><strong>Pick a calendar file</strong><span class="note">A file that ends in .ics</span></label>
       <input id="ic-file" type="file" accept=".ics,text/calendar" hidden>
       <p class="status" id="ic-status" aria-live="polite"></p>
       <div class="stack" id="ic-preview" hidden>
-        <label class="field"><span>Add them to</span><select class="input" id="ic-rink">${state.rinks.map((r) => html`<option value="${r.id}">${r.name}</option>`)}</select></label>
+        <label class="field"><span>Add them to</span><select class="input" id="ic-rink">${state.rinks.map((r) => html`<option value="${r.id}" ${r.id === startRink.id ? "selected" : ""}>${r.name}</option>`)}</select></label>
+        <div class="limit-row" id="ic-replace-row"><button class="chip" type="button" id="ic-replace" aria-pressed="true">Replace what I imported from a file before</button></div>
+        <p class="note" id="ic-diff" aria-live="polite"></p>
         <div class="card browse-list" id="ic-list"></div>
         <div class="limit-row"><button class="chip" type="button" id="ic-pick" aria-pressed="false">${icon("star")}Add them all to My picks</button></div>
       </div>
@@ -430,6 +464,19 @@ function openImportSheet(ctx) {
   const root = sheet.dialog;
   let found = [];
   const status = $("#ic-status", root);
+  const pressed = (id) => $(id, root).getAttribute("aria-pressed") === "true";
+  const options = () => ({ rinkId: $("#ic-rink", root).value, replace: pressed("#ic-replace"), pickAll: pressed("#ic-pick"), makeId: () => "preview" });
+
+  /* What importing would do, shown before it is done. */
+  function preview() {
+    const { rinkId, replace } = options();
+    const hasEarlier = state.iceSessions.some((s) => s.rinkId === rinkId && s.imported);
+    $("#ic-replace-row", root).hidden = !hasEarlier;
+    const r = applyImport(state.iceSessions, found, { ...options(), replace: replace && hasEarlier });
+    const bits = [`${r.added} new`, r.unchanged ? `${r.unchanged} already there` : "", r.removed ? `${r.removed} no longer in the file (removed)` : ""].filter(Boolean);
+    $("#ic-diff", root).textContent = bits.join(", ") + (r.dropped ? `. ${r.dropped} will not fit under the ${LIMITS.sessions} session limit` : "") + ".";
+    $("#ic-go", root).textContent = replace && hasEarlier ? "Update this rink" : `Add ${plural(r.added, "session")}`;
+  }
 
   $("#ic-file", root).addEventListener("change", async (e) => {
     const file = e.target.files[0];
@@ -446,30 +493,35 @@ function openImportSheet(ctx) {
     found = result.sessions.flatMap(perDay);
     if (!found.length) {
       status.className = "status status--warn";
-      status.textContent = result.total ? "Nothing in that file could be used. All-day events, overnight events, and unusual repeats are left out." : "That does not look like a calendar file.";
+      status.textContent = result.total ? "Nothing in that file could be used. All-day events, overnight events, unusual repeats, and events that already ended are left out." : "That does not look like a calendar file.";
       return;
     }
     const left = [result.skipped && `${plural(result.skipped, "event")} left out`, result.ended && `${plural(result.ended, "event")} already ended`].filter(Boolean).join(", ");
     status.className = "status status--ok";
-    status.textContent = `Found ${plural(found.length, "session")}${left ? ` (${left})` : ""}.`;
-    $("#ic-list", root).innerHTML = html`${found.slice(0, 40).map((s) => html`<div class="row"><span class="grow">${kindName(s.kind)} · ${s.date ? fmtDate(s.date) : DAY_NAMES[s.days[0] - 1]} · ${rangeOf(s)}${s.note ? html`<br><span class="dim">${s.note}</span>` : ""}</span></div>`)}${found.length > 40 ? html`<p class="dim">And ${found.length - 40} more.</p>` : ""}`.text;
+    status.textContent = `Found ${plural(found.length, "session")} from today on${left ? ` (${left})` : ""}.`;
+    $("#ic-list", root).innerHTML = html`${found.slice(0, 40).map((s) => html`<div class="row"><span class="grow">${kindName(s.kind)} · ${s.date ? fmtDate(s.date) : DAY_NAMES[s.days[0] - 1] + (s.every > 1 ? `, every ${s.every} weeks` : "")} · ${rangeOf(s)}${s.note ? html`<br><span class="dim">${s.note}</span>` : ""}</span></div>`)}${found.length > 40 ? html`<p class="dim">And ${found.length - 40} more.</p>` : ""}`.text;
     $("#ic-preview", root).hidden = false;
     $("#ic-go", root).hidden = false;
-    $("#ic-go", root).textContent = `Add ${plural(found.length, "session")}`;
+    preview();
   });
-  $("#ic-pick", root).addEventListener("click", (e) => e.currentTarget.setAttribute("aria-pressed", String(e.currentTarget.getAttribute("aria-pressed") !== "true")));
+  $("#ic-rink", root).addEventListener("change", preview);
+  for (const id of ["#ic-replace", "#ic-pick"]) {
+    $(id, root).addEventListener("click", (e) => {
+      e.currentTarget.setAttribute("aria-pressed", String(e.currentTarget.getAttribute("aria-pressed") !== "true"));
+      preview();
+    });
+  }
   $("#ic-go", root).addEventListener("click", () => {
-    const rinkId = $("#ic-rink", root).value;
-    const pick = $("#ic-pick", root).getAttribute("aria-pressed") === "true";
-    const sig = (s) => JSON.stringify([s.rinkId, s.kind, s.days, s.date, s.start, s.end, s.from, s.to]);
-    const have = new Set(state.iceSessions.map(sig));
-    const fresh = found.map((s) => sanitizeIceSession({ ...s, id: uid(), rinkId, pick })).filter((s) => s && !have.has(sig(s)));
-    const room = LIMITS.sessions - state.iceSessions.length;
-    state.iceSessions.push(...fresh.slice(0, Math.max(0, room)));
+    const opts = { ...options(), makeId: uid };
+    const rink = rinkOf(ctx, opts.rinkId);
+    const replace = opts.replace && state.iceSessions.some((s) => s.rinkId === opts.rinkId && s.imported);
+    const r = applyImport(state.iceSessions, found, { ...opts, replace });
+    state.iceSessions = r.sessions;
+    rink.updated = todayISO();
     ctx.save();
     sheet.close("imported");
     ctx.update();
-    const added = Math.min(fresh.length, Math.max(0, room));
-    toast(added ? `Added ${plural(added, "session")} to ${rinkOf(ctx, rinkId).name}.${fresh.length > added ? " The rest did not fit." : ""}` : "You already had all of those.", 4500);
+    const said = replace ? `${rink.name} updated: ${r.added} new, ${r.removed} removed, ${r.unchanged} the same.` : r.added ? `Added ${plural(r.added, "session")} to ${rink.name}.` : "You already had all of those.";
+    toast(said + (r.dropped ? ` ${r.dropped} did not fit.` : ""), 5000);
   });
 }

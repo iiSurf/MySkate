@@ -1069,3 +1069,29 @@ select.input {
   gap: var(--sp-2);
   width: 100%;
 }
+
+.ice-card.is-over {
+  opacity: 0.6;
+}
+
+.ice-stale {
+  color: #ffd98a;
+  font-size: 0.88rem;
+}
+
+.ice-rinkrow {
+  flex-wrap: wrap;
+}
+
+.ice-rinkrow .grow {
+  min-width: 160px;
+}
+
+.howto {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0 0 0 1.1em;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+}

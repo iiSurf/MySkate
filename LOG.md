@@ -272,3 +272,32 @@ The owner wanted to see local rinks, pick favorites, and see all of the week's s
 ### Not verified
 
 A real phone and Safari. Opening an exported calendar file in a real calendar app. Real rink calendar files (only sample files were tried). The style tile was not updated for the new cards. Nothing is pushed: the live site does not have Ice times yet.
+
+---
+
+## 2026-10-17 (Saturday, later): calendar files that update, Google Calendar, present and future only
+
+### Planned
+
+The owner liked the calendar-file idea and asked for three things: uploading a rink's file again should update what is on the page; it should work with rinks that use Google Calendar; and only the present and future dates should be kept.
+
+### What I found out first
+
+- Google Calendar's public iCal address returns a normal calendar file, but without the header a web page needs to fetch it (no `Access-Control-Allow-Origin`), so MySkate cannot read it by address. The workable path is the one the owner described: download the file (opening the iCal address in a browser downloads it), then upload it.
+- Real Google calendars write holiday closures as skipped dates (EXDATE) and moved or cancelled single dates (separate events with RECURRENCE-ID), and write times in the rink's time zone. The first calendar reader ignored all of that, so a closed day would still have shown. I could not test a real rink's Google calendar; I built to the calendar standard and tested with files shaped like Google's.
+
+### Changes
+
+- The calendar reader now handles skipped dates, moved and cancelled single dates (the move becomes its own one-day session and the original date is skipped), every 2 to 4 weeks, reminders inside events (ignored), and times in UTC (turned into the calendar's own zone from X-WR-TIMEZONE, or this device's zone when there is none).
+- Sessions can now have `skip` dates and repeat every n weeks. The calendar writer writes both back out (EXDATE, INTERVAL).
+- Updating: `applyImport` replaces what was imported from a file for a rink with the new file's sessions. A session that is still there keeps its star and its price; sessions you added by hand are untouched and never copied. The import sheet shows the counts first ("2 new, 3 already there, 2 no longer in the file (removed)"). Each rink shows when its file was last imported, an "Update from a file" button, and a reminder after 3 weeks. The sheet explains how to get a file from a rink's site, Google Calendar, and Apple Calendar.
+- Present and future only: sessions that have passed are dropped on load, on restore, and on the Ice page. The week starts at this week, the earlier-week arrow is off, days before today are not shown, sessions that ended earlier today are dimmed, and the forms do not accept past dates.
+
+### Verified
+
+- 84 tests pass in four time zones (local, Tokyo, New York, Auckland). New ones cover skipped, moved, and cancelled dates, every other week, time zones (including the clocks changing and an unknown zone name), reminders, export and read-back with skipped dates, dropping passed sessions, and updating (stars and prices kept, hand-added sessions untouched, no copies, the session limit).
+- In the browser, with a Google-style file: Z times came out right (2 PM), the moved session appeared on its new time, the skipped Thursday and the cancelled Tuesday were missing, the every-other-week class showed on the right Sundays, an old event and an all-day closure were left out and counted. A second, changed file updated the rink (2 new, 2 removed, 3 the same) and the starred session kept its star and price. Sessions added with past dates disappeared on reload and from storage. At 390 wide the import sheet has no sideways scroll and its buttons stay in view.
+
+### Not verified
+
+A real rink's calendar file or Google calendar. Opening an exported file in a real calendar app. A real phone and Safari. Nothing is pushed.

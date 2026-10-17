@@ -6,7 +6,7 @@ Live: https://iisurf.github.io/MySkate/
 
 ## What it does
 
-- **Ice times.** Put your rinks' weekly sessions on one page: add each rink and its sessions once (or import a calendar file), star the ones you want, and see them together for the week. Filter by type and rink, switch to My picks, and see what overlaps. Home shows your next ice.
+- **Ice times.** Put your rinks' weekly sessions on one page: add each rink and its sessions once (or import a calendar file), star the ones you want, and see them together for the week. Filter by type and rink, switch to My picks, and see what overlaps. Calendar files (.ics, including ones from Google Calendar) can be uploaded, and a newer file updates a rink's sessions. Only today and later are kept. Home shows your next ice.
 - **Plan.** Pick your ice slot (30, 45, 60, 75, 90, or 120 minutes, or your own) and the skills to work on. MySkate suggests what to try next and shares the slot across your skills.
 - **Skate.** A clock that counts only your time on ice and cannot drift, one skill at a time, a one to five skate rating, notes, and a landed or missed counter for jumps.
 - **Progress.** Time on ice by week, level progress, every skill you have tried, and every session.
