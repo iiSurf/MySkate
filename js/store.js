@@ -6,6 +6,7 @@ import { sanitizeFriend, MAX_FRIENDS } from "./friends.js";
 import { sanitizeTestGoal, sanitizeChecks } from "./testprep.js";
 import { sanitizeGoals } from "./goals.js";
 import { sanitizeHomeworkList } from "./homework.js";
+import { sanitizeOffIceList } from "./office.js";
 import { sanitizeRink, sanitizeIceSession, sanitizeIceView, defaultIceView, LIMITS as ICE_LIMITS } from "./ice.js";
 
 export const SCHEMA_VERSION = 1;
@@ -43,6 +44,7 @@ export function defaultState(now = new Date()) {
     testChecks: {},
     goals: [],
     homework: [],
+    offIce: [],
     rinks: [],
     iceSessions: [],
     iceView: defaultIceView(),
@@ -183,6 +185,7 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
     testChecks: sanitizeChecks(src.testChecks),
     goals: sanitizeGoals(src.goals),
     homework: sanitizeHomeworkList(src.homework),
+    offIce: sanitizeOffIceList(src.offIce),
     rinks,
     iceSessions,
     iceView,
@@ -273,6 +276,9 @@ export function mergeStates(current, incoming) {
   /* Homework: yours win by id, and homework you do not have is added. */
   const hwIds = new Set(current.homework.map((h) => h.id));
   merged.homework = sanitizeHomeworkList([...current.homework, ...incoming.homework.filter((h) => !hwIds.has(h.id))]);
+  /* Off-ice workouts: yours win by id, and ones you do not have are added. */
+  const offIds = new Set(current.offIce.map((e) => e.id));
+  merged.offIce = sanitizeOffIceList([...current.offIce, ...incoming.offIce.filter((e) => !offIds.has(e.id))]);
 
   /* Rinks and sessions you already have win over the file's copy of the same one; the rest are added. */
   const ice = cleanIce([...current.rinks, ...incoming.rinks], [...current.iceSessions, ...incoming.iceSessions]);

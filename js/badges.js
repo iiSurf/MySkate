@@ -6,6 +6,7 @@
 import { replayXp, levelFromXp, STREAK_MIN } from "./xp.js";
 import { EARNED_AT } from "./stats.js";
 import { addDays, daysBetween, todayISO, weekKey } from "./util.js";
+import { offIceMilestones } from "./office.js";
 
 export const GROUPS = ["On the ice", "Skills", "Jumps", "Habits", "Levels"];
 
@@ -41,6 +42,9 @@ export const BADGES = [
   { id: "goal-5", group: "Habits", name: "Five goals", text: "Reach 5 skill goals.", icon: "star", goal: 5, of: (a) => a.goals },
   { id: "hw-1", group: "Habits", name: "Homework done", text: "Finish a piece of homework from your coach.", icon: "check", goal: 1, of: (a) => a.homework },
   { id: "hw-5", group: "Habits", name: "Five homeworks", text: "Finish 5 pieces of homework.", icon: "check", goal: 5, of: (a) => a.homework },
+  { id: "off-1", group: "Habits", name: "Off-ice workout", text: "Log an off-ice workout.", icon: "plus", goal: 1, of: (a) => a.offIce },
+  { id: "off-10", group: "Habits", name: "Off-ice regular", text: "Log 10 off-ice workouts.", icon: "plus", goal: 10, of: (a) => a.offIce },
+  { id: "off-kinds", group: "Habits", name: "Cross-trainer", text: "Log 3 different kinds of off-ice work.", icon: "plus", goal: 3, of: (a) => a.offKinds },
   { id: "notes-5", group: "Habits", name: "Note taker", text: "Write 5 notes about a skill or a session.", icon: "edit", goal: 5, of: (a) => a.notes },
   { id: "variety", group: "Habits", name: "All-rounder", text: "Work on a skating skill, a jump, and a spin in one session.", icon: "plus", goal: 1, of: (a) => a.variety },
   { id: "sharpened", group: "Habits", name: "Fresh edge", text: "Log a blade sharpening.", icon: "ice", goal: 1, of: (a) => a.sharpened },
@@ -82,10 +86,10 @@ let memo = { key: "", value: null };
 
 /* Every badge with whether it is earned, how far along it is, and (when earned) the day, and how many sessions and days it took.
    sessions: saved sessions. sharpenings: [{ date }]. backupAt: ISO time of the last backup file, or null. goalDates: the day each
-   met skill goal was reached. homeworkDates: the day each piece of homework was finished. */
-export function evaluateBadges({ sessions, sharpenings = [], backupAt = null, catalog = null, goalDates = [], homeworkDates = [] }) {
+   met skill goal was reached. homeworkDates: the day each piece of homework was finished. offIce: the off-ice workouts. */
+export function evaluateBadges({ sessions, sharpenings = [], backupAt = null, catalog = null, goalDates = [], homeworkDates = [], offIce = [] }) {
   const weight = sessions.reduce((n, x) => n + x.entries.length + x.onIceSec, 0);
-  const key = [sessions.length, weight, sessions.length ? sessions[sessions.length - 1].id + sessions[sessions.length - 1].startedAt : "", sharpenings.length, backupAt, catalog ? catalog.skills.size : 0, goalDates.join(","), homeworkDates.join(",")].join("|");
+  const key = [sessions.length, weight, sessions.length ? sessions[sessions.length - 1].id + sessions[sessions.length - 1].startedAt : "", sharpenings.length, backupAt, catalog ? catalog.skills.size : 0, goalDates.join(","), homeworkDates.join(","), offIce.map((e) => e.date + e.kind).join(",")].join("|");
   if (memo.key === key && memo.value) return memo.value;
 
   const sorted = [...sessions].sort((a, b) => a.startedAt.localeCompare(b.startedAt));
@@ -99,7 +103,7 @@ export function evaluateBadges({ sessions, sharpenings = [], backupAt = null, ca
   const fives = new Set();
   const months = new Map();
   const weeks = new Map();
-  const a = { sessions: 0, minutes: 0, longest: 0, monthMax: 0, skillsEarned: 0, fives: 0, pbs: 0, levelsDone: 0, landed: 0, dialed: 0, streak: 0, notes: 0, variety: 0, sharpened: 0, backup: 0, level: 1, goals: 0, homework: 0 };
+  const a = { sessions: 0, minutes: 0, longest: 0, monthMax: 0, skillsEarned: 0, fives: 0, pbs: 0, levelsDone: 0, landed: 0, dialed: 0, streak: 0, notes: 0, variety: 0, sharpened: 0, backup: 0, level: 1, goals: 0, homework: 0, offIce: 0, offKinds: 0 };
   const earned = new Map();
   let cumXp = 0;
 
@@ -159,7 +163,10 @@ export function evaluateBadges({ sessions, sharpenings = [], backupAt = null, ca
   a.goals = goalsMet.length;
   const hwDone = [...homeworkDates].sort();
   a.homework = hwDone.length;
-  const dated = { sharpened: sharpenedOn, backup: backupOn, "goal-1": goalsMet[0], "goal-5": goalsMet[4], "hw-1": hwDone[0], "hw-5": hwDone[4] };
+  const off = offIceMilestones(offIce);
+  a.offIce = off.count;
+  a.offKinds = off.kinds;
+  const dated = { sharpened: sharpenedOn, backup: backupOn, "goal-1": goalsMet[0], "goal-5": goalsMet[4], "hw-1": hwDone[0], "hw-5": hwDone[4], "off-1": off.first, "off-10": off.tenth, "off-kinds": off.threeKinds };
   for (const [id, day] of Object.entries(dated)) if (day) earned.set(id, onDay(day));
 
   const value = BADGES.map(({ of, ...def }) => {

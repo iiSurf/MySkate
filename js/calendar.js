@@ -25,9 +25,9 @@ export function plannedByDay(iceSessions, from, to, today = todayISO()) {
 }
 
 /* One month as rows of seven days (a null for a day that belongs to the next or last month). Each day has: date, day (1 to 31),
-   today, sessions (how many you skated), minutes on ice, and planned (picked ice still to come). A week is marked streak when
+   today, sessions (how many you skated), minutes on ice, off (off-ice workouts that day), and planned (picked ice still to come). A week is marked streak when
    it has enough sessions to count toward a weekly streak. ym is "YYYY-MM". */
-export function monthGrid(ym, { sessions, iceSessions = [] }, today = todayISO()) {
+export function monthGrid(ym, { sessions, iceSessions = [], offIce = [] }, today = todayISO()) {
   const first = `${ym}-01`;
   const [y, m] = ym.split("-").map(Number);
   const last = todayISO(new Date(y, m, 0));
@@ -41,11 +41,13 @@ export function monthGrid(ym, { sessions, iceSessions = [] }, today = todayISO()
     byDate.set(s.date, d);
     perWeek.set(weekKey(s.date), (perWeek.get(weekKey(s.date)) || 0) + 1);
   }
+  const offByDay = {};
+  for (const e of offIce) offByDay[e.date] = (offByDay[e.date] || 0) + 1;
   const lead = (parseISODate(first).getDay() + 6) % 7;
   const cells = Array(lead).fill(null);
   for (let date = first; date <= last; date = addDays(date, 1)) {
     const d = byDate.get(date) || { sessions: 0, minutes: 0 };
-    cells.push({ date, day: Number(date.slice(8)), today: date === today, sessions: d.sessions, minutes: Math.round(d.minutes), planned: planned[date] || 0 });
+    cells.push({ date, day: Number(date.slice(8)), today: date === today, sessions: d.sessions, minutes: Math.round(d.minutes), off: offByDay[date] || 0, planned: planned[date] || 0 });
   }
   while (cells.length % 7) cells.push(null);
   const weeks = [];
