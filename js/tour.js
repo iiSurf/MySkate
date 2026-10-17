@@ -59,7 +59,7 @@ export const TOUR_STEPS = [
     lead: "When you step off the ice, tap End session.",
     demo: "grow",
     points: [
-      { b: "Save the session.", t: "You see what you earned first. Keep skating if you ended too soon, or discard it." },
+      { b: "Save the session.", t: "You see what you earned first, and can add what the ice cost. Keep skating if you ended too soon, or discard it." },
       { b: "XP rewards effort.", t: `${XP.session} XP for each session, ${XP.perMinute} per minute on ice, ${XP.perSkill} for each skill you practice, and ${XP.personalBest} for a new personal best.` },
       { b: "Keep a weekly streak.", t: `Skate ${STREAK_MIN} or more times in a week, week after week, for bonus XP.` },
       { b: "See it all on Progress.", t: "Hours by week, every skill you have tried, and every session." },

@@ -9,6 +9,7 @@ import { confirmSheet, toast, $ } from "../ui/dom.js";
 import { twinkle } from "../ui/celebrate.js";
 import { elapsedMs } from "../timer.js";
 import { upcomingPicks, kindName, fmtRange } from "../ice.js";
+import { costSummary, fmtMoney } from "../cost.js";
 
 const ui = { bladeOpen: false };
 const LIMITS = [20, 25, 30, 35];
@@ -130,6 +131,23 @@ function iceTile(ctx, d) {
   </section>`;
 }
 
+/* What the ice costs. Only shown once a session has a cost. */
+function costTile(ctx, d) {
+  const sum = costSummary(ctx.state.sessions, d.today);
+  if (!sum.all.costed) return "";
+  const per = (n) => (n === null ? "–" : fmtMoney(n));
+  return html`<section class="card tile" aria-labelledby="cost-title">
+    <div class="tile__head"><p class="eyebrow" id="cost-title">Ice cost</p></div>
+    <div class="hours"><span class="num">${sum.thisMonth.costed ? fmtMoney(sum.thisMonth.total) : "–"}</span><span class="dim">${sum.thisMonth.costed || !sum.thisMonth.sessions ? "this month" : "this month, no cost added"}</span></div>
+    <div class="stats">
+      <div><p class="num stat-n">${per(sum.all.perSession)}</p><p class="dim">per session</p></div>
+      <div><p class="num stat-n">${per(sum.all.perHour)}</p><p class="dim">per hour</p></div>
+      <div><p class="num stat-n">${fmtMoney(sum.all.total)}</p><p class="dim">in all</p></div>
+    </div>
+    <button class="btn btn--glass btn--small" type="button" data-action="go-progress">See by month</button>
+  </section>`;
+}
+
 function weekTile(ctx, d) {
   const { streak, totals } = d;
   const more = Math.max(0, streak.needed - streak.thisWeek);
@@ -181,7 +199,7 @@ export function renderHome(ctx) {
     </header>
     ${nudge(ctx)}
     ${heroCard(ctx, d)}
-    <div class="tiles">${xpTile(ctx, d)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}</div>
+    <div class="tiles">${xpTile(ctx, d)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
     ${recent(ctx, d)}`;
 }
 

@@ -5,6 +5,7 @@ import { $, openSheet, confirmSheet, toast } from "../ui/dom.js";
 import { levelOptions } from "../ui/onboard.js";
 import { parseBackup, mergeStates, replaceState, defaultState, requestPersistence } from "../store.js";
 import { SLOTS } from "../plan.js";
+import { sanitizeCost } from "../cost.js";
 
 const LIGHT_NAMES = { sunrise: "Sunrise", golden: "Golden hour", midday: "Midday", dusk: "Dusk" };
 
@@ -29,7 +30,8 @@ export function renderMe(ctx) {
           <span id="slot-label">Usual ice slot, in minutes</span>
           <div class="limit-row" role="group" aria-labelledby="slot-label">${SLOTS.map((m) => html`<button class="chip" type="button" data-action="default-slot" data-min="${m}" aria-pressed="${state.profile.defaultSlotMin === m}">${m}</button>`)}</div>
         </div>
-        <p class="note">Blade settings are on Home, in the Blade life tile.</p>
+        <label class="field"><span>Usual cost per session (optional)</span><input class="input input--num" type="number" inputmode="decimal" min="0" max="999" step="0.5" value="${state.profile.defaultCost ?? ""}" data-input="default-cost" placeholder="18"></label>
+        <p class="note">When you save a session it starts with this cost, and you can change it for any one session. Blade settings are on Home, in the Blade life tile.</p>
       </section>
 
       <section class="card stack">
@@ -168,6 +170,10 @@ export function meInputs(ctx) {
   return {
     name: (el) => {
       ctx.state.profile.name = el.value.trim().slice(0, 40);
+      ctx.save();
+    },
+    "default-cost": (el) => {
+      ctx.state.profile.defaultCost = sanitizeCost(el.value);
       ctx.save();
     },
     "level-skills": (el) => {

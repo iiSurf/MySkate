@@ -5,6 +5,7 @@ import { catDot, catName, miniSkates, bar, medallion } from "../ui/parts.js";
 import { openSheet, confirmSheet, toast, $ } from "../ui/dom.js";
 import { levelProgress, landedPct, minutesOnIce, EARNED_AT } from "../stats.js";
 import { nextLevelKey, levelLabel } from "../catalog.js";
+import { fmtMoney, costSummary, costByMonth, sanitizeCost } from "../cost.js";
 
 const ui = { tab: "overview", open: null, filter: "all" };
 
@@ -26,6 +27,30 @@ function weeklyChart(ctx, d) {
   return html`<div class="wkchart" role="img" aria-label="Time on ice for the last eight weeks: ${label}">${weeks.map(
     (w, i) => html`<div class="wk"><i class="${i === weeks.length - 1 ? "today" : ""} ${w.min === 0 ? "none" : ""}" style="--h:${w.min === 0 ? 4 : Math.max(10, Math.round((w.min / max) * 100))}%"></i><span>${fmtDate(w.wk, { month: "numeric", day: "numeric" })}</span></div>`
   )}</div>`;
+}
+
+/* What the ice costs: this month, per session, per hour, and the last six months. Sessions without a cost are left out of every number. */
+function costCard(ctx, d) {
+  const { sessions } = ctx.state;
+  if (!sessions.length) return "";
+  const sum = costSummary(sessions, d.today);
+  if (!sum.all.costed) {
+    return html`<section class="card tile"><div class="tile__head"><p class="eyebrow">Ice cost</p></div><p class="dim">Add what the ice cost when you save a session, or set your usual cost in Me. MySkate adds it up by month and works out the cost per hour.</p></section>`;
+  }
+  /* Months with no sessions are left out, except this one. */
+  const months = costByMonth(sessions, d.today, 6).filter((m, i) => i === 0 || m.sessions > 0);
+  const per = (n) => (n === null ? "–" : fmtMoney(n));
+  return html`<section class="card tile wide" aria-labelledby="cost-title">
+    <div class="tile__head"><p class="eyebrow" id="cost-title">Ice cost</p></div>
+    <div class="stats">
+      <div><p class="num stat-n">${sum.thisMonth.costed ? fmtMoney(sum.thisMonth.total) : "–"}</p><p class="dim">this month</p></div>
+      <div><p class="num stat-n">${per(sum.all.perSession)}</p><p class="dim">per session</p></div>
+      <div><p class="num stat-n">${per(sum.all.perHour)}</p><p class="dim">per hour on ice</p></div>
+      <div><p class="num stat-n">${fmtMoney(sum.all.total)}</p><p class="dim">in all</p></div>
+    </div>
+    <div>${months.map((m) => html`<div class="row"><span class="grow">${fmtDate(m.month + "-01", { month: "long", year: "numeric" })}<br><span class="dim">${m.sessions ? `${m.sessions} ${m.sessions === 1 ? "session" : "sessions"}, ${fmt1(m.hours)} h` : "No sessions"}</span></span>${m.costed ? html`<span class="chip chip--gold">${fmtMoney(m.total)}</span><span class="chip chip--tag">${per(m.perHour)} an hour</span>` : m.sessions ? html`<span class="dim">no cost added</span>` : ""}</div>`)}</div>
+    ${sum.all.unknown ? html`<p class="note">${sum.all.unknown} ${sum.all.unknown === 1 ? "session has" : "sessions have"} no cost, so ${sum.all.unknown === 1 ? "it is" : "they are"} left out. Add one from the Sessions tab.</p>` : ""}
+  </section>`;
 }
 
 function overview(ctx, d) {
@@ -69,6 +94,7 @@ function overview(ctx, d) {
         </div>
       </section>
       ${levelCards}
+      ${costCard(ctx, d)}
       <section class="card tile wide">
         <div class="tile__head"><p class="eyebrow">Hours by week</p></div>
         ${weeklyChart(ctx, d)}
@@ -104,6 +130,7 @@ function sessionsTab(ctx, d) {
     return html`<section class="card">
       <button class="sess-head" type="button" data-action="open-session" data-id="${s.id}" aria-expanded="${open}">
         <span class="grow"><strong>${fmtDate(s.date, { weekday: "long", month: "long", day: "numeric" })}</strong><br><span class="dim">${fmtMinutes(s.onIceSec / 60)} on ice of ${fmtMinutes(s.bookedMin)}, ${s.entries.length} ${s.entries.length === 1 ? "skill" : "skills"}</span></span>
+        ${s.cost !== null && s.cost !== undefined ? html`<span class="chip chip--tag">${fmtMoney(s.cost)}</span>` : ""}
         ${xp ? html`<span class="chip chip--gold">+${xp.xp} XP</span>` : ""}
       </button>
       ${open
@@ -113,6 +140,7 @@ function sessionsTab(ctx, d) {
               return html`<div class="row">${catDot(sk ? sk.cat : "skills")}<span class="grow">${sk ? sk.name : e.skillId}${e.note ? html`<br><span class="dim">${e.note}</span>` : ""}</span>${e.attempts ? html`<span class="chip chip--tag">${e.landed}/${e.attempts}</span>` : ""}${e.stars ? miniSkates(e.stars) : ""}</div>`;
             })}
             ${s.note ? html`<p class="note">${s.note}</p>` : ""}
+            <div class="row"><span class="grow">Ice cost${s.cost !== null && s.cost !== undefined ? html`: <strong>${fmtMoney(s.cost)}</strong>` : html`<br><span class="dim">Not added</span>`}</span><button class="chip" type="button" data-action="edit-cost" data-id="${s.id}">${s.cost !== null && s.cost !== undefined ? "Change" : "Add a cost"}</button></div>
             <button class="chip chip--discard" type="button" data-action="delete-session" data-id="${s.id}">Delete this session</button>
           </div>`
         : ""}
@@ -189,6 +217,34 @@ export function progressActions(ctx) {
     "open-session": (el) => {
       ui.open = ui.open === el.dataset.id ? null : el.dataset.id;
       ctx.update();
+    },
+    "edit-cost": (el) => {
+      const session = ctx.state.sessions.find((x) => x.id === el.dataset.id);
+      if (!session) return;
+      const sheet = openSheet(
+        html`<h2 class="sheet__title sheet__title--small">What did this ice cost?</h2>
+          <p class="note">${fmtDate(session.date, { weekday: "long", month: "long", day: "numeric" })}. Leave it empty if you do not know. Free ice is 0.</p>
+          <label class="field"><span>Cost</span><input class="input input--num" id="cost-in" type="number" inputmode="decimal" min="0" max="999" step="0.5" value="${session.cost ?? ""}" placeholder="18"></label>
+          <p class="status status--warn" role="alert" hidden></p>
+          <div class="sheet__foot"><button class="btn btn--glass btn--small" type="button" data-close="cancel">Cancel</button><button class="btn btn--small" type="button" id="cost-save">Save</button></div>`,
+        { label: "Ice cost" }
+      );
+      const input = $("#cost-in", sheet.dialog);
+      input.focus();
+      $("#cost-save", sheet.dialog).addEventListener("click", () => {
+        const text = input.value.trim();
+        const cost = sanitizeCost(text);
+        if (text !== "" && cost === null) {
+          const warn = $(".status--warn", sheet.dialog);
+          warn.textContent = "Enter an amount from 0 to 999.";
+          warn.hidden = false;
+          return;
+        }
+        session.cost = cost;
+        ctx.save();
+        sheet.close("saved");
+        ctx.update();
+      });
     },
     "delete-session": async (el) => {
       const ok = await confirmSheet({ title: "Delete this session?", message: "Its time, ratings, and XP are removed. This cannot be undone, so save a backup first if you are unsure.", confirmLabel: "Delete" });

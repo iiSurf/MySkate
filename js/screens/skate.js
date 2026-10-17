@@ -10,6 +10,7 @@ import { twinkle } from "../ui/celebrate.js";
 import { levelLabel } from "../catalog.js";
 import { landedPct, skillStats } from "../stats.js";
 import { keepAwake } from "../wake.js";
+import { sanitizeCost } from "../cost.js";
 
 function idle(ctx) {
   const n = ctx.state.plan.skillIds.length;
@@ -133,6 +134,8 @@ async function finish(ctx) {
   const after = replayXp([...ctx.state.sessions, draft]);
   const gain = after.bySession.get(draft.id);
   const rated = draft.entries.filter((x) => x.stars > 0).length;
+  /* The cost starts as the price of the ice time it was planned from, or your usual cost. */
+  const startCost = ctx.state.plan.cost ?? ctx.state.profile.defaultCost;
   const sheet = openSheet(
     html`<h2 class="sheet__title sheet__title--small">That's a session</h2>
       <div class="stats">
@@ -141,6 +144,7 @@ async function finish(ctx) {
         <div><p class="num stat-n">${rated}</p><p class="dim">rated</p></div>
       </div>
       <div class="card"><p class="eyebrow">You earned</p>${gain.parts.map((p) => html`<div class="row"><span class="grow">${p.label}</span><span class="chip chip--gold">+${p.xp}</span></div>`)}<div class="row"><strong class="grow">Total</strong><strong class="num">+${gain.xp} XP</strong></div></div>
+      <label class="field"><span>What did this ice cost? (optional)</span><input class="input input--num" id="sess-cost" type="number" inputmode="decimal" min="0" max="999" step="0.5" value="${startCost === null || startCost === undefined ? "" : startCost}" placeholder="18"></label>
       <label class="field"><span>A note about today (optional)</span><textarea class="input note-input" id="sess-note" rows="2" maxlength="1000" placeholder="How did the session feel?"></textarea></label>
       <div class="sheet__foot">
         <button class="btn btn--glass btn--small" type="button" data-close="keep">Keep skating</button>
@@ -150,6 +154,7 @@ async function finish(ctx) {
     { label: "Finish session" }
   );
   const noteEl = $("#sess-note", sheet.dialog);
+  const costEl = $("#sess-cost", sheet.dialog);
   const choice = await sheet.closed;
   if (choice === "discard") {
     const ok = await confirmSheet({ title: "Discard this session?", message: "Nothing from it will be saved: no time, ratings, or XP.", confirmLabel: "Discard", cancelLabel: "Keep it" });
@@ -163,6 +168,7 @@ async function finish(ctx) {
   }
   if (choice !== "save") return;
   draft.note = (noteEl && noteEl.value ? noteEl.value : "").slice(0, 1000);
+  draft.cost = sanitizeCost(costEl ? costEl.value : "");
   ctx.state.sessions.push(draft);
   ctx.state.active = null;
   ctx.state.plan = { slotMin: ctx.state.profile.defaultSlotMin, skillIds: [] };

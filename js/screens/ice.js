@@ -422,6 +422,7 @@ function openSessionSheet(ctx, existing) {
     });
     $("#se-plan", root).addEventListener("click", () => {
       state.plan.slotMin = slotFor(existing);
+      state.plan.cost = existing.price;
       ctx.save();
       sheet.close("plan");
       toast(`Your ice slot is now ${state.plan.slotMin} minutes. Pick what to work on.`, 4500);
