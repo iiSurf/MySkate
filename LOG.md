@@ -452,3 +452,35 @@ The owner picked four items from the Later list, in this order: goals with targe
 ### Not verified
 
 A real phone and Safari. Nothing is pushed.
+
+## 2026-10-17 (Saturday, night): the Fresh Ice redesign
+
+### Plan
+
+After the push and the live check, the skater said the look was not working: visual UI matters for getting someone excited to use the app. Look at the app on a phone, say honestly what is wrong, mock up directions, and rebuild the look in the direction they pick. Tagged the old look `before-redesign` first (local tag).
+
+### What was wrong
+
+- Every screen was the same tall stack of dark glass cards, all one weight, so nothing was the star. Home was about three and a half screens long, and it opened with two reminders (back up, plan a session) before any progress.
+- The mood was dark and quiet. The bouncy, rewarding side only showed up in the celebrations.
+
+### How the direction was chosen
+
+- Round one (three Home mockups in a familiar habit-app style: a bright light theme, a spotlight on the level, a game-like skill path) was turned down: too familiar to apps people are bad at checking into daily.
+- Round two borrowed from skating (a living ice sheet with a figure eight you trace, a printed program, a spotlit skate that fills with gold). Feedback: the ice was the favorite but its background squiggles looked bad; the printed program looked like homework; the skate looked cool but something was missing. The mockups were removed once the choice was made. The decision is written up under "Round four" in `ROADMAP.md`.
+
+### Changes
+
+- Fresh Ice: clean glossy ice under the low gold sun, type set on the ice with hairline rules instead of cards. Only sheets and toasts are surfaces, and they are dark and nearly solid. New buttons (an ice-white pill; gold for rewards; coral for ending or deleting; outline for the rest), outlined chips, plain-word tabs with a gold line, hairline bars with a bright bead at the end, words-only main tabs (a gold dot marks the current one; a list down the side on a desktop), and quiet gold links at the end of Home sections.
+- Retired the squiggles: the background tracks drawn from the skater's skills (`js/ice-tracks.js`, `js/ui/ice.js`, `iceSkills` in `js/stats.js`), the scratch texture, the corner etching on tiles, and the generator script. Their tests went with them. The background is now clean ice with a low sun, a long sheen, a few sparkles, and a darker foot.
+- Home is rebuilt around the week as a figure eight (`js/week.js` with tests, drawn by `js/ui/eight.js`): each session traces one loop, a whole eight means the week counts toward the streak, and the whole eight is the main button (STEP ON, PLAN IT, or BACK ON). A row of small gold eights shows the weeks in a row. Then three lines (level, next skill, blades), the other sections, recent sessions, and the backup reminder last. On a desktop the eight stays beside the lines.
+- The other screens (Plan, Skate, Progress, Ice, Me), the sheets, the tour, and the celebrations pick up the new look through the shared styles. Skill titles on the Skate screen are lighter. The tour's streak step and picture now show the figure eight.
+- `design/style-tile.html` is rebuilt from the app's own CSS and drawing code, so it cannot drift from the app. `tools/seed.html` (made-up data to look at any screen) and `tools/shot.mjs` (a screenshot at an exact phone or desktop size) are new.
+
+### Verified
+
+185 tests pass (179 before the figure eight; 4 track tests were removed with the squiggles and 6 week tests were added). Looked at every screen at 390 wide, Home and the style tile at 1280, the first-run sheet, the tour, both celebrations, a finished eight, an empty week, a session in progress, and high contrast, in headless Chrome. The tracing line is animated only when the week changes, and every animation has its reduced-motion off state.
+
+### Not verified
+
+A real phone and Safari. Not pushed. The faded `Skate` bottom buttons sit behind the tab fade until scrolled, as before.

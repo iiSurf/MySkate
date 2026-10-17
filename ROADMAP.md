@@ -164,12 +164,11 @@ There is no server, so a plan made on a laptop does not appear on a phone. "Send
 - Needs a QR encoder and a scanner (the BarcodeDetector API where available, a small library elsewhere) and camera permission. Both are downloads, so ask before adding them.
 - Later: live pairing over WebRTC, with a QR to exchange the handshake, still without a server.
 
-### Your ice
+### Your week, as a figure eight
 
-- The background is the view from under the ice. Each skill the skater has practiced leaves its own marks there, drawn by `js/ice-tracks.js`. The skill's name and category pick the pattern, and its id picks the position, so a skill always lands in the same place.
-- Patterns: glide, swizzle chain, crossover scallops, edge circles, figure eight, tiny 3s for three-turns, mohawk, twizzle loops, loop, spin spiral, jump takeoff and landing (toe-pick dots for toe jumps), stop skid with snow spray, spiral, step serpentine.
-- Color jobs: blue marks are being learned, gold marks are earned, faint marks have not been practiced lately. Logging a rating carves that skill's marks live with a glint.
-- "Peek at my ice" fades the interface to show the whole sheet. Use the real rating data instead of the demo's made-up states once the app has it.
+- Home's centerpiece (`js/week.js`, drawn by `js/ui/eight.js`): two loops that touch in the middle, like the figures skaters once traced on the ice. Each session you save traces one loop, and a whole eight means the week counts toward your streak. The first loop shows the first session's day and time on the ice, the second shows the second's. The open loop says STEP ON (or PLAN IT, or BACK ON during a session) and the whole eight is the button.
+- Under it, a row of small gold eights, one for each week in a row, with a dotted one for the week still to finish.
+- The earlier idea, a background drawn from the skater's own skills (tracks per skill, carved live), was built and then retired in October 2026: on screen it read as random squiggles. The background is now clean ice.
 
 ### Test readiness
 
@@ -214,9 +213,9 @@ Round two feedback (after the first style tile): skates need to be beautiful so 
 - Color has jobs. Deep water: surfaces. Ice cyan: actions and learning. Ice white: text and highlights. Gold: earned (XP, streaks, earned skates, mastered progress). Coral: caution. Skill types: skating skills cyan (flow), jumps gold (air), spins lavender (rotation). Progress bars warm from ice to gold as they fill; the sharpening bar warms to coral.
 - Skate art: unearned skates are gray ghosts. Earned skates are the white boot with gold trim, mesh windows, and a steel blade. Earning one bounces it in with sparkles. The simple line skate is only for navigation icons.
 - Type: Bodoni Moda (italic for titles, numerals for XP and levels) and Jost (UI and body), served from `fonts/` (self-hosted, so no outside request) with system fallbacks. Both are free open fonts. Satoshi would also work. Neue Machina and Söhne need paid licenses, so they are out for now.
-- Liquid glass: translucent cards with a blurred, saturated backdrop, a bright top edge, and a soft specular highlight. Pill buttons and chips are tinted glass that squish and spring back. The tab bar is a floating glass capsule with a lens that slides under the current tab.
+- Liquid glass (retired in round four): translucent cards with a blurred backdrop, a bright top edge, and a soft highlight.
 - Rewards: the XP bar fills with a spring and a moving sheen, "+20 XP" floats up, and a level-up takes over the screen with rays, a gold medallion that pops in, confetti stars, and a vibration on phones. Reduced motion shows the same screen without movement.
-- Background layers, back to front: water, low sun, skate traces (glide lines, crossovers, a figure eight, two spin spirals, a dotted toe-pick trail, scratches), twinkling sparkles, snow flecks, a vignette.
+- Background layers (round four): the ice, the low sun, a long diagonal sheen, twinkling sparkles, and a darker foot so type stays readable.
 - One glow per screen: gold when it is about reward, ice when it is about the action in front of you.
 - Motion: everything animated has a reduced-motion off state.
 - Placeholders: dashed "3D reference coming soon" panels on the Skate and Skill detail screens.
@@ -227,7 +226,18 @@ Round three (after the second style tile): the skate looked like a children's bo
 - Readability: Bodoni only for big moments (about 28px and up), Jost for everything small, 17px body at weight 450, brighter text colors, a dark tint under every glass surface, High contrast text mode, and text-wrap balance and pretty. Glass is layered on a readable base, not the other way around.
 - Fonts: Bodoni Moda and Jost for now (OFL, free to self-host). Self-hosting WOFF2 subsets with a preload for the critical face, `font-display: swap`, and metric-adjusted fallbacks is the recommended next step.
 - Tiles: each big tile shows its thing as a picture (blade, medallion and weekly bars, a row of skates, a calendar block) with etched ice in the corner.
-- Background: a faint scratch texture under skill tracks drawn live from the skater's own skills.
+- Background (retired in round four): a faint scratch texture under skill tracks drawn live from the skater's own skills.
+
+Round four (2026-10-17, after the app was live): "I am not loving it. Visual UI looks are important to get someone excited to use the app." The glass-card look read as one tall stack of the same dark card on every screen, with nothing as the star, and Home opened with reminders before any progress. Three Home mockups in a familiar habit-app style (a bright light theme, a spotlight on the level, a game-like skill path) were turned down as too familiar to apps people are bad at checking into daily. A second round borrowed from skating itself (a living ice sheet with a figure eight, a printed program, a spotlit skate). Feedback: the ice with the figure eight was the favorite, but the squiggles in its background did not look good; the printed program looked like homework; the skate looked cool but something was missing.
+
+- Direction: Fresh Ice. Clean, glossy ice under the low gold sun. Type is set on the ice with hairline rules between things, instead of cards. The week is a figure eight (see "Your week, as a figure eight"). Home leads with it, then three lines (level, next skill, blades), then the other sections, and the backup reminder comes last.
+- Surfaces: none, except panels (sheets, toasts), which are dark and nearly solid. A section is a hairline above it. The one glow per screen is the hairline catching the sun, gold for reward and ice for action.
+- Buttons: a bright ice-white pill that squishes and springs back is the main action; gold is for rewards (Save session, Keep skating), coral for ending or deleting, outline for everything else. Sections end in a quiet gold link, not a big button.
+- Chips are outlined pills; a pressed chip fills with ice-white; a status chip is a quiet cyan, gold, or coral outline.
+- Tabs inside a screen are plain words with a gold line under the current one. The main tabs are words only along the foot of the ice on a phone (a gold dot over the current one) and a list down the side on a desktop. There are no tab icons.
+- Bars are a hairline with a glowing fill and a bright bead at the end, like a blade catching the light.
+- Still true: Bodoni Moda italic for titles and numerals for big numbers, Jost for everything else; earned skates are the white-and-gold illustration; the level-up and badge celebrations keep their rays, medallion and confetti; every animation has a reduced-motion off state; a high contrast mode exists.
+- Not done, and worth a look later: the gold-skate-as-progress idea from the second round (a skate that fills with gold as skills are earned), which the skater liked but felt was missing something.
 
 ## Open questions
 
