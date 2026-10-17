@@ -36,7 +36,7 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 6. Cost per session and per month (done)
 7. Test readiness against the 2026-27 Singles chart (done)
 8. Passphrase-protected backups (Web Crypto, AES-GCM) (done)
-9. Self-host the fonts (needs the owner's yes to download them)
+9. Self-host the fonts (done: six files in `fonts/`, 192 KB, no request to Google)
 
 ### Later
 
@@ -199,7 +199,7 @@ Round two feedback (after the first style tile): skates need to be beautiful so 
 - Theme: golden hour, seen from under the ice. Light variants (sunrise, golden hour, midday, dusk) swap the sky and sun through `data-light`. Later idea: follow the real time of day.
 - Color has jobs. Deep water: surfaces. Ice cyan: actions and learning. Ice white: text and highlights. Gold: earned (XP, streaks, earned skates, mastered progress). Coral: caution. Skill types: skating skills cyan (flow), jumps gold (air), spins lavender (rotation). Progress bars warm from ice to gold as they fill; the sharpening bar warms to coral.
 - Skate art: unearned skates are gray ghosts. Earned skates are the white boot with gold trim, mesh windows, and a steel blade. Earning one bounces it in with sparkles. The simple line skate is only for navigation icons.
-- Type: Bodoni Moda (italic for titles, numerals for XP and levels) and Jost (UI and body), from Google Fonts with system fallbacks. Both are free. Satoshi would also work. Neue Machina and Söhne need paid licenses, so they are out for now.
+- Type: Bodoni Moda (italic for titles, numerals for XP and levels) and Jost (UI and body), served from `fonts/` (self-hosted, so no outside request) with system fallbacks. Both are free open fonts. Satoshi would also work. Neue Machina and Söhne need paid licenses, so they are out for now.
 - Liquid glass: translucent cards with a blurred, saturated backdrop, a bright top edge, and a soft specular highlight. Pill buttons and chips are tinted glass that squish and spring back. The tab bar is a floating glass capsule with a lens that slides under the current tab.
 - Rewards: the XP bar fills with a spring and a moving sheen, "+20 XP" floats up, and a level-up takes over the screen with rays, a gold medallion that pops in, confetti stars, and a vibration on phones. Reduced motion shows the same screen without movement.
 - Background layers, back to front: water, low sun, skate traces (glide lines, crossovers, a figure eight, two spin spirals, a dotted toe-pick trail, scratches), twinkling sparkles, snow flecks, a vignette.

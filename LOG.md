@@ -390,3 +390,26 @@ The next items on the stretch list, before trying the new features on a phone: f
 ### Not verified
 
 A real phone and Safari: the share sheet for a card link and picture, and the keyboard and password manager behaviour on the passphrase fields. A real friend on another phone opening a link. Locked backups on a very old browser (it needs Web Crypto, which every current browser has). Nothing is pushed.
+
+---
+
+## 2026-10-17 (Saturday, night): self-hosted fonts
+
+### Planned
+
+The last stretch item: stop loading the two typefaces from Google, so the app makes no outside request to draw its text and the type works offline. The owner said yes to downloading six files (name, source, and size were listed first).
+
+### Changes
+
+- Downloaded six files from `fonts.gstatic.com` into `fonts/` (the exact files Google Fonts served for these two families): Bodoni Moda regular and italic, each in the Latin and Latin Extended subsets, and Jost in the Latin and Latin Extended subsets. 192 KB in all, every file the size listed and a genuine woff2 (checked by its first four bytes). They are variable fonts, so each file covers every weight.
+- `css/fonts.css` has the `@font-face` rules (the same weight ranges and unicode ranges Google used, `font-display: swap`). `index.html` and the style tile use it, the Google links are gone, and the two Latin files are preloaded. The Latin Extended files load only when a page uses those letters (checked with a name like Łukasz Čech).
+- `fonts/README.md` records the source, the date, and the license: both are open fonts under the SIL Open Font License 1.1, with the copyright lines of the two projects. I did not add the license text file itself: the license is linked, and I do not have the text from the projects. Adding the project's `OFL.txt` next to the fonts would be the strict way to meet the license, and is a small download for the owner to approve.
+- Four tests: no page or stylesheet points at Google's font servers, every rule points at a file that exists, the files are genuine woff2 within sensible sizes, and the README names the license.
+
+### Verified
+
+150 tests pass in two time zones. In the browser: all three used faces loaded from `/fonts/`, the page made no request outside its own site, the headings and body text look the same as before, the share picture still draws with the fonts, and there are no console errors.
+
+### Not verified
+
+Safari and a real phone. Nothing is pushed.

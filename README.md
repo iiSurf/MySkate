@@ -48,6 +48,7 @@ Plain HTML, CSS, and JavaScript modules. No framework, no server, no accounts, n
 
 - `index.html`, `css/`, `js/`: the app. `js/screens/` has one file per screen, `js/ui/` the shared pieces.
 - `data/catalog/`: the skill lists as JSON. Skill ids never change, because saved data refers to them.
+- `fonts/` and `css/fonts.css`: the two typefaces (Bodoni Moda and Jost), self-hosted, so the app makes no outside request for them and the type works offline.
 - `assets/`: the skate illustration and the ice art. `design/` holds the style tile, the skate lab, and the scripts that generate the ice art.
 - `ROADMAP.md` is the plan, `LOG.md` records what changed, and `CLAUDE.md` guides AI-assisted work in this repo.
 
