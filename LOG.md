@@ -214,3 +214,28 @@ A real phone and Safari. Friend cards, connecting devices by code, and the 3D re
 
 Try it on a phone at the rink, then pick from the stretch list in `ROADMAP.md` (friend cards, connect devices, test readiness, encrypted backups, self-hosted fonts).
 
+---
+
+## 2026-10-17 (Saturday): a quick tour for new skaters
+
+### Planned
+
+The owner found MySkate hard to understand. Add a tutorial that opens the first time the app is used, and a button in Me that opens it again whenever someone forgets how something works.
+
+### Changes
+
+- `js/tour.js` holds the six steps as plain data: Plan, skate, grow; Plan your session; On the ice; Finish and watch it grow; Blade life; Your data stays with you. The numbers in the text (slots, XP, streak, skates that earn a skill) are read from the same constants the app uses, so the tour cannot drift from how it really works.
+- `js/ui/tour.js` shows the steps in a sheet, each with a small picture built from the app's own pieces (the clock, skates, XP bar, blade, buttons). Back, Next, dots, arrow keys, and "Skip the tour" at the top. The steps share one grid cell, so the sheet keeps one height and does not jump. On wide screens the picture sits beside the words; on phones the steps scroll inside the sheet while Back and Next stay put; on short screens the pictures hide so the words fit.
+- It opens by itself once, right after first-run setup (also after "I'll set up later"), and for someone who already has data and has not seen it yet (not while a session is running). Closing it any way counts as seen. Restoring a backup counts as seen.
+- Help card at the top of Me: "Show me how MySkate works". On Home, a "How MySkate works" button sits next to "Plan a session" until the first session is saved.
+- Saved data gets one new optional field, `profile.tourSeen`. It defaults to false, so old backups load fine and `schemaVersion` stays 1. `CLAUDE.md` now says when a version bump is and is not needed.
+- Added a `.sr-only` helper so the tour can announce "Step 3 of 6: On the ice" to screen readers.
+
+### Verified
+
+- 52 tests pass (6 new): the steps are well formed and name a picture that exists; the tour quotes the real numbers; every button the tour tells you to tap really has that label in the screens; the Me and Home buttons exist; the flag defaults, sanitizes, and old backups load; restore and merge treat it correctly.
+- In the browser: first run (clean storage, skip setup) opens the tour with "Skip the tour"; all six steps show their pictures; Next ends on "Got it" and saves the flag; reload does not show it again. Help on Me opens it with "Close", Escape closes it, and focus returns to the button. Arrow keys move between steps. Checked at 1024x768, 390x844, 320x568, and 844x390 (phone sideways): nothing is cut off and Back, Next, and Skip stay reachable.
+
+### Not verified
+
+A real phone and Safari, and a screen reader (the step announcement is in place but only checked in the markup).

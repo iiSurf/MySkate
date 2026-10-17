@@ -21,6 +21,7 @@ export function defaultState(now = new Date()) {
       levels: { skills: "lts-freeskate/pre-free-skate", jumps: "lts-freeskate/pre-free-skate" },
       defaultSlotMin: 60,
       onboarded: false,
+      tourSeen: false,
     },
     blades: { name: "", limitHours: 25, baseHours: 0, countedFrom: now.toISOString() },
     sharpenings: [],
@@ -136,6 +137,7 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
       },
       defaultSlotMin: Math.round(num(p.defaultSlotMin, 5, 300, 60)),
       onboarded: p.onboarded === true,
+      tourSeen: p.tourSeen === true,
     },
     blades: {
       name: str(b.name, MAX.name),
@@ -249,6 +251,7 @@ export function replaceState(incoming, current) {
   next.backup = { lastExportAt: current && current.backup ? current.backup.lastExportAt : null };
   next.active = null;
   next.profile.onboarded = true;
+  next.profile.tourSeen = true;   // someone restoring a backup already knows the app
   return next;
 }
 

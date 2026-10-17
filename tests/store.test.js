@@ -178,3 +178,25 @@ test("CSV has one row per rating and protects against spreadsheet formulas", () 
   assert.match(lines[1], /,4,7,10,/);
   assert.match(lines[1], /"'=HYPERLINK\(""http:\/\/example.com""\), ""quoted"""$/);
 });
+
+test("the quick tour flag starts false, only a real true counts, and an old backup without it loads", () => {
+  assert.equal(defaultState().profile.tourSeen, false);
+  assert.equal(sanitizeState({ profile: { tourSeen: true } }).profile.tourSeen, true);
+  assert.equal(sanitizeState({ profile: { tourSeen: "yes" } }).profile.tourSeen, false);
+  const old = JSON.parse(exportJSON(defaultState(), new Date()));
+  delete old.profile.tourSeen;
+  const parsed = parseBackup(JSON.stringify(old));
+  assert.equal(parsed.ok, true);
+  assert.equal(parsed.state.profile.tourSeen, false);
+});
+
+test("restoring a backup counts as having seen the tour, and a merge keeps this device's answer", () => {
+  const incoming = defaultState();
+  incoming.profile.onboarded = true;
+  assert.equal(replaceState(incoming, defaultState()).profile.tourSeen, true);
+  const current = defaultState();
+  current.profile.onboarded = true;
+  current.profile.tourSeen = true;
+  incoming.profile.tourSeen = false;
+  assert.equal(mergeStates(current, incoming).state.profile.tourSeen, true);
+});

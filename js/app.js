@@ -9,6 +9,7 @@ import { $, render, delegate, toast, download } from "./ui/dom.js";
 import { createIce } from "./ui/ice.js";
 import { levelUp as celebrateLevelUp, reducedMotion } from "./ui/celebrate.js";
 import { runOnboarding } from "./ui/onboard.js";
+import { openTour } from "./ui/tour.js";
 import { newActive } from "./timer.js";
 import { keepAwake } from "./wake.js";
 import { renderHome, homeActions, homeInputs } from "./screens/home.js";
@@ -206,6 +207,16 @@ function buildContext(state, catalog, status) {
       syncIce({});
       renderRoute();
       requestPersistence();
+      await ctx.showTour({ firstTime: true });
+    },
+    /* The quick tour. With firstTime it only opens if it has not been seen on this device. Closing it either way counts as seen. */
+    async showTour({ firstTime = false } = {}) {
+      if (firstTime && ctx.state.profile.tourSeen) return;
+      await openTour({ first: firstTime });
+      if (!ctx.state.profile.tourSeen) {
+        ctx.state.profile.tourSeen = true;
+        save();
+      }
     },
   };
 }
@@ -264,6 +275,7 @@ async function boot() {
   renderRoute();
   if (status === "recovered") toast("Your saved data could not be read. A copy was kept aside and MySkate started fresh.", 8000);
   if (!ctx.state.profile.onboarded) ctx.startOnboarding();
+  else if (!ctx.state.active) ctx.showTour({ firstTime: true });
   window.myskate = ctx;
 }
 

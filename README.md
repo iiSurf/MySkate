@@ -13,6 +13,7 @@ Live: https://iisurf.github.io/MySkate/
 - **Blade life.** Set your own sharpening interval (20, 25, 30, 35 hours, or any number). Your on-ice time counts toward it.
 - **Your ice.** The background draws each skill's marks as you rate it: swizzles weave, three-turns leave tiny 3s, jumps leave a takeoff and landing, spins leave spirals.
 - **Skill lists.** Learn to Skate USA Basic 1-6, Pre-Free Skate and Free Skate 1-6, Adult 1-6, U.S. Figure Skating Skating Skills tests, and a jump, spin, and element library.
+- **Quick tour.** Six short steps with pictures explain planning, skating, rating, XP, blade life, and backups. It opens once when you first set up, and any time from the Help card on Me.
 - **Backups.** Save a JSON backup, export a CSV for a spreadsheet, and restore by merging or replacing. Nothing is uploaded anywhere.
 
 Skill lists are summarized from public curricula and may differ from your coach or club. Always follow your coach.

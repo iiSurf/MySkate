@@ -32,7 +32,7 @@ This is Artifact 2 for TCSS 490. Due Sunday 2026-10-18, 11:59pm. The Canvas subm
 - Plan before building anything large. Keep changes small and commit after each working step with a clear message.
 - Add a dated entry to `LOG.md` after each meaningful change: what was planned, what changed, what was verified.
 - Check the result in a browser at phone width and desktop width before calling a feature done. Say what was not checked.
-- Changing the shape of saved data bumps `schemaVersion` and adds a migration. Restoring an old backup must always keep working.
+- Changing the shape of saved data bumps `schemaVersion` and adds a migration. Restoring an old backup must always keep working. Adding an optional field that `sanitizeState` gives a default (like `profile.tourSeen`) needs no bump, because older backups simply load with the default and older apps ignore it. Renaming, removing, or changing what a field means does need one.
 - Never commit PDFs or other copyrighted source documents. Catalog files are our own lists with a link to the source.
 - No secrets, tokens, or personal data in the repo.
 - Respect `prefers-reduced-motion`: every animation has an off state.

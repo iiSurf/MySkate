@@ -15,6 +15,10 @@ export function renderMe(ctx) {
   const safe = (url) => (typeof url === "string" && /^https:\/\//.test(url) ? url : "");
   return html`
     <header class="screen-head"><div><p class="eyebrow">Your setup</p><h1>Me</h1></div></header>
+    <section class="card card--ice help-card" aria-labelledby="help-title">
+      <div class="grow"><h2 id="help-title">Help</h2><p class="dim">New here, or forgot how something works? The quick tour covers planning, skating, XP, blade life, and backups.</p></div>
+      <button class="btn" type="button" data-action="tour">Show me how MySkate works</button>
+    </section>
     <div class="grid-2">
       <section class="card stack">
         <h2>Skater</h2>
@@ -138,6 +142,7 @@ export function meActions(ctx) {
       ctx.applySettings();
       ctx.update();
     },
+    tour: () => ctx.showTour(),
     export: () => ctx.exportBackup(),
     "export-csv": () => ctx.exportCSV(),
     persist: async () => {

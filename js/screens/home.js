@@ -38,7 +38,7 @@ function heroCard(ctx, d) {
   return html`<section class="card hero-card">
     <p class="eyebrow">Ready to skate?</p>
     <p class="hero-card__line dim">Pick a few skills, pick your ice slot, and go.</p>
-    <button class="btn" type="button" data-action="go-plan">Plan a session</button>
+    <div class="cluster"><button class="btn" type="button" data-action="go-plan">Plan a session</button>${state.sessions.length ? "" : html`<button class="btn btn--glass" type="button" data-action="tour">How MySkate works</button>`}</div>
   </section>`;
 }
 
@@ -207,6 +207,7 @@ export function homeActions(ctx) {
     "go-plan": () => ctx.go("plan"),
     "go-skate": () => ctx.go("skate"),
     "go-progress": () => ctx.go("progress"),
+    tour: () => ctx.showTour(),
     start: () => ctx.startSession(),
     "export-now": () => ctx.exportBackup(),
     "blade-edit": (el) => {

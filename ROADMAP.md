@@ -23,6 +23,7 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 - [x] Backup: export JSON (full), export CSV (read-only), restore with Merge or Replace, reminder after 7 days without a backup
 - [x] Deployed on GitHub Pages, Portfolio card filled in, `CLAUDE.md` and `LOG.md` current
 - [x] Placeholder panels where the 3D reference will go (Skate screen, Skill detail)
+- [x] Quick tour: six short steps with pictures, shown once after setup, and any time from Home or Me ("Show me how MySkate works")
 
 ### Stretch, in this order
 
@@ -93,6 +94,7 @@ There is no server, so a plan made on a laptop does not appear on a phone. "Send
 - A setup sheet on the very first open: Set up my skates (names, sharpening limit, hours so far; skating-skills level and jumps-and-spins level from the catalog; usual slot), Restore a backup, or Connect from another device.
 - Restore reads the file on the device, checks `schemaVersion` and a `sessions` array, shows the session count and date range, then offers Merge or Replace.
 - The same settings stay editable afterward from the tiles and the profile.
+- After setup (or after "I'll set up later"), the quick tour opens once: plan, skate, rate, XP and streaks, blade life, backups. "Skip the tour" closes it and counts as seen. It is always one tap away: the Help card on Me, and a "How MySkate works" button on Home until the first session is saved. Restoring a backup skips it.
 
 ### Connect devices
 
