@@ -17,6 +17,8 @@ import {
   parseIcs,
   buildIcs,
   nextRinkColor,
+  dropEnded,
+  applyImport,
   RINK_COLORS,
 } from "../js/ice.js";
 import { defaultState, sanitizeState, mergeStates, replaceState, exportJSON, parseBackup } from "../js/store.js";
@@ -157,7 +159,7 @@ test("a calendar file becomes sessions, and what MySkate cannot use is counted, 
     ev(["DTSTART;VALUE=DATE:20261025", "SUMMARY:Rink closed (all day)"]),
     ev(["DTSTART:20261026T220000", "DTEND:20261027T010000", "SUMMARY:Overnight camp"]),
     ev(["DTSTART:20261026T100000", "DTEND:20261026T110000", "RRULE:FREQ=MONTHLY", "SUMMARY:Monthly"]),
-    ev(["DTSTART:20261026T100000", "DTEND:20261026T110000", "RRULE:FREQ=WEEKLY;INTERVAL=2", "SUMMARY:Every other week"]),
+    ev(["DTSTART:20261026T100000", "DTEND:20261026T110000", "RRULE:FREQ=WEEKLY;INTERVAL=9", "SUMMARY:Every ninth week"]),
     ev(["DTSTART:20261026T100000", "DTEND:20261026T110000", "STATUS:CANCELLED", "SUMMARY:Cancelled"]),
     ev(["DTSTART:20250105T100000", "DTEND:20250105T110000", "SUMMARY:Long ago"]),
     ev(["DTSTART:20250105T100000", "DTEND:20250105T110000", "RRULE:FREQ=WEEKLY;UNTIL=20250301", "SUMMARY:Old weekly"]),
@@ -281,4 +283,116 @@ test("merging adds the rinks and sessions you are missing and keeps yours", () =
 test("MySkate's own calendar titles come back without the 'at the rink' part", () => {
   const got = parseIcs(ics([ev(["DTSTART:20261024T100000", "DTEND:20261024T113000", "SUMMARY:Public skate at Highland\\, Ice Arena"]), ev(["DTSTART:20261025T100000", "DTEND:20261025T113000", "SUMMARY:Open Skate Saturday"])]), { today: "2026-10-17" });
   assert.deepEqual(got.sessions.map((s) => [s.kind, s.note]), [["public", ""], ["public", "Open Skate Saturday"]]);
+});
+
+
+test("a calendar can skip dates and move or cancel single sessions, the way Google Calendar writes a holiday closure", () => {
+  const file = ics([
+    ev(["UID:a1@x", "DTSTART;TZID=America/Los_Angeles:20261020T143000", "DTEND;TZID=America/Los_Angeles:20261020T153000", "RRULE:FREQ=WEEKLY;BYDAY=TU,TH", "EXDATE;TZID=America/Los_Angeles:20261105T143000,20261110T143000", "EXDATE;TZID=America/Los_Angeles:20260101T143000", "SUMMARY:Freestyle"]),
+    ev(["UID:a1@x", "RECURRENCE-ID;TZID=America/Los_Angeles:20261022T143000", "DTSTART;TZID=America/Los_Angeles:20261022T160000", "DTEND;TZID=America/Los_Angeles:20261022T170000", "SUMMARY:Freestyle (moved)"]),
+    ev(["UID:a1@x", "RECURRENCE-ID;TZID=America/Los_Angeles:20261027T143000", "DTSTART;TZID=America/Los_Angeles:20261027T143000", "DTEND;TZID=America/Los_Angeles:20261027T153000", "STATUS:CANCELLED", "SUMMARY:Freestyle"]),
+  ]);
+  const got = parseIcs(file, { today: "2026-10-17" });
+  assert.equal(got.skipped, 0, "a cancelled single date is not 'left out', it is handled");
+  assert.equal(got.sessions.length, 2);
+  const [weekly, moved] = got.sessions;
+  assert.deepEqual(weekly.skip, ["2026-10-22", "2026-10-27", "2026-11-05", "2026-11-10"], "past dates are not kept");
+  assert.deepEqual([moved.date, moved.start, moved.end, moved.note], ["2026-10-22", "16:00", "17:00", "Freestyle (moved)"]);
+  const s = sanitizeIceSession({ id: "w", rinkId: "r1", ...weekly });
+  const dates = (week) => occurrencesInWeek([s], week).map((o) => o.date);
+  assert.deepEqual(dates("2026-10-19"), ["2026-10-20"], "Thursday the 22nd moved away");
+  assert.deepEqual(dates("2026-10-26"), ["2026-10-29"], "Tuesday the 27th is cancelled");
+  assert.deepEqual(dates("2026-11-02"), ["2026-11-03"], "Tuesday Nov 3 runs, Thursday Nov 5 is skipped");
+});
+
+test("every other week counts from the first day", () => {
+  const got = parseIcs(ics([ev(["DTSTART:20261020T100000", "DTEND:20261020T110000", "RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=TU", "SUMMARY:Learn to skate"])]), { today: "2026-10-17" });
+  assert.equal(got.sessions[0].every, 2);
+  const s = sanitizeIceSession({ id: "e", rinkId: "r1", ...got.sessions[0] });
+  assert.deepEqual([s.every, s.from], [2, "2026-10-20"]);
+  const weeks = ["2026-10-19", "2026-10-26", "2026-11-02", "2026-11-09", "2026-11-16"];
+  assert.deepEqual(weeks.map((w) => occurrencesInWeek([s], w).length), [1, 0, 1, 0, 1]);
+  assert.equal(sanitizeIceSession({ id: "e", rinkId: "r1", days: [2], every: 2, start: "10:00", end: "11:00" }).every, 1, "no first day to count from");
+  assert.equal(sanitizeIceSession({ id: "e", rinkId: "r1", days: [2], from: "2026-10-20", every: 9, start: "10:00", end: "11:00" }).every, 1);
+});
+
+test("Z times are turned into the calendar's own time zone, not the device's", () => {
+  const file = ics([ev(["DTSTART:20261020T210000Z", "DTEND:20261020T220000Z", "SUMMARY:Public Skate"])]).replace("VERSION:2.0", "VERSION:2.0\r\nX-WR-TIMEZONE:America/Los_Angeles");
+  const got = parseIcs(file, { today: "2026-10-17" });
+  assert.deepEqual([got.sessions[0].date, got.sessions[0].start, got.sessions[0].end], ["2026-10-20", "14:00", "15:00"], "9 PM UTC is 2 PM in Los Angeles in October");
+  const winter = parseIcs(file.replaceAll("20261020", "20261120"), { today: "2026-10-17" });
+  assert.equal(winter.sessions[0].start, "13:00", "after the clocks go back it is 1 PM");
+  const odd = parseIcs(ics([ev(["DTSTART:20261020T210000Z", "DTEND:20261020T220000Z", "SUMMARY:x"])]).replace("VERSION:2.0", "VERSION:2.0\r\nX-WR-TIMEZONE:Mars/Olympus"), { today: "2026-10-17" });
+  assert.equal(odd.sessions.length, 1, "an unknown zone name falls back to the device clock instead of failing");
+});
+
+test("reminders inside an event are not read as the event", () => {
+  const got = parseIcs(ics([ev(["DTSTART:20261024T100000", "DTEND:20261024T113000", "SUMMARY:Public Skate", "BEGIN:VALARM", "ACTION:EMAIL", "SUMMARY:Freestyle reminder", "TRIGGER:-PT15M", "END:VALARM"])]), { today: "2026-10-17" });
+  assert.deepEqual(got.sessions.map((s) => s.kind), ["public"]);
+});
+
+test("a calendar export keeps skipped dates and every-other-week", () => {
+  const rinks = [{ id: "r1", name: "Highland", city: "", url: "", color: RINK_COLORS[0] }];
+  const a = sess({ id: "a", days: [2], from: "2026-10-20", every: 2, skip: ["2026-11-03", "2026-12-01"], pick: true });
+  const file = buildIcs([a], rinks, { now: new Date(Date.UTC(2026, 9, 17, 12, 0)) });
+  assert.match(file, /RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=TU/);
+  assert.equal((file.match(/EXDATE:/g) || []).length, 2);
+  const back = parseIcs(file, { today: "2026-10-17" }).sessions[0];
+  assert.deepEqual([back.every, back.skip], [2, ["2026-11-03", "2026-12-01"]]);
+});
+
+test("only the present and the future are kept", () => {
+  const list = [
+    sess({ id: "past-day", days: [], date: "2026-10-16" }),
+    sess({ id: "today", days: [], date: "2026-10-17" }),
+    sess({ id: "ended", days: [1], to: "2026-10-16" }),
+    sess({ id: "last-day", days: [1], to: "2026-10-17" }),
+    sess({ id: "forever", days: [1] }),
+    sess({ id: "later", days: [1], from: "2027-01-01" }),
+  ];
+  assert.deepEqual(dropEnded(list, "2026-10-17").map((s) => s.id), ["today", "last-day", "forever", "later"]);
+});
+
+const found = (o) => ({ kind: "freestyle", days: [2], date: null, start: "14:00", end: "15:00", price: null, note: "", from: "2026-10-20", to: null, skip: [], every: 1, pick: false, ...o });
+let n = 0;
+const makeId = () => "n" + ++n;
+
+test("importing a newer file updates what you imported before, keeping stars and prices, and leaves your own sessions alone", () => {
+  const tue = sess({ id: "old-tue", days: [2], imported: true, pick: true, price: 18, from: "2026-10-20" });
+  const thu = sess({ id: "old-thu", days: [4], imported: true, from: "2026-10-20" });
+  const gone = sess({ id: "old-sat", days: [6], imported: true, start: "09:00", end: "10:00" });
+  const mine = sess({ id: "mine", days: [1], kind: "public", start: "19:00", end: "20:00" });
+  const other = sess({ id: "other-rink", rinkId: "r2", days: [2], imported: true });
+  const file = [found({ days: [2] }), found({ days: [4] }), found({ days: [5], kind: "public", start: "19:00", end: "20:00" }), found({ days: [1], kind: "public", start: "19:00", end: "20:00" })];
+  const got = applyImport([tue, thu, gone, mine, other], file, { rinkId: "r1", replace: true, makeId });
+  assert.deepEqual([got.added, got.removed, got.unchanged, got.dropped], [1, 1, 2, 0], "Friday is new; Saturday is gone; Tue and Thu are the same; Monday public is one you already added by hand");
+  const ids = got.sessions.map((s) => s.id);
+  assert.ok(ids.includes("mine") && ids.includes("other-rink"));
+  assert.ok(!ids.includes("old-sat") && !ids.includes("old-tue"));
+  const newTue = got.sessions.find((s) => s.rinkId === "r1" && s.days[0] === 2);
+  assert.deepEqual([newTue.pick, newTue.price, newTue.imported], [true, 18, true]);
+  assert.equal(got.sessions.filter((s) => s.rinkId === "r1" && s.days[0] === 1).length, 1, "no copy of the one added by hand");
+});
+
+test("importing without replacing only adds what is new", () => {
+  const have = sess({ id: "have", days: [2], imported: true });
+  const got = applyImport([have], [found({ days: [2] }), found({ days: [3] })], { rinkId: "r1", replace: false, pickAll: true, makeId });
+  assert.deepEqual([got.added, got.removed, got.unchanged], [1, 0, 0]);
+  assert.equal(got.sessions.length, 2);
+  assert.equal(got.sessions.find((s) => s.days[0] === 3).pick, true);
+  assert.equal(got.sessions.find((s) => s.id === "have").pick, false);
+});
+
+test("an import stops at the session limit and says how many did not fit", () => {
+  const many = Array.from({ length: 499 }, (_, i) => sess({ id: "k" + i, days: [], date: `2027-${String(1 + (i % 12)).padStart(2, "0")}-${String(1 + (i % 28)).padStart(2, "0")}`, start: `${String(i % 24).padStart(2, "0")}:00`, end: `${String(i % 24).padStart(2, "0")}:30` }));
+  const got = applyImport(many, [found({ days: [1] }), found({ days: [2] }), found({ days: [3] })], { rinkId: "r1", replace: false, makeId });
+  assert.equal(got.sessions.length, 500);
+  assert.equal(got.dropped, 2);
+});
+
+test("skipped dates are cleaned: real days only, kept in order, and a one-day session has none", () => {
+  const s = sess({ days: [2], skip: ["2026-11-05", "nope", "2026-02-31", "2026-10-30", "2026-11-05"] });
+  assert.deepEqual(s.skip, ["2026-10-30", "2026-11-05"]);
+  assert.deepEqual(sess({ days: [], date: "2026-11-05", skip: ["2026-11-05"] }).skip, []);
+  assert.equal(sess({ imported: "yes" }).imported, false);
 });
