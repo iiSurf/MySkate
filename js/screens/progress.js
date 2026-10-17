@@ -7,13 +7,16 @@ import { levelProgress, landedPct, minutesOnIce, EARNED_AT } from "../stats.js";
 import { nextLevelKey, levelLabel } from "../catalog.js";
 import { fmtMoney, costSummary, costByMonth, sanitizeCost } from "../cost.js";
 import { GROUPS, badgeRatio, progressText } from "../badges.js";
-import { shareBadge } from "../ui/share.js";
+import { shareBadge, shareCardLink, shareCardPicture, copyCardLink } from "../ui/share.js";
+import { board, parseFriendInput } from "../friends.js";
+import { initials, openFriend, openAddFriend } from "../ui/friends.js";
 
-const ui = { tab: "overview", open: null, filter: "all" };
+const ui = { tab: "overview", open: null, filter: "all", board: "week" };
 
 const TABS = [
   ["overview", "Overview"],
   ["badges", "Badges"],
+  ["friends", "Friends"],
   ["skills", "Skills"],
   ["sessions", "Sessions"],
 ];
@@ -21,6 +24,11 @@ const TABS = [
 /* Open Progress on the trophy case (used by the Badges tile on Home). */
 export function showBadges() {
   ui.tab = "badges";
+}
+
+/* Open Progress on the friends board (used by the Friends tile on Home and by a friend's link). */
+export function showFriends() {
+  ui.tab = "friends";
 }
 
 function weeklyChart(ctx, d) {
@@ -139,6 +147,40 @@ function badgesTab(ctx) {
   </div>`;
 }
 
+/* You and your friends ranked by XP, your own card to send, and a place to add a friend from a link. */
+function friendsTab(ctx) {
+  const { state } = ctx;
+  const me = ctx.myCard();
+  const rows = board({ me, friends: state.friends, period: ui.board });
+  const row = (r) => {
+    const body = html`<span class="rank num" aria-label="Place ${r.rank}">${r.rank}</span><span class="avatar" aria-hidden="true">${initials(r.name)}</span><span class="grow">${r.name}${r.you ? " (you)" : ""}<br><span class="dim">Level ${r.level} · ${r.streak} ${r.streak === 1 ? "week" : "weeks"} in a row · ${r.badges} ${r.badges === 1 ? "badge" : "badges"}</span></span><span class="chip chip--gold">${r.xp} XP</span>`;
+    return r.you ? html`<div class="row row--you">${body}</div>` : html`<button class="row row--btn" type="button" data-action="friend" data-id="${r.id}">${body}</button>`;
+  };
+  return html`<div class="tiles">
+    <section class="card card--glow tile wide" aria-labelledby="board-title">
+      <div class="tile__head"><p class="eyebrow" id="board-title">Friends board</p>
+        <div class="seg" role="group" aria-label="Period"><button type="button" data-action="board" data-p="week" aria-pressed="${ui.board === "week"}">Last 7 days</button><button type="button" data-action="board" data-p="all" aria-pressed="${ui.board === "all"}">All time</button></div></div>
+      <div>${rows.map(row)}</div>
+      ${state.friends.length
+        ? html`<p class="note">A friend's numbers are from the day their card was made. Ask them for a fresh card to update them.</p>`
+        : html`<p class="dim">No friends yet. Send your card to a friend below, and add theirs when they send it back. Everyone's numbers stay on their own device: a card holds only a name, level, XP, streak, badge count, and hours.</p>`}
+    </section>
+    <section class="card tile" aria-labelledby="card-title">
+      <div class="tile__head"><p class="eyebrow" id="card-title">Your card</p></div>
+      <div class="friend-head"><span class="avatar" aria-hidden="true">${initials(me.name)}</span><div><strong>${me.name}</strong><br><span class="dim">Level ${me.level} · ${me.xpTotal} XP · ${me.badges} ${me.badges === 1 ? "badge" : "badges"}</span></div></div>
+      ${state.profile.name.trim() ? "" : html`<p class="note">Your card says "Skater". Add your name in Me to put it on the card.</p>`}
+      <div class="cluster"><button class="btn btn--small" type="button" data-action="share-card">Share my card</button><button class="btn btn--glass btn--small" type="button" data-action="card-picture">Save as a picture</button><button class="chip" type="button" data-action="copy-card">Copy link</button></div>
+      <p class="note">Your friend opens the link on their phone and taps Add. The link keeps your card after the # in the address, so it is never sent to any website.</p>
+    </section>
+    <section class="card tile" aria-labelledby="add-title">
+      <div class="tile__head"><p class="eyebrow" id="add-title">Add a friend</p></div>
+      <p class="dim">Open the link your friend sent you, or paste it here.</p>
+      <label class="field"><span class="sr-only">A friend's link</span><input class="input" id="friend-code" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste a friend's link"></label>
+      <button class="btn btn--glass btn--small" type="button" data-action="add-friend">Add friend</button>
+    </section>
+  </div>`;
+}
+
 function openBadge(ctx, id) {
   const b = ctx.badges().find((x) => x.id === id);
   if (!b) return;
@@ -206,10 +248,10 @@ function sessionsTab(ctx, d) {
 
 export function renderProgress(ctx) {
   const d = ctx.derive();
-  const body = ui.tab === "overview" ? overview(ctx, d) : ui.tab === "badges" ? badgesTab(ctx) : ui.tab === "skills" ? skillsTab(ctx, d) : sessionsTab(ctx, d);
+  const body = ui.tab === "overview" ? overview(ctx, d) : ui.tab === "badges" ? badgesTab(ctx) : ui.tab === "friends" ? friendsTab(ctx) : ui.tab === "skills" ? skillsTab(ctx, d) : sessionsTab(ctx, d);
   return html`
     <header class="screen-head"><div><p class="eyebrow">Look how far you have come</p><h1>Progress</h1></div></header>
-    <div class="seg" role="group" aria-label="Section">${TABS.map(([key, label]) => html`<button type="button" data-action="ptab" data-tab="${key}" aria-pressed="${ui.tab === key}">${label}</button>`)}</div>
+    <div class="seg seg--scroll" role="group" aria-label="Section">${TABS.map(([key, label]) => html`<button type="button" data-action="ptab" data-tab="${key}" aria-pressed="${ui.tab === key}">${label}</button>`)}</div>
     ${body}`;
 }
 
@@ -271,6 +313,20 @@ export function progressActions(ctx) {
     },
     skill: (el) => openSkill(ctx, el.dataset.id),
     badge: (el) => openBadge(ctx, el.dataset.id),
+    board: (el) => {
+      ui.board = el.dataset.p;
+      ctx.update();
+    },
+    friend: (el) => openFriend(ctx, el.dataset.id),
+    "share-card": () => shareCardLink(ctx.myCard()),
+    "card-picture": () => shareCardPicture(ctx.myCard()),
+    "copy-card": () => copyCardLink(ctx.myCard()),
+    "add-friend": () => {
+      const input = $("#friend-code");
+      const card = parseFriendInput(input ? input.value : "");
+      if (!card) return toast("That does not look like a friend's link. Ask them to send it again.", 4500);
+      openAddFriend(ctx, card);
+    },
     "open-session": (el) => {
       ui.open = ui.open === el.dataset.id ? null : el.dataset.id;
       ctx.update();

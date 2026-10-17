@@ -4,12 +4,14 @@ import { loadCatalog } from "./catalog.js";
 import { loadState, saveState, exportJSON, exportCSV, requestPersistence } from "./store.js";
 import { replayXp, levelFromXp, streakWeeks, weekBars } from "./xp.js";
 import { skillStats, activeAsSession, iceSkills, totals } from "./stats.js";
-import { todayISO, html } from "./util.js";
+import { todayISO, html, uid } from "./util.js";
 import { $, render, delegate, toast, download } from "./ui/dom.js";
 import { createIce } from "./ui/ice.js";
 import { levelUp as celebrateLevelUp, badgeUnlock, reducedMotion } from "./ui/celebrate.js";
 import { shareBadge } from "./ui/share.js";
 import { evaluateBadges, newlyEarned } from "./badges.js";
+import { makeCard, parseFriendHash } from "./friends.js";
+import { openAddFriend } from "./ui/friends.js";
 import { runOnboarding } from "./ui/onboard.js";
 import { openTour } from "./ui/tour.js";
 import { newActive } from "./timer.js";
@@ -19,7 +21,7 @@ import { renderPlan, planActions, planInputs } from "./screens/plan.js";
 import { renderIce, iceActions } from "./screens/ice.js";
 import { dropEnded } from "./ice.js";
 import { renderSkate, mountSkate, skateActions, skateInputs } from "./screens/skate.js";
-import { renderProgress, progressActions } from "./screens/progress.js";
+import { renderProgress, progressActions, showFriends } from "./screens/progress.js";
 import { renderMe, mountMe, meActions, meInputs } from "./screens/me.js";
 
 const none = () => ({});
@@ -145,7 +147,24 @@ function go(route) {
   location.hash = `#/${route}`;
 }
 
+/* A friend's link (#/friend?c=...) was opened: go to the friends board and offer to add them. Returns true if it was one. */
+async function handleFriendLink() {
+  if (!location.hash.startsWith("#/friend")) return false;
+  const card = parseFriendHash(location.hash);
+  history.replaceState(null, "", location.pathname + location.search + "#/progress");
+  showFriends();
+  current = currentRoute();
+  renderRoute();
+  if (card) await openAddFriend(ctx, card);
+  else toast("That friend link did not work. Ask your friend to send it again.", 5000);
+  return true;
+}
+
 function onRouteChange() {
+  if (location.hash.startsWith("#/friend")) {
+    handleFriendLink();
+    return;
+  }
   current = currentRoute();
   renderRoute();
   window.scrollTo(0, 0);
@@ -209,6 +228,16 @@ function buildContext(state, catalog, status) {
       toast("Spreadsheet saved. Look in your downloads.");
     },
     levelUp: (level) => celebrateLevelUp(level),
+    /* Your friend card as of now. The card id is made the first time it is needed and stays with your data. */
+    myCard() {
+      const p = ctx.state.profile;
+      if (!p.cardId) {
+        p.cardId = uid();
+        save();
+      }
+      const d = derive();
+      return makeCard({ id: p.cardId, name: p.name, level: d.level.level, xpTotal: d.xp.total, xpWeek: d.bars.reduce((sum, b) => sum + b.xp, 0), streak: d.streak.weeks, badges: ctx.badges().filter((b) => b.earned).length, hours: d.totals.allMin / 60 });
+    },
     /* Every badge with whether it is earned and when, worked out from the saved sessions. */
     badges: () => evaluateBadges({ sessions: ctx.state.sessions, sharpenings: ctx.state.sharpenings, backupAt: ctx.state.backup.lastExportAt, catalog: ctx.catalog }),
     /* Tell the skater about badges earned since the last look. The first time (and after a restore) it only notes what is
@@ -304,10 +333,12 @@ async function boot() {
   current = currentRoute();
   renderRoute();
   if (status === "recovered") toast("Your saved data could not be read. A copy was kept aside and MySkate started fresh.", 8000);
-  if (!ctx.state.profile.onboarded) ctx.startOnboarding();
-  else if (!ctx.state.active) ctx.showTour({ firstTime: true });
   ctx.checkBadges({ silent: true });
   window.myskate = ctx;
+  /* New here: set up first (a friend's link waits until then). Otherwise a friend's link comes first, then the tour if it is new. */
+  if (!ctx.state.profile.onboarded) await ctx.startOnboarding();
+  const wasLink = await handleFriendLink();
+  if (!wasLink && ctx.state.profile.onboarded && !ctx.state.active) ctx.showTour({ firstTime: true });
 }
 
 boot();

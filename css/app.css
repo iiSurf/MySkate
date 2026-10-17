@@ -1253,3 +1253,40 @@ select.input {
     font-size: 0.9rem;
   }
 }
+
+/* Friends (js/friends.js): the board, your card, and the sheets. */
+
+.rank {
+  display: inline-block;
+  min-width: 1.6ch;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.friend-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.row--you .avatar,
+.row--you .rank {
+  color: var(--sun);
+}
+
+/* Progress has five tabs now; on a small phone they scroll sideways instead of squeezing. */
+.seg--scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+
+.seg--scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.seg--scroll button {
+  flex: none;
+  scroll-snap-align: center;
+}

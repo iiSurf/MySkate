@@ -2,7 +2,9 @@
 
 import { html, fmtMinutes, fmtDate, fmtNum, fmt1, fmtClock, todayISO, daysBetween, addDays } from "../util.js";
 import { icon, medallion, medal, bar, bladeArt, skateSvg, weekBarsHtml } from "../ui/parts.js";
-import { showBadges } from "./progress.js";
+import { showBadges, showFriends } from "./progress.js";
+import { board } from "../friends.js";
+import { initials } from "../ui/friends.js";
 import { badgeRatio, progressText } from "../badges.js";
 import { bladeInfo, bladeHours, logSharpening } from "../blades.js";
 import { levelProgress, suggestNext, isSkating, isAir } from "../stats.js";
@@ -117,6 +119,19 @@ function bladeTile(ctx) {
   </section>`;
 }
 
+/* Where you stand among your friends this week (their numbers are from their cards). Only shown once you have a friend. */
+function friendsTile(ctx) {
+  if (!ctx.state.friends.length) return "";
+  const rows = board({ me: ctx.myCard(), friends: ctx.state.friends, period: "week" });
+  const mine = rows.find((r) => r.you);
+  return html`<section class="card tile" aria-labelledby="friends-title">
+    <div class="tile__head"><p class="eyebrow" id="friends-title">Friends, last 7 days</p></div>
+    <div class="hours"><span class="num">#${mine.rank}</span><span class="dim">of ${rows.length}</span></div>
+    <div>${rows.slice(0, 3).map((r) => html`<div class="row ${r.you ? "row--you" : ""}"><span class="avatar" aria-hidden="true">${initials(r.name)}</span><span class="grow">${r.name}${r.you ? " (you)" : ""}</span><span class="chip chip--gold">${r.xp} XP</span></div>`)}</div>
+    <button class="btn btn--glass btn--small" type="button" data-action="go-friends">Open friends</button>
+  </section>`;
+}
+
 /* How many badges, the latest ones, and the next one you are closest to. Only shown once there is a session or a badge. */
 function badgeTile(ctx) {
   const list = ctx.badges();
@@ -217,7 +232,7 @@ export function renderHome(ctx) {
     </header>
     ${nudge(ctx)}
     ${heroCard(ctx, d)}
-    <div class="tiles">${xpTile(ctx, d)}${badgeTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
+    <div class="tiles">${xpTile(ctx, d)}${badgeTile(ctx)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
     ${recent(ctx, d)}`;
 }
 
@@ -259,6 +274,10 @@ export function homeActions(ctx) {
   return {
     "go-plan": () => ctx.go("plan"),
     "go-ice": () => ctx.go("ice"),
+    "go-friends": () => {
+      showFriends();
+      ctx.go("progress");
+    },
     "go-badges": () => {
       showBadges();
       ctx.go("progress");
