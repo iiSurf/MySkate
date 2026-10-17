@@ -37,7 +37,7 @@ export function openFriend(ctx, id) {
       ${stats(f)}
       ${stale ? html`<p class="note">These numbers are a week or more old. Ask ${f.name} to send a fresh card, then open the link to update them.</p>` : ""}
       <div class="sheet__foot"><button class="chip chip--discard" type="button" id="friend-remove">Remove</button><button class="btn btn--small" type="button" data-close="done">Done</button></div>`,
-    { label: f.name }
+    { label: f.name, sticky: true }
   );
   $("#friend-remove", sheet.dialog).addEventListener("click", async () => {
     const ok = await confirmSheet({ title: `Remove ${f.name}?`, message: "They disappear from your board. Opening their link again adds them back.", confirmLabel: "Remove" });
@@ -65,7 +65,7 @@ export async function openAddFriend(ctx, card) {
       ${stats(card)}
       ${message ? html`<p class="note">${message}</p>` : html`<p class="note">${plan.status === "updated" ? "This replaces their older numbers." : "Their numbers are from when the card was made. Nothing else about them comes with it."}</p>`}
       <div class="sheet__foot"><button class="btn btn--glass btn--small" type="button" data-close="cancel">${message ? "Close" : "Not now"}</button>${message ? html`<span></span>` : html`<button class="btn btn--small" type="button" id="friend-add">${plan.status === "updated" ? "Update" : "Add"} ${card.name}</button>`}</div>`,
-    { label: `Card from ${card.name}` }
+    { label: `Card from ${card.name}`, sticky: true }
   );
   const add = $("#friend-add", sheet.dialog);
   if (add) {

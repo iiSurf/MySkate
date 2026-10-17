@@ -350,3 +350,43 @@ First run (setup, then the 7-step tour), the six tabs, adding a rink and importi
 ### Not verified
 
 A real phone and Safari: the share sheet, the file picker for a calendar file, the on-ice clock with the screen locked, and opening an exported calendar file in a calendar app.
+
+---
+
+## 2026-10-17 (Saturday, night): friends, test readiness, practice calendar, locked backups
+
+### Planned
+
+The next items on the stretch list, before trying the new features on a phone: friend cards and a board, test readiness against the 2026-27 Singles chart, a practice calendar (an idea from the competing apps), and passphrase-protected backups. Fonts need the owner's yes to download, so they wait for an answer.
+
+### Friends
+
+- `js/friends.js`: a card is a name, level, XP in all, XP in the last 7 days, streak, badge count, and hours on ice, plus an id that stays with the skater. It travels as a link (`#/friend?c=<code>`); the part after the # is never sent to any website. Reading a card is strict (length, characters, version, every number clamped, control characters removed) and a name stays plain text because the screens escape everything.
+- Adding a friend: a new one is added; a newer card from the same friend updates them; an older card, your own card, or a full list (100) is refused with a reason. A friend's link works when the app is open, when it is opened fresh, and on a new device (it waits until setup is done). A card can also be pasted into Add a friend, with or without the words around it.
+- Progress has a Friends tab: the board (last 7 days or all time, ties share a place, your row live and theirs as of their card, with the card's age shown), your card with Share, Save as a picture, and Copy link, and Add a friend. Home has a tile with your place once you have a friend. Saved data: `friends` now also keeps badges and hours (older saved friends load with 0), and `profile.cardId`.
+- The tab strip on Progress now scrolls sideways on a small phone instead of squeezing.
+
+### Test readiness
+
+- `data/catalog/freeskate-tests.json`: the free skate part of the 12 tests as short checklists (89 items), written from the 2026-27 Singles Test Requirements chart in our own words, with the maximum time and which adult test shares each standard one. A test checks that its ids match the 12 skating skills tests.
+- `js/testprep.js`: skating skills readiness (a skill is earned at 4 skates or more by its latest rating, with the last five ratings), the free skate checklist (ticked by the skater, since MySkate cannot see a jump), the countdown (D-12, Tomorrow, Today, Passed), and which skills to work on first.
+- The Tests tab: choose a test and a date, two rings, the skating skills (tap one for its history), a "Plan the ones not earned" button, and the checklist. Home has a Your test tile. Saved data: `profile.test` and `testChecks`.
+- Limits to remember: the skating skills lists come from an undated checklist, and the free skate summary is ours. The page tells skaters to check the current rulebook and ask a coach.
+
+### Practice calendar
+
+- `js/calendar.js` and a card on the Progress overview: gold days for days skated, a blue dot for picked Ice sessions still to come, a ring on today, a glow behind weeks that count toward a streak, and a sheet for each day.
+
+### Locked backups
+
+- `js/crypto.js`: AES-256-GCM with a PBKDF2 (SHA-256, 600,000 rounds, random salt) key, in the browser's Web Crypto. The file records how it was locked and is checked before any work (so a hostile file with an absurd round count is refused at once). Me has Save a locked backup; restoring (from Me or the first-run sheet) notices a locked file and asks for the passphrase (a wrong one can be retried). A forgotten passphrase cannot be recovered and the sheet says so.
+- The sheets for locking and unlocking, friends, badges, calendar days, and cost keep their buttons in view while they scroll on a small phone.
+
+### Verified
+
+- 146 tests pass in four time zones. New: friends (the code round trip, 20 kinds of bad input, links in addresses and in pasted messages, adding and updating and refusing, the board with ties, saving and old data); test readiness (the checklist data matches the tests and is well formed, earned skills by latest rating, last five ratings, the order to work on, ticks, the countdown, saving and merging); the calendar (weekday layout including leap years and a Sunday start, skated days, planned ice, streak weeks across months); locked backups (round trip, nothing readable in the file, wrong passphrase and tampering, 17 kinds of bad file refused quickly, accents, a 3 MB backup).
+- In the browser: friend links while the app is open and when it is opened fresh, paste and update flows, the friend sheet and board, Home friend tile, the card picture; choosing a test and a date, ticking, planning, the Home tile; the calendar with dots, glow, a day sheet, and month arrows; locking a backup (and the short and mismatched passphrase messages), then restoring it with a wrong passphrase, the right one, and cancelling. No console errors. Phone widths 390 and 320: no sideways scrolling, buttons in view.
+
+### Not verified
+
+A real phone and Safari: the share sheet for a card link and picture, and the keyboard and password manager behaviour on the passphrase fields. A real friend on another phone opening a link. Locked backups on a very old browser (it needs Web Crypto, which every current browser has). Nothing is pushed.

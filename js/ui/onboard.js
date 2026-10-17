@@ -5,6 +5,7 @@ import { openSheet, $, $$ } from "./dom.js";
 import { parseBackup, replaceState } from "../store.js";
 import { SLOTS } from "../plan.js";
 import { medallion } from "./parts.js";
+import { readBackup } from "./unlock.js";
 
 /* Level choices for a select. kind is "skills" or "jumps". */
 export function levelOptions(catalog, kind, selected) {
@@ -163,8 +164,10 @@ export function runOnboarding(ctx) {
     $("#ob-file", root).addEventListener("change", async (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      const result = parseBackup(await file.text());
+      const text = await readBackup(await file.text());
       e.target.value = "";
+      if (text === null) return;
+      const result = parseBackup(text);
       const status = $("#ob-status", root);
       const restoreBtn = $("#ob-restore", root);
       if (!result.ok) {

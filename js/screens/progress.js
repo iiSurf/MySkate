@@ -295,7 +295,7 @@ function openDay(ctx, date) {
       })}
       ${planned.length ? html`<div class="card"><p class="eyebrow">Ice you picked</p>${planned.map((o) => html`<div class="row"><span class="grow"><strong>${fmtRange(o.start, o.end)}</strong><br><span class="dim">${kindName(o.kind)} at ${rinkName(o.rinkId)}</span></span></div>`)}</div>` : ""}
       <div class="sheet__foot"><span></span><button class="btn btn--small" type="button" data-close="done">Done</button></div>`,
-    { label: fmtDate(date, { weekday: "long", month: "long", day: "numeric" }) }
+    { label: fmtDate(date, { weekday: "long", month: "long", day: "numeric" }), sticky: true }
   );
   return sheet.closed;
 }
@@ -314,7 +314,7 @@ function openBadge(ctx, id) {
         : html`${bar({ pct: badgeRatio(b) * 100, label: `${b.name} progress` })}<p class="dim">${progressText(b)}</p>`}
     </div>
     <div class="sheet__foot">${b.earned ? html`<button class="btn btn--glass btn--small" type="button" id="badge-share">Share</button>` : html`<span></span>`}<button class="btn btn--small" type="button" data-close="done">Done</button></div>`,
-    { label: b.name }
+    { label: b.name, sticky: true }
   );
   const share = $("#badge-share", sheet.dialog);
   if (share) share.addEventListener("click", () => shareBadge(b, ctx.state.profile.name));
@@ -511,7 +511,7 @@ export function progressActions(ctx) {
           <label class="field"><span>Cost</span><input class="input input--num" id="cost-in" type="number" inputmode="decimal" min="0" max="999" step="0.5" value="${session.cost ?? ""}" placeholder="18"></label>
           <p class="status status--warn" role="alert" hidden></p>
           <div class="sheet__foot"><button class="btn btn--glass btn--small" type="button" data-close="cancel">Cancel</button><button class="btn btn--small" type="button" id="cost-save">Save</button></div>`,
-        { label: "Ice cost" }
+        { label: "Ice cost", sticky: true }
       );
       const input = $("#cost-in", sheet.dialog);
       input.focus();

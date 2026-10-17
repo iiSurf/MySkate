@@ -36,9 +36,9 @@ export function toast(message, ms = 3000) {
 }
 
 /* A modal sheet with Raw content. Anything with data-close="value" closes it with that value. */
-export function openSheet(content, { label = "", dismissible = true } = {}) {
+export function openSheet(content, { label = "", dismissible = true, sticky = false } = {}) {
   const dialog = document.createElement("dialog");
-  dialog.className = "sheet";
+  dialog.className = sticky ? "sheet sheet--form" : "sheet";   // sticky: the buttons at the bottom stay in view while the sheet scrolls
   if (label) dialog.setAttribute("aria-label", label);
   dialog.innerHTML = `<div class="sheet__body">${content instanceof Raw ? content.text : content}</div>`;
   document.body.appendChild(dialog);

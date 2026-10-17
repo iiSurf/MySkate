@@ -11,6 +11,7 @@ import { levelUp as celebrateLevelUp, badgeUnlock, reducedMotion } from "./ui/ce
 import { shareBadge } from "./ui/share.js";
 import { evaluateBadges, newlyEarned } from "./badges.js";
 import { makeCard, parseFriendHash } from "./friends.js";
+import { encryptBackup } from "./crypto.js";
 import { openAddFriend } from "./ui/friends.js";
 import { runOnboarding } from "./ui/onboard.js";
 import { openTour } from "./ui/tour.js";
@@ -219,6 +220,17 @@ function buildContext(state, catalog, status) {
       ctx.state.backup.lastExportAt = now.toISOString();
       save();
       toast("Backup saved. Look in your downloads.");
+      renderRoute({ keepScroll: true });
+      ctx.checkBadges();
+    },
+    /* A backup locked with a passphrase. The lock takes a moment, so this is async; it throws if it could not lock. */
+    async exportBackupLocked(passphrase) {
+      const now = new Date();
+      const file = await encryptBackup(exportJSON(ctx.state, now), passphrase, { now });
+      download(`myskate-backup-${todayISO(now)}-locked.json`, file, "application/json");
+      ctx.state.backup.lastExportAt = now.toISOString();
+      save();
+      toast("Locked backup saved. Look in your downloads, and keep the passphrase safe.", 5000);
       renderRoute({ keepScroll: true });
       ctx.checkBadges();
     },

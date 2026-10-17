@@ -31,11 +31,11 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 1. Your ice: the background draws each skill's marks as you skate (done)
 2. Blade life tile: editable sharpening limit (20, 25, 30, 35, or custom), hours since sharpening from logged on-ice time, a reset button (done)
 3. Time-budget planner: split the booked slot across the chosen skills (done, shared evenly)
-4. Friend cards and a local friends board
-5. Connect devices by code, in both directions (small payload by QR; full history by backup file)
+4. Friend cards and a local friends board (done)
+5. Connect devices by code, in both directions (small payload by QR; full history by backup file) (not built: a backup file, and a friend's link, already move what matters, and a QR scanner would need a library and a camera)
 6. Cost per session and per month (done)
-7. Test readiness against the 2026-27 Singles chart
-8. Passphrase-protected backups (Web Crypto, AES-GCM)
+7. Test readiness against the 2026-27 Singles chart (done)
+8. Passphrase-protected backups (Web Crypto, AES-GCM) (done)
 9. Self-host the fonts (needs the owner's yes to download them)
 
 ### Later
@@ -104,9 +104,27 @@ Level n to n+1 costs `100 + 50 * (n - 1)` XP. XP is effort relative to your own 
 
 ### Friend cards
 
-- A friend card is a small snapshot: display name, XP, level, weekly XP, streak, and (later) avatar settings.
-- Share it as a link (`#friend=...`) or a file. Opening a friend's link asks "Add friend?". The board sorts locally and updates when a friend re-shares.
-- It runs on trust and is not live. A real-time leaderboard needs a backend (see Later).
+- A card is a small snapshot: name, level, XP in all, XP in the last 7 days, weekly streak, badge count, hours on ice. Nothing else (no sessions, notes, or ratings). It travels as a link: `#/friend?c=<code>` after the app's address, where the code is the card in base64. The part after the # is never sent to any website. A card holds an id that stays with the skater, so a newer card from the same friend updates them and an older one is ignored.
+- Share my card (the phone's share sheet, or the link copied), Copy link, and Save as a picture (a 1080 by 1350 picture drawn on the device). Opening a friend's link (or pasting it into Add a friend) shows who it is and offers Add or Update. Opening it on a new device waits until setup is done.
+- Progress has a Friends tab: the board ranks you and your friends by XP for the last 7 days or all time (ties share a place), with your own row live and each friend's as of their card (the board says so, and a friend sheet says how old the card is). Home has a tile with your place among friends once you have a friend.
+- There is no live sync: that would need a server and accounts. A fresh card is one tap away for the friend.
+
+### Test readiness
+
+- The Tests tab on Progress: pick the test you are working toward (the 12 U.S. Figure Skating tests: Pre-preliminary to Gold, and the four adult tests) and an optional test date. It shows days to go (D-12, Tomorrow, Today, or Passed) and two rings.
+- Skating skills: the test's skills from the catalog, with the latest and best rating, the last five ratings as small squares, and a ring of how many are earned (4 skates or more, by the latest rating, since a test asks for it now). "Plan the ones not earned" adds them to the plan, the ones you have tried first.
+- Free skate: a checklist of the jump, spin, and sequence requirements for that test, from the 2026-27 Singles Test Requirements chart (our own short summary, with the maximum time and which adult test shares it), that you tick yourself, because MySkate cannot see a jump. The page says to check the current rulebook and ask a coach.
+- Home has a Your test tile (countdown and both counts). Saved data: `profile.test` ({ id, date }) and `testChecks` (item id to true), both optional.
+- The checklists live in `data/catalog/freeskate-tests.json`. Its ids match the skating skills tests, and a test checks they stay in step.
+
+### Practice calendar
+
+- On the Progress overview: a month (weeks start Monday) with gold days for the days you skated, a blue dot on the days that have picked Ice sessions still to come, a ring on today, and a soft glow behind weeks that count toward a streak. Tap a day for its sessions (time on ice, skills, XP, notes) and its picked ice. The arrows move by month.
+
+### Locked backups
+
+- Me has Save a locked backup (passphrase). The backup text is locked with AES-256-GCM, using a key made from the passphrase with PBKDF2 (SHA-256, 600,000 rounds, a random salt), all with the browser's Web Crypto on the device. The file says how it was locked; a damaged or hostile file with an absurd round count is refused before any work. At least 8 characters, typed twice, and the sheet says plainly that a forgotten passphrase cannot be recovered.
+- Restoring (from Me or from the first-run sheet) notices a locked file and asks for the passphrase (a wrong one can be retried). Accents and other languages work in a passphrase.
 
 ### Phone and desktop do not share data
 

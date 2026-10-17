@@ -233,6 +233,9 @@ export function parseBackup(text) {
   } catch (err) {
     return { ok: false, error: "That file is not readable. Pick a MySkate backup (.json)." };
   }
+  if (data && data.app === "MySkate" && data.encrypted === true) {
+    return { ok: false, error: "That backup is locked with a passphrase. Pick it again and MySkate will ask for the passphrase." };
+  }
   if (!data || typeof data !== "object" || typeof data.schemaVersion !== "number" || !Array.isArray(data.sessions)) {
     return { ok: false, error: "That file does not look like a MySkate backup." };
   }

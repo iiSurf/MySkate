@@ -62,7 +62,7 @@ export const TOUR_STEPS = [
       { b: "Save the session.", t: "You see what you earned first, and can add what the ice cost. Keep skating if you ended too soon, or discard it." },
       { b: "XP rewards effort.", t: `${XP.session} XP for each session, ${XP.perMinute} per minute on ice, ${XP.perSkill} for each skill you practice, and ${XP.personalBest} for a new personal best.` },
       { b: "Keep a weekly streak.", t: `Skate ${STREAK_MIN} or more times in a week, week after week, for bonus XP.` },
-      { b: "See it all on Progress.", t: "Hours by week, what the ice costs, every skill and session, and a trophy case on the Badges tab that you can share from." },
+      { b: "See it all on Progress.", t: "Hours by week, what the ice costs, a practice calendar, every skill and session, your progress toward a test on the Tests tab, a board of you and your friends on the Friends tab, and a trophy case on the Badges tab you can share from." },
     ],
   },
   {
@@ -82,7 +82,7 @@ export const TOUR_STEPS = [
     lead: "There are no accounts. Everything is saved in this browser, on this device.",
     demo: "data",
     points: [
-      { b: "Save a backup now and then.", t: "Open Me and tap Save a backup. The file keeps your progress safe and moves it to a new phone." },
+      { b: "Save a backup now and then.", t: "Open Me and tap Save a backup. The file keeps your progress safe and moves it to a new phone. You can lock it with a passphrase." },
       { b: "Restore it", t: "from the same screen. You choose whether to merge it with what is here or replace it." },
       { b: "Need this tour again?", t: "Open Me and tap Show me how MySkate works." },
     ],

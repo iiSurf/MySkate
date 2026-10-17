@@ -6,6 +6,7 @@ import { levelOptions } from "../ui/onboard.js";
 import { parseBackup, mergeStates, replaceState, defaultState, requestPersistence } from "../store.js";
 import { SLOTS } from "../plan.js";
 import { sanitizeCost } from "../cost.js";
+import { readBackup, openLockSheet } from "../ui/unlock.js";
 
 const LIGHT_NAMES = { sunrise: "Sunrise", golden: "Golden hour", midday: "Midday", dusk: "Dusk" };
 
@@ -55,6 +56,8 @@ export function renderMe(ctx) {
           <button class="btn" type="button" data-action="export">Save a backup</button>
           <button class="btn btn--glass" type="button" data-action="export-csv">Spreadsheet (CSV)</button>
         </div>
+        <div class="cluster"><button class="btn btn--glass btn--small" type="button" data-action="export-locked">Save a locked backup (passphrase)</button></div>
+        <p class="note">A locked backup needs your passphrase to open, so it is safer to keep in email or cloud storage. Nobody can open it if you forget the passphrase.</p>
         <label class="choice" for="restore-file"><strong>Restore from a backup file</strong><span class="note">Pick a MySkate backup (JSON). You choose whether to merge it or replace what is here. Nothing is uploaded.</span></label>
         <input id="restore-file" type="file" accept=".json,application/json" data-input="restore-file" hidden>
         <div class="cluster"><button class="chip" type="button" data-action="persist">Ask the browser to keep my data</button><span class="dim" id="persist-status"></span></div>
@@ -84,7 +87,9 @@ export function mountMe() {
 }
 
 async function restoreFile(ctx, file) {
-  const result = parseBackup(await file.text());
+  const text = await readBackup(await file.text());
+  if (text === null) return;
+  const result = parseBackup(text);
   if (!result.ok) {
     toast(result.error, 5000);
     return;
@@ -147,6 +152,7 @@ export function meActions(ctx) {
     },
     tour: () => ctx.showTour(),
     export: () => ctx.exportBackup(),
+    "export-locked": () => openLockSheet((passphrase) => ctx.exportBackupLocked(passphrase)),
     "export-csv": () => ctx.exportCSV(),
     persist: async () => {
       const ok = await requestPersistence();
