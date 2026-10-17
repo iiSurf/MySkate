@@ -213,3 +213,11 @@ test("goal badges are earned on the day each goal was reached, even with no sess
   assert.deepEqual([one(three, "goal-1").earned, one(three, "goal-5").earned, progressText(one(three, "goal-5"))], [true, false, "3 of 5"]);
   assert.equal(one(got([session("2026-10-01")]), "goal-1").earned, false);
 });
+
+test("homework badges are earned on the day the homework was finished", () => {
+  const list = got([session("2026-10-01")], { homeworkDates: ["2026-10-12", "2026-10-03", "2026-10-20", "2026-10-21", "2026-10-22"] });
+  assert.deepEqual([one(list, "hw-1").earned, one(list, "hw-1").earnedOn], [true, "2026-10-03"]);
+  assert.deepEqual([one(list, "hw-5").earned, one(list, "hw-5").earnedOn], [true, "2026-10-22"]);
+  const two = got([], { homeworkDates: ["2026-10-03", "2026-10-04"] });
+  assert.deepEqual([one(two, "hw-1").earned, one(two, "hw-5").earned, progressText(one(two, "hw-5"))], [true, false, "2 of 5"]);
+});

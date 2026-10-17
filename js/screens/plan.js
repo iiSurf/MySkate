@@ -5,10 +5,13 @@ import { icon, catDot, miniSkates, bar } from "../ui/parts.js";
 import { $, $$, openSheet, confirmSheet, toast } from "../ui/dom.js";
 import { pickSkill } from "../ui/skillpick.js";
 import { sortedGoals, addGoal, TARGETS } from "../goals.js";
+import { addHomework, toggleHomework, sortedHomework, clearDone, MAX_TEXT } from "../homework.js";
 import { openPicker } from "../ui/picker.js";
 import { SLOTS, splitMinutes, move } from "../plan.js";
 import { suggestNext, isSkating } from "../stats.js";
 import { levelSkillIds, levelLabel } from "../catalog.js";
+
+const ui = { hwDone: false };
 
 function pickRow(ctx, d, id, extra = "") {
   const sk = ctx.catalog.skills.get(id);
@@ -35,7 +38,7 @@ function goalRow(ctx, g) {
   const skates = (n) => `${n} ${n === 1 ? "skate" : "skates"}`;
   const chip = g.met ? html`<span class="chip chip--gold">Reached</span>` : g.countdown ? html`<span class="chip ${g.overdue ? "chip--coral" : "chip--gold"}">${g.countdown.label}</span>` : "";
   return html`<div class="row goal-row">
-    <span class="tick" aria-hidden="true" data-on="${g.met}">${icon("check")}</span>
+    ${g.met ? html`<span class="tick" aria-hidden="true" data-on="true">${icon("check")}</span>` : catDot(sk.cat)}
     <span class="grow">${sk.name}<br><span class="dim">${g.met ? `Reached ${fmtDate(g.metOn, { month: "short", day: "numeric" })}, goal was ${skates(g.target)}` : g.tried ? `Now ${skates(g.latest)}, goal ${skates(g.target)}` : `Not tried yet, goal ${skates(g.target)}`}${g.date && !g.met ? ` by ${fmtDate(g.date, { month: "short", day: "numeric" })}` : ""}</span>${g.met ? "" : bar({ pct: g.pct, thin: true, label: `${sk.name}: ${g.pct} percent of the way to the goal` })}</span>
     ${chip}
     ${g.met ? "" : html`<button class="chip" type="button" data-action="goal-plan" data-id="${g.id}">${ctx.state.plan.skillIds.includes(g.skillId) ? "In plan" : "Plan it"}</button>`}
@@ -49,6 +52,77 @@ function goalsCard(ctx, d) {
     <div class="split"><p class="eyebrow" id="goals-title">Goals</p><button class="chip" type="button" data-action="add-goal">Add a goal</button></div>
     ${rows.length ? html`<div>${rows.map((g) => goalRow(ctx, g))}</div>` : html`<p class="dim">Pick a skill, the rating you want, and a date if you have one. MySkate shows how close you are, and cheers when you get there.</p>`}
   </section>`;
+}
+
+/* Coach homework: what your coach asked for, to tick off. */
+function homeworkRow(ctx, h) {
+  const sk = h.skillId && ctx.catalog.skills.get(h.skillId);
+  const chip = h.done ? "" : h.countdown ? html`<span class="chip ${h.overdue ? "chip--coral" : "chip--gold"}">${h.countdown.label}</span>` : "";
+  return html`<div class="row hw-row ${h.done ? "is-done" : ""}">
+    <button class="tick" type="button" role="checkbox" aria-checked="${h.done}" aria-label="${h.done ? "Done" : "Mark done"}: ${h.text}" data-action="hw-toggle" data-id="${h.id}">${icon("check")}</button>
+    <span class="grow">${h.text}${sk ? html`<br><span class="dim">${sk.name}</span>` : ""}${h.due && !h.done ? html`<br><span class="dim">Due ${fmtDate(h.due, { weekday: "short", month: "short", day: "numeric" })}</span>` : ""}</span>
+    ${chip}
+    ${sk && !h.done ? html`<button class="chip" type="button" data-action="hw-plan" data-id="${h.id}">${ctx.state.plan.skillIds.includes(h.skillId) ? "In plan" : "Plan it"}</button>` : ""}
+    <button class="icon-btn icon-btn--sm" type="button" data-action="hw-remove" data-id="${h.id}" aria-label="Remove: ${h.text}">${icon("x")}</button>
+  </div>`;
+}
+
+function homeworkCard(ctx, d) {
+  const rows = sortedHomework(ctx.state.homework, d.today);
+  const open = rows.filter((h) => !h.done);
+  const done = rows.filter((h) => h.done);
+  return html`<section class="card" aria-labelledby="hw-title">
+    <div class="split"><p class="eyebrow" id="hw-title">Coach homework</p><button class="chip" type="button" data-action="add-hw">Add homework</button></div>
+    ${open.length ? html`<div>${open.map((h) => homeworkRow(ctx, h))}</div>` : html`<p class="dim">${done.length ? "All done. Nice work." : "Write down what your coach asks you to work on, with a day if there is one. Tick it off when you have done it."}</p>`}
+    ${done.length
+      ? html`<div class="cluster"><button class="chip" type="button" data-action="hw-done-toggle" aria-expanded="${ui.hwDone}">Done · ${done.length}</button>${ui.hwDone ? html`<button class="chip chip--discard" type="button" data-action="hw-clear">Clear done</button>` : ""}</div>${ui.hwDone ? html`<div>${done.map((h) => homeworkRow(ctx, h))}</div>` : ""}`
+      : ""}
+  </section>`;
+}
+
+async function openHomeworkSheet(ctx) {
+  let skillId = "";
+  const sheet = openSheet(
+    html`<h2 class="sheet__title sheet__title--small">Add homework</h2>
+      <label class="field"><span>What did your coach ask for?</span><textarea class="input note-input" id="hw-text" rows="3" maxlength="${MAX_TEXT}" placeholder="Keep your eyes up on the landing"></textarea></label>
+      <div class="field"><span id="hw-skill-l">A skill it is about (optional)</span><div class="cluster"><button class="btn btn--glass btn--small" type="button" id="hw-skill" aria-labelledby="hw-skill-l hw-skill">Choose a skill</button><button class="chip" type="button" id="hw-skill-clear" hidden>Clear</button></div></div>
+      <label class="field"><span>Due (optional)</span><input class="input" id="hw-due" type="date" min="${todayISO()}"></label>
+      <p class="status status--warn" role="alert" hidden></p>
+      <div class="sheet__foot"><button class="btn btn--glass btn--small" type="button" data-close="cancel">Cancel</button><button class="btn btn--small" type="button" id="hw-save">Save</button></div>`,
+    { label: "Add homework", sticky: true }
+  );
+  const root = sheet.dialog;
+  const warn = $(".status--warn", root);
+  const fail = (m) => {
+    warn.textContent = m;
+    warn.hidden = false;
+  };
+  $("#hw-text", root).focus();
+  $("#hw-skill", root).addEventListener("click", async () => {
+    const id = await pickSkill(ctx, { title: "A skill for this homework" });
+    if (!id) return;
+    skillId = id;
+    $("#hw-skill", root).textContent = ctx.catalog.skills.get(id).name;
+    $("#hw-skill-clear", root).hidden = false;
+  });
+  $("#hw-skill-clear", root).addEventListener("click", (e) => {
+    skillId = "";
+    $("#hw-skill", root).textContent = "Choose a skill";
+    e.currentTarget.hidden = true;
+  });
+  $("#hw-save", root).addEventListener("click", () => {
+    const due = $("#hw-due", root).value;
+    if (due && due < todayISO()) return fail("That day has passed. Pick today or later, or leave it empty.");
+    const result = addHomework(ctx.state.homework, { text: $("#hw-text", root).value, skillId, due }, uid(), todayISO());
+    if (result.status === "invalid") return fail("Write what your coach asked for.");
+    if (result.status === "full") return fail("MySkate holds up to 60 pieces of homework. Clear some done ones first.");
+    ctx.state.homework = result.list;
+    ctx.save();
+    sheet.close("saved");
+    ctx.update();
+    toast("Homework added.");
+  });
+  return sheet.closed;
 }
 
 /* The sheet for setting a goal. */
@@ -158,6 +232,7 @@ export function renderPlan(ctx) {
           <button class="chip slot-link" type="button" data-action="go-ice">Find ice time</button>
         </section>
         ${goalsCard(ctx, d)}
+        ${homeworkCard(ctx, d)}
         ${suggested}
         ${lists}
         <button class="btn btn--glass" type="button" data-action="browse">Browse every skill</button>
@@ -204,6 +279,33 @@ export function planActions(ctx) {
     },
     clear: () => {
       ctx.state.plan.skillIds = [];
+      ctx.save();
+      ctx.update();
+    },
+    "add-hw": () => openHomeworkSheet(ctx),
+    "hw-toggle": (el) => {
+      ctx.state.homework = toggleHomework(ctx.state.homework, el.dataset.id, todayISO());
+      ctx.save();
+      ctx.update();
+      ctx.checkBadges();
+    },
+    "hw-plan": (el) => {
+      const h = ctx.state.homework.find((x) => x.id === el.dataset.id);
+      if (h && h.skillId && !ctx.state.plan.skillIds.includes(h.skillId)) ctx.togglePlan(h.skillId);
+      ctx.update();
+    },
+    "hw-remove": (el) => {
+      ctx.state.homework = ctx.state.homework.filter((x) => x.id !== el.dataset.id);
+      ctx.save();
+      ctx.update();
+    },
+    "hw-done-toggle": () => {
+      ui.hwDone = !ui.hwDone;
+      ctx.update();
+    },
+    "hw-clear": () => {
+      ctx.state.homework = clearDone(ctx.state.homework);
+      ui.hwDone = false;
       ctx.save();
       ctx.update();
     },

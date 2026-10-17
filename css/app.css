@@ -1433,3 +1433,33 @@ button.cal-day {
   background: var(--ice-bright);
   box-shadow: 0 0 0 1.5px rgba(6, 22, 65, 0.6);
 }
+
+/* Goals and coach homework on the Plan screen */
+
+.goal-row,
+.hw-row {
+  flex-wrap: wrap;
+}
+
+.goal-row .grow,
+.hw-row .grow {
+  flex: 1 1 160px;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.hw-row .tick {
+  position: relative;
+}
+
+.hw-row .tick::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+}
+
+.hw-row.is-done .grow {
+  color: var(--text-faint);
+  text-decoration: line-through;
+  text-decoration-color: rgba(255, 255, 255, 0.35);
+}

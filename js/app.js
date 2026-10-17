@@ -11,6 +11,7 @@ import { levelUp as celebrateLevelUp, badgeUnlock, reducedMotion } from "./ui/ce
 import { shareBadge } from "./ui/share.js";
 import { evaluateBadges, newlyEarned } from "./badges.js";
 import { goalStatus } from "./goals.js";
+import { homeworkDoneDates } from "./homework.js";
 import { makeCard, parseFriendHash } from "./friends.js";
 import { encryptBackup } from "./crypto.js";
 import { openAddFriend } from "./ui/friends.js";
@@ -256,7 +257,7 @@ function buildContext(state, catalog, status) {
       const stats = skillStats(ctx.state.sessions);
       const today = todayISO();
       const goalDates = ctx.state.goals.map((g) => goalStatus(g, stats, today)).filter((g) => g.met).map((g) => g.metOn);
-      return evaluateBadges({ sessions: ctx.state.sessions, sharpenings: ctx.state.sharpenings, backupAt: ctx.state.backup.lastExportAt, catalog: ctx.catalog, goalDates });
+      return evaluateBadges({ sessions: ctx.state.sessions, sharpenings: ctx.state.sharpenings, backupAt: ctx.state.backup.lastExportAt, catalog: ctx.catalog, goalDates, homeworkDates: homeworkDoneDates(ctx.state.homework) });
     },
     /* Tell the skater about badges earned since the last look. The first time (and after a restore) it only notes what is
        already earned, so old progress does not set off a pile of celebrations. */

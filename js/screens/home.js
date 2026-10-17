@@ -16,6 +16,7 @@ import { elapsedMs } from "../timer.js";
 import { upcomingPicks, kindName, fmtRange } from "../ice.js";
 import { costSummary, fmtMoney } from "../cost.js";
 import { sortedGoals } from "../goals.js";
+import { sortedHomework } from "../homework.js";
 
 const ui = { bladeOpen: false };
 const LIMITS = [20, 25, 30, 35];
@@ -118,6 +119,17 @@ function bladeTile(ctx) {
       <p class="note">Most skaters sharpen between 20 and 35 hours. Use what your coach or sharpener says. MySkate adds your on-ice time after every session.${last ? ` Last sharpened ${fmtDate(last.date, { month: "short", day: "numeric" })} at ${fmtNum(last.hours)} hours.` : ""}</p>
     </div>
     <button class="btn btn--glass btn--small" type="button" data-action="blade-log">I just got them sharpened</button>
+  </section>`;
+}
+
+/* Coach homework still to do, soonest first. Only shown while there is some. */
+function homeworkTile(ctx, d) {
+  const open = sortedHomework(ctx.state.homework, d.today).filter((h) => !h.done);
+  if (!open.length) return "";
+  return html`<section class="card tile" aria-labelledby="hw-title">
+    <div class="tile__head"><p class="eyebrow" id="hw-title">Coach homework</p><span class="chip chip--on">${open.length} open</span></div>
+    <div>${open.slice(0, 3).map((h) => html`<div class="row"><span class="grow">${h.text}</span>${h.countdown ? html`<span class="chip ${h.overdue ? "chip--coral" : "chip--gold"}">${h.countdown.label}</span>` : ""}</div>`)}</div>
+    <button class="btn btn--glass btn--small" type="button" data-action="go-plan">Open homework</button>
   </section>`;
 }
 
@@ -264,7 +276,7 @@ export function renderHome(ctx) {
     </header>
     ${nudge(ctx)}
     ${heroCard(ctx, d)}
-    <div class="tiles">${xpTile(ctx, d)}${badgeTile(ctx)}${goalsTile(ctx, d)}${testTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
+    <div class="tiles">${xpTile(ctx, d)}${badgeTile(ctx)}${homeworkTile(ctx, d)}${goalsTile(ctx, d)}${testTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
     ${recent(ctx, d)}`;
 }
 
