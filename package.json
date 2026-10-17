@@ -1,0 +1,9 @@
+{
+  "name": "myskate",
+  "private": true,
+  "type": "module",
+  "description": "MySkate: a figure skating practice tracker. Plain HTML, CSS, and JavaScript; this file only lets Node run the logic tests.",
+  "scripts": {
+    "test": "node --test \"tests/*.test.js\""
+  }
+}

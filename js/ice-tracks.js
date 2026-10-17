@@ -190,13 +190,12 @@ function el(tag, attrs = {}) {
   return node;
 }
 
-/* Where a skill's track lands: a jittered grid, so marks spread across the whole sheet. */
-function place(skill, index, total) {
+/* Where a skill's track lands: a jittered grid cell chosen by the skill id alone, so a skill always appears in the same place. */
+function place(skill) {
   const r = rng(hash(skill.id + "#place"));
   const cols = 8;
   const rows = 5;
-  const slots = cols * rows;
-  const slot = (hash(skill.id) + index * 7) % slots;
+  const slot = hash(skill.id) % (cols * rows);
   const col = slot % cols;
   const row = Math.floor(slot / cols);
   return {
@@ -208,9 +207,9 @@ function place(skill, index, total) {
 }
 
 /* One skill's marks as an SVG group. state: "learning" (cyan), "earned" (gold), or "stale" (faint). */
-export function trackGroup(skill, index, total, state = "learning") {
+export function trackGroup(skill, state = "learning") {
   const shape = buildTrack(skill);
-  const at = place(skill, index, total);
+  const at = place(skill);
   const g = el("g", {
     class: "trk trk--" + state,
     transform: `translate(${f(at.x)} ${f(at.y)}) rotate(${f(at.rot)}) scale(${f(at.scale)})`,
@@ -234,7 +233,7 @@ export function drawIce(svg, skills) {
   svg.replaceChildren();
   const groups = new Map();
   skills.forEach((skill, i) => {
-    const g = trackGroup(skill, i, skills.length, skill.state || "learning");
+    const g = trackGroup(skill, skill.state || "learning");
     svg.append(g);
     groups.set(skill.id, g);
   });
@@ -242,8 +241,8 @@ export function drawIce(svg, skills) {
 }
 
 /* Carve one new track while you watch, with a glint at the blade. */
-export function carveTrack(svg, skill, index, total, state = "learning", reduceMotion = false) {
-  const g = trackGroup(skill, index, total, state);
+export function carveTrack(svg, skill, state = "learning", reduceMotion = false) {
+  const g = trackGroup(skill, state);
   svg.append(g);
   if (reduceMotion) return Promise.resolve(g);
 

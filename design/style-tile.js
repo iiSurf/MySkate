@@ -444,7 +444,7 @@ document.getElementById("ice-carve").addEventListener("click", async (event) => 
   btn.disabled = true;
   const skill = catalogSkills[n];
   iceNow.textContent = "Carving " + skill.name + ": " + typeText[trackTypeFor(skill)] + ".";
-  await carveTrack(iceSvg, skill, n, n + 1, "learning", reduceMotion.matches);
+  await carveTrack(iceSvg, skill, "learning", reduceMotion.matches);
   iceRange.value = String(n + 1);
   iceOut.textContent = String(n + 1);
   btn.disabled = false;
