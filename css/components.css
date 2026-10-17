@@ -1,4 +1,4 @@
-/* Shared components: liquid glass, bounce, and color with jobs.
+/* Shared components: type set on the ice, hairline rules, a few bright pieces, and bounce for rewards.
    One glow per screen: .card--glow or .card--ice is it. Blue is learning, gold is earned, coral is caution. */
 
 .ic {
@@ -38,56 +38,41 @@
   letter-spacing: -0.01em;
 }
 
-/* Liquid glass: a dark tint underneath (so text never sits on a bright patch), a soft highlight,
-   a bright top edge, and a blurred backdrop. */
-
-.glass,
-.card,
-.tabbar,
-.chip,
-.icon-btn,
-.btn--glass,
-.placeholder,
-.seg,
-.sheet {
-  background:
-    radial-gradient(130% 70% at 14% -14%, rgba(255, 255, 255, 0.3), transparent 56%),
-    linear-gradient(150deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04) 52%, rgba(255, 255, 255, 0.1)),
-    linear-gradient(var(--glass-tint), var(--glass-tint));
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-edge-soft);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 24px rgba(255, 255, 255, 0.05),
-    var(--glass-shadow);
-}
+/* Sections sit straight on the ice with a hairline above them. Only panels (sheets, toasts) are a dark surface. */
 
 .card {
-  border-radius: var(--r-lg);
-  padding: var(--sp-4);
+  padding: var(--sp-4) 0 0;
+  border-top: 1px solid var(--rule);
 }
 
-/* The one glow: warm gold light, as if the sunrise is behind this card. */
+/* The one glow: the rule above this section catches the low gold sun. */
 .card--glow {
-  border-color: rgba(255, 217, 138, 0.7);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 244, 205, 0.8),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-    0 0 0 1px rgba(255, 217, 138, 0.25),
-    0 0 46px rgba(255, 186, 96, 0.32),
-    var(--glass-shadow);
+  border-top-color: rgba(255, 217, 138, 0.8);
+  box-shadow: 0 -14px 28px -22px rgba(255, 200, 110, 0.9);
 }
 
 .card--ice {
-  border-color: rgba(166, 241, 255, 0.7);
-  box-shadow:
-    inset 0 1px 0 rgba(235, 252, 255, 0.8),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-    0 0 0 1px rgba(166, 241, 255, 0.25),
-    0 0 46px rgba(95, 216, 230, 0.3),
-    var(--glass-shadow);
+  border-top-color: rgba(166, 241, 255, 0.75);
+  box-shadow: 0 -14px 28px -22px rgba(120, 225, 255, 0.9);
+}
+
+/* A reminder that should not shout: a thin gold outline. */
+.card.nudge {
+  padding: var(--sp-4);
+  border: 1px solid rgba(255, 217, 138, 0.5);
+  border-radius: var(--r-md);
+  box-shadow: none;
+  background: rgba(4, 14, 36, 0.45);
+}
+
+.glass,
+.sheet,
+.toast {
+  background: var(--panel);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--rule-strong);
+  box-shadow: var(--glass-shadow);
 }
 
 .split {
@@ -97,13 +82,12 @@
   gap: var(--sp-3);
 }
 
-/* Buttons: tinted glass that squishes and springs back. */
+/* Buttons: a bright ice-white pill that squishes and springs back. Gold is for rewards, coral for caution, outline for the rest. */
 
 .btn {
-  --t1: rgba(255, 255, 255, 0.64);
-  --t2: rgba(166, 241, 255, 0.66);
-  --t3: rgba(70, 205, 228, 0.86);
-  --halo: rgba(60, 205, 230, 0.42);
+  --bg1: #ffffff;
+  --bg2: #c8eefa;
+  --halo: rgba(166, 241, 255, 0.34);
   --fg: var(--ink);
   position: relative;
   display: inline-flex;
@@ -112,24 +96,21 @@
   gap: 8px;
   min-height: 52px;
   padding: 0 28px;
-  border: 1px solid rgba(255, 255, 255, 0.62);
+  border: 0;
   border-radius: var(--r-pill);
-  background: linear-gradient(180deg, var(--t1), var(--t2) 46%, var(--t3));
+  background: linear-gradient(180deg, var(--bg1), var(--bg2));
   color: var(--fg);
   font: 600 1.05rem/1 var(--font-ui);
   letter-spacing: 0.01em;
   cursor: pointer;
-  box-shadow:
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.95),
-    inset 0 -7px 14px rgba(0, 110, 150, 0.25),
-    0 8px 22px var(--halo);
-  transition: transform 0.45s var(--spring), box-shadow 0.25s, filter 0.2s;
+  box-shadow: inset 0 1px 0 #fff, 0 8px 26px var(--halo);
+  transition: transform 0.45s var(--spring), box-shadow 0.25s, filter 0.2s, background 0.2s;
   -webkit-tap-highlight-color: transparent;
 }
 
 .btn:hover {
   transform: translateY(-1px) scale(1.025);
-  filter: brightness(1.06);
+  filter: brightness(1.05);
 }
 
 .btn:active {
@@ -143,28 +124,29 @@
 }
 
 .btn--gold {
-  --t1: rgba(255, 249, 218, 0.82);
-  --t2: rgba(255, 222, 140, 0.88);
-  --t3: rgba(246, 168, 58, 0.96);
-  --halo: rgba(255, 185, 90, 0.46);
+  --bg1: #fff1c4;
+  --bg2: #f5b64a;
+  --halo: rgba(255, 185, 90, 0.42);
   --fg: var(--ink-gold);
 }
 
 .btn--coral {
-  --t1: rgba(255, 228, 222, 0.78);
-  --t2: rgba(255, 150, 135, 0.88);
-  --t3: rgba(224, 80, 66, 0.96);
-  --halo: rgba(255, 110, 95, 0.4);
+  --bg1: #ff9d90;
+  --bg2: #e0503f;
+  --halo: rgba(255, 110, 95, 0.36);
   --fg: #fff;
 }
 
 .btn--glass {
-  border-color: var(--glass-edge);
+  border: 1.5px solid var(--rule-strong);
+  background: none;
   color: var(--text);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-    var(--glass-shadow);
+  box-shadow: none;
+}
+
+.btn--glass:hover {
+  background: rgba(255, 255, 255, 0.08);
+  filter: none;
 }
 
 .btn--small {
@@ -192,10 +174,16 @@
   width: 46px;
   height: 46px;
   padding: 0;
+  border: 1.5px solid var(--rule-strong);
   border-radius: 50%;
+  background: none;
   color: var(--ice-white);
   cursor: pointer;
-  transition: transform 0.4s var(--spring);
+  transition: transform 0.4s var(--spring), background 0.2s;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .icon-btn:active {
@@ -212,49 +200,56 @@
   height: 40px;
 }
 
-/* Chips */
+/* Chips: outlined pills. A pressed chip fills with ice-white; a status chip is a quiet cyan outline. */
 
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 6px 15px;
+  border: 1.5px solid var(--rule-strong);
   border-radius: var(--r-pill);
+  background: none;
   color: var(--text-dim);
   font: 500 0.92rem/1.2 var(--font-ui);
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 4px 12px rgba(0, 8, 34, 0.25);
-  transition: transform 0.4s var(--spring), background 0.2s;
+  transition: transform 0.4s var(--spring), background 0.2s, color 0.2s;
 }
 
 .chip:active {
   transform: scale(0.92);
 }
 
-.chip[aria-pressed="true"],
-.chip--on {
-  border-color: rgba(255, 255, 255, 0.7);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(95, 216, 230, 0.64));
+.chip[aria-pressed="true"] {
+  border-color: var(--ice-white);
+  background: var(--ice-white);
   color: var(--ink);
   font-weight: 600;
 }
 
+.chip--on,
 .chip--gold,
 .chip--coral {
   cursor: default;
   font-weight: 600;
 }
 
+.chip--on {
+  border-color: rgba(166, 241, 255, 0.6);
+  background: rgba(95, 216, 230, 0.12);
+  color: var(--ice-bright);
+}
+
 .chip--gold {
   border-color: rgba(255, 217, 138, 0.7);
-  background: linear-gradient(180deg, rgba(255, 244, 205, 0.5), rgba(255, 185, 90, 0.5));
-  color: #fff6d8;
+  background: rgba(255, 200, 110, 0.12);
+  color: #ffe3a0;
 }
 
 .chip--coral {
-  border-color: rgba(255, 170, 160, 0.8);
-  background: linear-gradient(180deg, rgba(255, 220, 214, 0.5), rgba(255, 105, 90, 0.55));
-  color: #fff;
+  border-color: rgba(255, 150, 135, 0.8);
+  background: rgba(255, 110, 95, 0.14);
+  color: #ffb4a8;
 }
 
 /* Forms */
@@ -271,11 +266,10 @@
 .input {
   min-height: 48px;
   padding: 0 14px;
-  border: 1px solid var(--glass-edge);
+  border: 1px solid var(--rule-strong);
   border-radius: var(--r-md);
-  background: rgba(3, 14, 48, 0.55);
+  background: rgba(3, 14, 40, 0.6);
   color: var(--text);
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .input::placeholder {
@@ -298,41 +292,42 @@ select.input {
   gap: 10px;
 }
 
+/* Tabs inside a screen: plain words with a gold line under the one you are on. */
+
 .seg {
   display: inline-flex;
   gap: 2px;
-  padding: 4px;
-  border-radius: var(--r-pill);
+  padding: 0;
+  border-bottom: 1px solid var(--rule);
 }
 
 .seg button {
-  padding: 8px 16px;
+  margin-bottom: -1px;
+  padding: 10px 14px;
   border: 0;
-  border-radius: var(--r-pill);
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
   background: none;
   color: var(--text-dim);
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.3s, color 0.3s;
+  transition: color 0.3s, border-color 0.3s;
 }
 
 .seg button[aria-pressed="true"] {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(166, 241, 255, 0.28));
+  border-bottom-color: var(--sun);
   color: #fff;
   font-weight: 600;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
-/* Bars: a glass track, and a fill whose color follows the job. The fill warms from ice to gold as it nears done.
-   Set --v (a percentage) and --vn (the same number, unitless). */
+/* Bars: a hairline track, a fill whose color follows the job, and a bright bead at the end, like a blade catching the light.
+   The fill warms from ice to gold as it nears done. Set --v (a percentage) and --vn (the same number, unitless). */
 
 .bar {
   position: relative;
-  height: 16px;
+  height: 6px;
   border-radius: var(--r-pill);
   background: var(--track);
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.2);
-  overflow: hidden;
 }
 
 .bar > i {
@@ -343,57 +338,46 @@ select.input {
   background-image: var(--bar-gradient, linear-gradient(90deg, var(--ice), var(--ice-bright) 52%, var(--sun)));
   background-size: calc(10000% / var(--vn, 100)) 100%;
   background-repeat: no-repeat;
-  box-shadow: 0 0 16px var(--bar-glow, rgba(166, 241, 255, 0.5)), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 12px var(--bar-glow, rgba(166, 241, 255, 0.5));
   transition: width 0.9s var(--spring-soft);
 }
 
 .bar > i::after {
   content: "";
   position: absolute;
-  left: 10px;
-  right: 10px;
-  top: 3px;
-  height: 3px;
-  border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, 0.55);
+  right: -5px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 10px 2px var(--bar-glow, rgba(166, 241, 255, 0.7));
 }
 
-.bar > i::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(100deg, transparent 32%, rgba(255, 255, 255, 0.6) 50%, transparent 68%) 200% 0 / 220% 100%;
-  animation: sheen 3.6s ease-in-out infinite;
-}
-
-@keyframes sheen {
-  to {
-    background-position: -120% 0;
-  }
+.bar > i[style*="--v:0%"]::after {
+  display: none;
 }
 
 .bar--xp {
-  --bar-gradient: linear-gradient(90deg, #ffeab0, #ffc35a 60%, #f5a742);
-  --bar-glow: rgba(255, 190, 100, 0.6);
+  --bar-gradient: linear-gradient(90deg, rgba(255, 234, 176, 0.35), #ffe3a0 60%, #ffc35a);
+  --bar-glow: rgba(255, 200, 110, 0.8);
 }
 
 .bar--blade {
   --bar-gradient: linear-gradient(90deg, var(--ice), var(--sun) 62%, var(--coral));
-  --bar-glow: rgba(255, 190, 100, 0.35);
+  --bar-glow: rgba(255, 200, 110, 0.55);
 }
 
 .bar--thin {
-  height: 10px;
+  height: 3px;
 }
 
-.bar--thin > i {
-  box-shadow: 0 0 10px var(--bar-glow, rgba(166, 241, 255, 0.4)), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-}
-
-.bar--thin > i::after,
-.bar--thin > i::before {
-  display: none;
+.bar--thin > i::after {
+  right: -4px;
+  width: 9px;
+  height: 9px;
+  margin-top: -4.5px;
 }
 
 /* Level medallion */
@@ -556,27 +540,12 @@ select.input {
   opacity: 0.42;
 }
 
-/* Big tiles: each has a job, a picture, and a bit of etched ice in the corner. */
+/* Sections with a job. A tile is just a section that holds a number, a picture, and a button. */
 
 .tile {
   position: relative;
   display: grid;
   gap: var(--sp-3);
-  overflow: hidden;
-  isolation: isolate;
-}
-
-.tile::before {
-  content: "";
-  position: absolute;
-  right: -22px;
-  bottom: -16px;
-  width: 200px;
-  height: 136px;
-  background: url("../assets/tile-trace.svg") center / contain no-repeat;
-  opacity: 0.28;
-  z-index: -1;
-  pointer-events: none;
 }
 
 .tile__head {
@@ -639,9 +608,9 @@ select.input {
   display: grid;
   gap: var(--sp-3);
   padding: var(--sp-4);
-  border: 1px solid var(--glass-edge-soft);
+  border: 1px solid var(--rule);
   border-radius: var(--r-md);
-  background: rgba(3, 14, 48, 0.55);
+  background: rgba(3, 14, 40, 0.6);
 }
 
 .edit[hidden] {
@@ -681,9 +650,8 @@ select.input {
   width: 68px;
   height: 72px;
   flex: none;
-  border: 1px solid var(--glass-edge);
+  border: 1.5px solid var(--rule-strong);
   border-radius: var(--r-md);
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.06));
   text-align: center;
   line-height: 1;
 }
@@ -788,67 +756,71 @@ select.input {
   box-shadow: 0 0 8px rgba(166, 241, 255, 0.5);
 }
 
-/* Floating tab bar with a lens that slides under the current tab */
+/* Tabs: words only, set on the ice. The one you are on is gold with a small glowing dot above it. */
 
 .tabbar {
   position: relative;
   display: flex;
-  gap: 2px;
-  padding: 6px;
-  border-radius: var(--r-pill);
-}
-
-.tabbar .lens {
-  position: absolute;
-  top: 6px;
-  bottom: 6px;
-  left: 0;
-  width: 0;
-  border-radius: var(--r-pill);
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(166, 241, 255, 0.2));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 4px 14px rgba(95, 216, 230, 0.3);
-  transition: left 0.55s var(--spring), width 0.55s var(--spring);
-  pointer-events: none;
+  gap: 0;
+  padding: 0;
 }
 
 .tab {
   position: relative;
   z-index: 1;
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  padding: 8px 4px;
+  display: grid;
+  place-items: center;
+  min-height: 52px;
+  padding: 10px 2px 6px;
   border: 0;
   background: none;
-  color: var(--text-dim);
-  font: 500 0.8rem/1 var(--font-ui);
+  color: rgba(234, 246, 255, 0.7);
+  font: 600 0.74rem/1 var(--font-ui);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   cursor: pointer;
   transition: color 0.2s;
 }
 
 .tab .ic {
-  width: 24px;
-  height: 24px;
+  display: none;
+}
+
+.tab::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 50%;
+  background: #ffd98a;
+  box-shadow: 0 0 10px #ffd98a;
+  opacity: 0;
+  transform: scale(0.3);
+  transition: opacity 0.3s, transform 0.5s var(--spring);
 }
 
 .tab[aria-current="page"] {
-  color: #fff;
-  font-weight: 600;
+  color: #ffe3a0;
+}
+
+.tab[aria-current="page"]::before {
+  opacity: 1;
+  transform: none;
 }
 
 /* Placeholders and people */
 
 .placeholder {
   padding: var(--sp-5);
-  border: 1.5px dashed var(--glass-edge);
+  border: 1.5px dashed var(--rule-strong);
   border-radius: var(--r-md);
   color: var(--text-dim);
   font: 500 0.95rem/1.4 var(--font-ui);
   text-align: center;
-  box-shadow: none;
 }
 
 .avatar {
@@ -870,8 +842,8 @@ select.input {
   padding-right: 12px;
   border-radius: var(--r-md);
   border-top-color: transparent;
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.22), rgba(166, 241, 255, 0.1));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  background: rgba(255, 217, 138, 0.1);
+  box-shadow: inset 3px 0 0 var(--sun);
 }
 
 /* Sheets: first-run setup and device connect */
@@ -943,20 +915,19 @@ select.input {
   gap: 2px;
   width: 100%;
   padding: 16px 18px;
-  border: 1px solid var(--glass-edge);
+  border: 1.5px solid var(--rule-strong);
   border-radius: var(--r-lg);
-  background:
-    radial-gradient(130% 70% at 14% -14%, rgba(255, 255, 255, 0.24), transparent 56%),
-    linear-gradient(150deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+  background: rgba(255, 255, 255, 0.04);
   color: var(--text);
   text-align: left;
   cursor: pointer;
-  transition: transform 0.4s var(--spring), border-color 0.2s;
+  transition: transform 0.4s var(--spring), border-color 0.2s, background 0.2s;
 }
 
 .choice:hover {
   transform: translateY(-2px) scale(1.01);
-  border-color: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .choice:active {
@@ -1064,12 +1035,7 @@ select.input {
   z-index: 120;
   max-width: calc(100vw - 32px);
   padding: 14px 20px;
-  border: 1px solid var(--glass-edge);
   border-radius: var(--r-pill);
-  background: linear-gradient(var(--glass-tint), var(--glass-tint));
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  box-shadow: var(--glass-shadow);
   font-weight: 500;
   translate: -50% 0;
   animation: toast-in 0.5s var(--spring-soft) both;

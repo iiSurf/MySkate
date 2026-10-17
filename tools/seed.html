@@ -1,0 +1,61 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>seed</title>
+<!-- A tool for looking at the app with believable, made-up data. Open tools/seed.html?s=full&r=home through the local server and it
+     fills this browser's storage, then jumps to that screen. It replaces whatever MySkate data is saved at this address.
+     s = full | week0 | week2 | empty | active; r = home | ice | plan | skate | progress | me; n= (no name); plan=1; contrast=1; ob=1 (first run).
+     Not part of the app. -->
+<script type="module">
+  import { defaultState } from "../js/store.js";
+
+  const q = new URLSearchParams(location.search);
+  const scene = q.get("s") || "full";
+  const route = q.get("r") || "home";
+  const now = new Date();
+  const iso = (offset) => { const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - offset); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+  const monday = (now.getDay() + 6) % 7; // days since Monday
+
+  const st = defaultState(now);
+  st.profile.name = q.get("n") === "" ? "" : (q.get("n") || "Sam");
+  st.profile.onboarded = true;
+  st.profile.tourSeen = true;
+
+  const ids = ["pre-free-skate.fi-open-mohawk", "pre-free-skate.bkwd-xovers-bo-glide", "pre-free-skate.bo-to-fo-transition", "pre-free-skate.xover-mohawk-sequence", "pre-free-skate.mazurka", "pre-free-skate.bkwd-inside-pivots", "pre-free-skate.one-foot-upright-spin", "pre-free-skate.waltz-jump"];
+  const make = (offset, i) => {
+    const date = iso(offset);
+    const picks = [ids[i % 8], ids[(i + 2) % 8], ids[(i + 5) % 8]];
+    return { id: "s" + i, date, startedAt: date + "T17:00:00.000Z", bookedMin: 60, onIceSec: 2400 + ((i * 137) % 1500),
+      entries: picks.map((id, j) => ({ skillId: id, stars: Math.min(5, 2 + ((i + j) % 4) + (i > 6 ? 1 : 0)), landed: id.includes("jump") ? 4 + (i % 3) : 0, attempts: id.includes("jump") ? 7 + (i % 3) : 0, note: "" })),
+      note: i === 0 ? "Mohawks felt smoother today." : "", cost: i % 3 === 0 ? 18 : null };
+  };
+
+  /* Six whole weeks behind (two sessions each), then this week as the scene says. */
+  const past = [];
+  for (let w = 1; w <= 6; w++) { past.push(monday + 7 * (w - 1) + 1 + 0, monday + 7 * (w - 1) + 3); }
+  const thisWeek = { week0: [], full: [monday > 3 ? 3 : 0], week2: [Math.min(monday, 5), Math.min(monday, 1)] }[scene] || [];
+  const offsets = scene === "empty" ? [] : [...thisWeek.filter((o) => o <= monday), ...past];
+  st.sessions = offsets.map((o, i) => make(o, i));
+
+  if (scene === "full" || scene === "week0" || scene === "week2") {
+    st.goals = [{ id: "g1", skillId: ids[7], target: 4, date: iso(-28), created: iso(10) }];
+    st.homework = [{ id: "h1", text: "Mohawk turns, ten each way", skillId: ids[3], due: iso(-3), done: false, doneOn: "", created: iso(5) }];
+    st.offIce = [{ id: "o1", date: iso(2), kind: "strength", minutes: 25, note: "" }];
+    st.rinks = [{ id: "r1", name: "Highland Ice Arena", city: "Shoreline", url: null, color: "#5fd8e6", updated: iso(3) }];
+    st.iceSessions = [
+      { id: "i1", rinkId: "r1", kind: "freestyle", days: [2, 4], date: null, start: "18:00", end: "19:00", price: 18, note: "", from: null, to: null, skip: [], every: 1, imported: false, pick: true },
+      { id: "i2", rinkId: "r1", kind: "public", days: [6], date: null, start: "14:00", end: "15:30", price: 12, note: "", from: null, to: null, skip: [], every: 1, imported: false, pick: false },
+    ];
+  }
+  if (scene === "active") {
+    const a = { id: "a1", startedAt: Date.now() - 12 * 60 * 1000, bookedMin: 60, order: ids.slice(3, 6), index: 0, entries: {}, running: true, runStart: Date.now() - 12 * 60 * 1000, accumMs: 0 };
+    a.entries[ids[3]] = { skillId: ids[3], stars: 2, landed: 0, attempts: 0, note: "" };
+    st.active = a;
+    st.plan = { slotMin: 60, skillIds: ids.slice(3, 6) };
+  }
+  if (q.get("plan") === "1") st.plan = { slotMin: 60, skillIds: ids.slice(3, 6) };
+  if (q.get("contrast") === "1") st.settings.contrast = true;
+  if (q.get("ob") === "1") { st.profile.onboarded = false; st.profile.tourSeen = false; }
+
+  localStorage.setItem("myskate.v1", JSON.stringify(st));
+  location.replace("../index.html#/" + route);
+</script>

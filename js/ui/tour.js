@@ -5,7 +5,9 @@ import { html } from "../util.js";
 import { openSheet, $, $$ } from "./dom.js";
 import { TOUR_STEPS } from "../tour.js";
 import { SLOTS } from "../plan.js";
-import { icon, miniSkates, bar, medallion, bladeArt, catDot } from "./parts.js";
+import { icon, miniSkates, bladeArt, catDot } from "./parts.js";
+import { eightSvg } from "./eight.js";
+import { STREAK_MIN } from "../xp.js";
 
 /* The pictures are for looking at, not for pressing, so they are hidden from screen readers (the words say it all). */
 const DEMOS = {
@@ -27,8 +29,7 @@ const DEMOS = {
   skate: () => html`<div class="tour-clock"><span class="timer">12:40</span><span class="dim">of 1 h</span><span class="icon-btn">${icon("pause")}</span></div>
     <div class="tour-skates">${miniSkates(4)}</div>
     <div class="pair"><span class="btn btn--block">+ Landed</span><span class="btn btn--glass btn--block">+ Missed</span></div>`,
-  grow: () => html`<div class="tour-grow">${medallion(3)}<div class="grow"><p><span class="num xp-big">70</span> <span class="dim">/ 200 XP</span></p>${bar({ pct: 35, cls: "bar--xp", label: "Example XP bar" })}</div></div>
-    <span class="chip chip--gold">${icon("flame", "ic--fill")}2 weeks</span>`,
+  grow: () => html`<div class="tour-eight">${eightSvg({ fraction: 1 / STREAK_MIN, complete: false, count: 1, needed: STREAK_MIN, loops: [{ date: "2026-10-13", onIceSec: 2400 }, null] }, { tiny: "Your turn", go: "STEP ON" })}</div>`,
   blade: () => html`<div class="hours"><span class="num">17.5</span> <span class="dim">of 25 hours before sharpening</span></div>${bladeArt(70)}`,
   data: () => html`<div class="cluster"><span class="btn btn--small">Save a backup</span><span class="btn btn--glass btn--small">Spreadsheet (CSV)</span></div>
     <p class="note">Stays on this device</p>`,

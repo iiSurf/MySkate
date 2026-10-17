@@ -1,7 +1,9 @@
-/* Home: your level, your streak, your blades, and what to do next. */
+/* Home: your week as a figure eight, your streak, your level, your blades, and what to do next. */
 
 import { html, fmtMinutes, fmtDate, fmtNum, fmt1, fmtClock, todayISO, daysBetween, addDays } from "../util.js";
-import { icon, medallion, medal, bar, bladeArt, skateSvg, weekBarsHtml } from "../ui/parts.js";
+import { icon, medal, bar, bladeArt, skateSvg } from "../ui/parts.js";
+import { eightSvg } from "../ui/eight.js";
+import { weekEight, streakEights } from "../week.js";
 import { showBadges, showFriends, showTests } from "./progress.js";
 import { testList, skillsReadiness, freeReadiness, countdown } from "../testprep.js";
 import { board } from "../friends.js";
@@ -20,7 +22,7 @@ import { sortedHomework } from "../homework.js";
 import { offIceSummary } from "../office.js";
 import { openOffIceSheet } from "../ui/officesheet.js";
 
-const ui = { bladeOpen: false };
+const ui = { bladeOpen: false, eightKey: null };
 const LIMITS = [20, 25, 30, 35];
 
 function greeting() {
@@ -28,40 +30,49 @@ function greeting() {
   return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
 }
 
-function heroCard(ctx, d) {
-  const { state } = ctx;
-  if (state.active) {
-    const ms = elapsedMs(state.active);
-    return html`<section class="card hero-card">
-      <div class="split"><p class="eyebrow">Session in progress</p><span class="chip chip--on">${state.active.running ? "Running" : "Paused"}</span></div>
-      <p class="hero-card__line"><span class="num">${fmtClock(ms / 1000)}</span> <span class="dim">on ice of ${state.active.bookedMin} min</span></p>
-      <button class="btn" type="button" data-action="go-skate">Back to the ice</button>
-    </section>`;
-  }
-  const n = state.plan.skillIds.length;
-  if (n) {
-    return html`<section class="card hero-card">
-      <p class="eyebrow">Your plan</p>
-      <p class="hero-card__line"><span class="num">${n}</span> <span class="dim">${n === 1 ? "skill" : "skills"} for a ${state.plan.slotMin} minute slot</span></p>
-      <div class="cluster"><button class="btn" type="button" data-action="start">Start session</button><button class="btn btn--glass" type="button" data-action="go-plan">Edit plan</button></div>
-    </section>`;
-  }
-  return html`<section class="card hero-card">
-    <p class="eyebrow">Ready to skate?</p>
-    <p class="hero-card__line dim">Pick a few skills, pick your ice slot, and go.</p>
-    <div class="cluster"><button class="btn" type="button" data-action="go-plan">Plan a session</button>${state.sessions.length ? "" : html`<button class="btn btn--glass" type="button" data-action="tour">How MySkate works</button>`}</div>
-  </section>`;
+/* What tapping the figure eight does, and what its open loop says. */
+function eightCall(state) {
+  if (state.active) return { action: "go-skate", title: "Back to the ice", tiny: "On the ice", go: "BACK ON" };
+  if (state.plan.skillIds.length) return { action: "start", title: "Start your session", tiny: "Your turn", go: "STEP ON" };
+  return { action: "go-plan", title: "Plan a session", tiny: "Your turn", go: "PLAN IT" };
 }
 
-function xpTile(ctx, d) {
+/* The one big button: this week's figure eight. */
+function eightHero(ctx, d, week, animate) {
+  const { state } = ctx;
+  const call = eightCall(state);
+  const more = week.needed - week.count;
+  const caption = state.active
+    ? `${fmtClock(elapsedMs(state.active) / 1000)} on ice of ${state.active.bookedMin} min. ${state.active.running ? "Running." : "Paused."}`
+    : week.complete
+      ? "The eight is whole. Streak secured for this week."
+      : more === 1
+        ? "One more session closes your eight."
+        : `${more} more sessions close your eight.`;
+  const n = state.plan.skillIds.length;
+  const items = streakEights(d.streak.weeks, week.complete);
+  const streakText = d.streak.weeks > 0 ? `${d.streak.weeks} ${d.streak.weeks === 1 ? "week" : "weeks"} in a row` : `Skate ${week.needed} times in a week to start a streak`;
+  return html`<div class="home__eight">
+    <button class="eight" type="button" data-action="${call.action}" aria-label="${call.title}. This week: ${week.count} of ${week.needed} sessions.">${eightSvg(week, call, animate)}</button>
+    <p class="home__caption ${week.complete && !state.active ? "is-whole" : ""}">${caption}</p>
+    <div class="streak"><span class="streak__eights" aria-hidden="true">${items.map((k) => icon("eight", `ic--eight is-${k}`))}</span><span>${streakText}</span></div>
+    ${!state.active && n ? html`<div class="cluster"><span class="dim">${n} ${n === 1 ? "skill" : "skills"} planned for a ${state.plan.slotMin} minute slot.</span><button class="chip" type="button" data-action="go-plan">Edit plan</button></div>` : ""}
+    ${!state.active && !state.sessions.length ? html`<div class="cluster"><button class="chip" type="button" data-action="tour">How MySkate works</button></div>` : ""}
+  </div>`;
+}
+
+/* Level, what to work on next, and blade life: the three numbers worth a glance. */
+function glance(ctx, d) {
   const L = d.level;
-  const streakChip = d.streak.weeks > 0 ? html`<span class="chip chip--gold">${icon("flame", "ic--fill")}${d.streak.weeks} ${d.streak.weeks === 1 ? "week" : "weeks"}</span>` : "";
-  return html`<section class="card card--glow tile" aria-labelledby="xp-title">
-    <div class="tile__head"><p class="eyebrow" id="xp-title">XP level</p>${streakChip}</div>
-    <div class="xp-top">${medallion(L.level)}<p><span class="num xp-big">${L.into}</span> <span class="dim">/ ${L.need} XP</span></p></div>
-    ${bar({ pct: L.pct, cls: "bar--xp", label: "XP to the next level" })}
-    <div><p class="eyebrow">Last 7 days</p>${weekBarsHtml(d.bars)}</div>
-    <p class="note">${L.need - L.into} XP to level ${L.level + 1}.</p>
+  const info = bladeInfo(ctx.state);
+  const next = suggestNext(ctx.state, ctx.catalog, d.stats, d.today, 1)[0];
+  const nextSkill = next && ctx.catalog.skills.get(next.skillId);
+  return html`<section class="lines" aria-label="Level, next skill, and blades">
+    <div class="line"><p class="eyebrow">Level ${L.level}</p><p class="line__val"><span class="num">${L.into}</span> <span class="dim">/ ${L.need} XP</span></p></div>
+    ${bar({ pct: L.pct, cls: "bar--xp", thin: true, label: "XP to the next level" })}
+    ${nextSkill ? html`<button class="line line--btn" type="button" data-action="go-plan"><span class="eyebrow">Next up</span><span class="line__name">${nextSkill.name}</span><span class="line__go">${icon("right")}</span></button>` : ""}
+    <div class="line"><p class="eyebrow">Blades</p><p class="line__val"><span class="num">${fmt1(info.hours)}</span> <span class="dim">of ${fmtNum(info.limit)} hours</span></p></div>
+    ${bar({ pct: info.pct, cls: "bar--blade", thin: true, label: "Blade life used" })}
   </section>`;
 }
 
@@ -240,8 +251,6 @@ function costTile(ctx, d) {
 
 function weekTile(ctx, d) {
   const { streak, totals } = d;
-  const more = Math.max(0, streak.needed - streak.thisWeek);
-  const line = streak.thisWeek >= streak.needed ? "Streak secured for this week." : more === 1 ? "One more session this week keeps your streak going." : `${more} more sessions this week build your streak.`;
   return html`<section class="card tile" aria-labelledby="week-title">
     <div class="tile__head"><p class="eyebrow" id="week-title">On the ice</p></div>
     <div class="hours"><span class="num">${fmt1(totals.weekMin / 60)}</span><span class="dim">hours this week</span></div>
@@ -250,7 +259,6 @@ function weekTile(ctx, d) {
       <div><p class="num stat-n">${fmt1(totals.monthMin / 60)}</p><p class="dim">hours this month</p></div>
       <div><p class="num stat-n">${fmt1(totals.allMin / 60)}</p><p class="dim">hours in all</p></div>
     </div>
-    <p class="note">${line}</p>
   </section>`;
 }
 
@@ -283,14 +291,25 @@ function nudge(ctx) {
 export function renderHome(ctx) {
   const d = ctx.derive();
   const name = ctx.state.profile.name.trim();
-  return html`
-    <header class="screen-head">
-      <div><p class="eyebrow">${fmtDate(d.today, { weekday: "long", month: "long", day: "numeric" })}</p><h1>${greeting()}${name ? ", " + name : ""}</h1></div>
-    </header>
-    ${nudge(ctx)}
-    ${heroCard(ctx, d)}
-    <div class="tiles">${xpTile(ctx, d)}${badgeTile(ctx)}${homeworkTile(ctx, d)}${goalsTile(ctx, d)}${offIceTile(ctx, d)}${testTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
-    ${recent(ctx, d)}`;
+  const week = weekEight(ctx.state.sessions, d.today, d.streak.needed);
+  /* The line is traced as you arrive, but only when the week has changed since it was last drawn, so ordinary updates stay calm. */
+  const key = `${week.count}/${week.needed}`;
+  const animate = ui.eightKey !== key;
+  ui.eightKey = key;
+  return html`<div class="home">
+    <div class="home__hero">
+      <header class="screen-head">
+        <div><p class="eyebrow">${greeting()} · ${fmtDate(d.today, { weekday: "long", month: "long", day: "numeric" })}</p><h1>${name || "Skater"}</h1><p class="home__sub">${ctx.state.active ? "You are on the ice" : "Your ice, this week"}</p></div>
+      </header>
+      ${eightHero(ctx, d, week, animate)}
+    </div>
+    <div class="home__rest">
+      ${glance(ctx, d)}
+      <div class="tiles">${badgeTile(ctx)}${homeworkTile(ctx, d)}${goalsTile(ctx, d)}${offIceTile(ctx, d)}${testTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
+      ${recent(ctx, d)}
+      ${nudge(ctx)}
+    </div>
+  </div>`;
 }
 
 /* Update the blade tile's numbers in place so typing in its fields never loses focus. */

@@ -1,4 +1,4 @@
-/* MySkate design tokens. Theme: golden hour, seen from under the ice.
+/* MySkate design tokens. Theme: fresh ice at golden hour. Clean, glossy ice with the low sun on it, and type set straight on the ice.
    Color has jobs: blue means learning, gold means earned, coral means caution. */
 
 :root {
@@ -24,9 +24,9 @@
   color-scheme: dark;
 
   /* Water and ice */
-  --deep-0: #061641;
-  --deep-1: #0b2a66;
-  --deep-2: #14468e;
+  --deep-0: #05132e;
+  --deep-1: #0a2549;
+  --deep-2: #0f3560;
   --ice: #5fd8e6;
   --ice-bright: #a6f1ff;
   --ice-white: #eef9ff;
@@ -51,18 +51,21 @@
   --ink: #052545;
   --ink-gold: #4a2f00;
 
-  /* Liquid glass. The tint is a dark layer under the glass so text never sits on a bright patch. */
-  --glass-tint: rgba(5, 22, 72, 0.5);
-  --glass-edge: rgba(255, 255, 255, 0.36);
-  --glass-edge-soft: rgba(255, 255, 255, 0.16);
-  --glass-blur: blur(22px) saturate(1.5);
-  --glass-shadow: 0 14px 38px rgba(0, 8, 34, 0.42);
-  --track: rgba(3, 14, 48, 0.5);
+  /* Type sits straight on the ice, with hairline rules between things. Panels (sheets, toasts) are dark and nearly solid. */
+  --rule: rgba(236, 248, 255, 0.22);
+  --rule-strong: rgba(236, 248, 255, 0.42);
+  --panel: rgba(6, 20, 48, 0.95);
+  --glass-tint: rgba(5, 20, 50, 0.55);
+  --glass-edge: rgba(236, 248, 255, 0.42);
+  --glass-edge-soft: rgba(236, 248, 255, 0.22);
+  --glass-blur: blur(18px) saturate(1.4);
+  --glass-shadow: 0 24px 70px rgba(0, 6, 28, 0.55);
+  --track: rgba(236, 248, 255, 0.2);
 
-  /* Sky behind the glass. Set by [data-light]. */
-  --sky-top: #14468e;
-  --sky-mid: #0b2a66;
-  --sky-bot: #061641;
+  /* The ice and the light on it. Set by [data-light]. */
+  --sky-top: #0f3560;
+  --sky-mid: #0a2549;
+  --sky-bot: #06172f;
   --sun-stops: rgba(255, 208, 120, 0.95) 0%, rgba(255, 166, 108, 0.7) 22%, rgba(214, 120, 150, 0.42) 46%, rgba(110, 110, 200, 0.2) 66%, transparent 82%;
   --sun-x: 78%;
 }

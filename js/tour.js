@@ -62,7 +62,7 @@ export const TOUR_STEPS = [
     points: [
       { b: "Save the session.", t: "You see what you earned first, and can add what the ice cost. Keep skating if you ended too soon, or discard it." },
       { b: "XP rewards effort.", t: `${XP.session} XP for each session, ${XP.perMinute} per minute on ice, ${XP.perSkill} for each skill you practice, and ${XP.personalBest} for a new personal best.` },
-      { b: "Keep a weekly streak.", t: `Skate ${STREAK_MIN} or more times in a week, week after week, for bonus XP.` },
+      { b: "Close a figure eight each week.", t: `Each session you save traces one loop of the eight on Home. Skate ${STREAK_MIN} or more times in a week to close it, week after week, for bonus XP.` },
       { b: "See it all on Progress.", t: "Hours by week, what the ice costs, a practice calendar, every skill and session, an off-ice log (tap Log off-ice work on the Sessions tab), your progress toward a test on the Tests tab, a board of you and your friends on the Friends tab, and a trophy case on the Badges tab you can share from." },
     ],
   },

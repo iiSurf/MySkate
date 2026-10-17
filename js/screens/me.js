@@ -136,7 +136,6 @@ async function restoreFile(ctx, file) {
   } else {
     return;
   }
-  ctx.syncIce({});
   ctx.applySettings();
   ctx.update();
   ctx.checkBadges({ silent: true });
@@ -185,7 +184,6 @@ export function meActions(ctx) {
       if (!ok) return;
       ctx.setState(defaultState());
       ctx.save();
-      ctx.syncIce({});
       ctx.applySettings();
       ctx.go("home");
       ctx.startOnboarding();

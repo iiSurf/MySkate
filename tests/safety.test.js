@@ -1,7 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { html, raw, esc } from "../js/util.js";
-import { trackTypeFor, buildTrack } from "../js/ice-tracks.js";
 import { levelProgress, skillStats, isSkating, isAir } from "../js/stats.js";
 import { sanitizeState } from "../js/store.js";
 import { realCatalog, session } from "./helpers.js";
@@ -27,38 +26,6 @@ test("html prints booleans so ARIA states are never empty, and drops null and un
   assert.equal(html`aria-pressed="${false}"`.text, 'aria-pressed="false"');
   assert.equal(html`aria-pressed="${true}"`.text, 'aria-pressed="true"');
   assert.equal(html`a${null}b${undefined}c${0}`.text, "abc0");
-});
-
-test("skills get the ice pattern their name suggests", () => {
-  const type = (name, cat = "skills") => trackTypeFor({ name, cat });
-  assert.equal(type("Forward swizzles (6-8 in a row)"), "swizzle");
-  assert.equal(type("Forward crossovers (clockwise and counterclockwise)"), "scallop");
-  assert.equal(type("Hockey stop (both directions)"), "stop");
-  assert.equal(type("T-stops (right and left)"), "stop");
-  assert.equal(type("Forward outside three-turn (right and left)"), "turn");
-  assert.equal(type("Five-step mohawk sequence"), "mohawk");
-  assert.equal(type("Forward Twizzles"), "twizzle");
-  assert.equal(type("Waltz eight"), "eight");
-  assert.equal(type("Forward spiral on a straight line"), "spiral");
-  assert.equal(type("Creative step sequence"), "steps");
-  assert.equal(type("Waltz jump", "jumps"), "edgeJump");
-  assert.equal(type("Toe loop", "jumps"), "toeJump");
-  assert.equal(type("Bunny hop", "jumps"), "hop");
-  assert.equal(type("Camel spin", "spins"), "spin");
-});
-
-test("counterclockwise is not mistaken for a counter turn", () => {
-  const name = "Moving backward-to-forward two-foot turn on a circle (clockwise and counterclockwise)";
-  assert.equal(trackTypeFor({ name, cat: "skills" }), "circle");
-  assert.equal(trackTypeFor({ name: "Forward and Backward Outside Counters", cat: "skills" }), "turn");
-});
-
-test("every skill in the catalog can be drawn, with finite coordinates", () => {
-  for (const skill of catalog.skills.values()) {
-    const track = buildTrack(skill);
-    assert.ok(track.paths.length > 0, skill.id);
-    for (const d of track.paths) assert.ok(!/NaN|Infinity/.test(d), skill.id);
-  }
 });
 
 test("the jump and spin library counts its progress across the whole library", () => {

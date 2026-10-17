@@ -5,7 +5,6 @@ import { levelSkillIds, nextLevelKey } from "./catalog.js";
 import { addDays, daysBetween, weekKey } from "./util.js";
 
 export const EARNED_AT = 4;
-export const STALE_DAYS = 21;
 export const FRESH_DAYS = 14;
 
 /* One record per skill: every rating in order, the latest and best, and landing totals. */
@@ -105,20 +104,6 @@ export function suggestNext(state, catalog, stats, todayIso, count = 6) {
       .forEach((item) => take({ ...item, reason: "Next level" }));
   });
   return out;
-}
-
-/* The skills that leave marks on the ice: blue while learning, gold once earned, faint when not practiced lately. */
-export function iceSkills(catalog, stats, todayIso) {
-  const list = [];
-  for (const st of stats.values()) {
-    const sk = catalog.skills.get(st.skillId);
-    if (!sk) continue;
-    let state = "learning";
-    if (daysBetween(st.lastDate, todayIso) > STALE_DAYS) state = "stale";
-    else if (st.latest >= EARNED_AT) state = "earned";
-    list.push({ id: sk.id, name: sk.name, cat: sk.cat, state, first: st.firstDate });
-  }
-  return list.sort((a, b) => a.first.localeCompare(b.first));
 }
 
 export function minutesOnIce(sessions, fromIso, toIso) {

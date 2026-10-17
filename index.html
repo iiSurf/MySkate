@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>MySkate</title>
   <meta name="description" content="A figure skating practice tracker: plan a session, log it at the rink, and watch your progress build. Your data stays on your device.">
-  <meta name="theme-color" content="#061641">
+  <meta name="theme-color" content="#0a2549">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="MySkate">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
@@ -40,14 +40,13 @@
     <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.6 2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 17l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/></symbol>
     <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
     <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-eight" viewBox="-17 -9 34 18"><path d="M0 0A8 8 0 1 0-16 0A8 8 0 1 0 0 0A8 8 0 1 1 16 0A8 8 0 1 1 0 0"/></symbol>
     <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 7 4 12l5 5"/><path d="M4 12h10a5 5 0 0 1 0 10h-2"/></symbol>
   </defs>
 </svg>
 
 <div class="rink-bg" aria-hidden="true">
   <div class="rink-bg__sun"></div>
-  <div class="rink-bg__texture"></div>
-  <svg class="rink-bg__ice" id="ice" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice"></svg>
   <svg class="rink-bg__sparkles" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
     <g>
       <g transform="translate(230 330) scale(1.1)"><path class="sp" style="--d:.2s" d="M0-9 2.4-2.4 9 0 2.4 2.4 0 9-2.4 2.4-9 0-2.4-2.4z"/></g>
@@ -71,13 +70,12 @@
 <div class="shell">
   <nav class="nav-wrap" id="nav" aria-label="Main">
     <div class="tabbar">
-      <span class="lens"></span>
-      <a class="tab" href="#/home" data-route="home"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg>Home</a>
-      <a class="tab" href="#/ice" data-route="ice"><svg class="ic" aria-hidden="true"><use href="#i-ice"/></svg>Ice</a>
-      <a class="tab" href="#/plan" data-route="plan"><svg class="ic" aria-hidden="true"><use href="#i-plan"/></svg>Plan</a>
-      <a class="tab" href="#/skate" data-route="skate"><svg class="ic" aria-hidden="true"><use href="#i-skate"/></svg>Skate</a>
-      <a class="tab" href="#/progress" data-route="progress"><svg class="ic" aria-hidden="true"><use href="#i-chart"/></svg>Progress</a>
-      <a class="tab" href="#/me" data-route="me"><svg class="ic" aria-hidden="true"><use href="#i-me"/></svg>Me</a>
+      <a class="tab" href="#/home" data-route="home">Home</a>
+      <a class="tab" href="#/ice" data-route="ice">Ice</a>
+      <a class="tab" href="#/plan" data-route="plan">Plan</a>
+      <a class="tab" href="#/skate" data-route="skate">Skate</a>
+      <a class="tab" href="#/progress" data-route="progress">Progress</a>
+      <a class="tab" href="#/me" data-route="me">Me</a>
     </div>
   </nav>
   <main class="screen" id="screen" tabindex="-1">

@@ -1,507 +1,169 @@
 <!doctype html>
 <html lang="en" data-light="golden">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MySkate style tile</title>
-  <link rel="stylesheet" href="../css/fonts.css">
-  <link rel="stylesheet" href="../css/tokens.css">
-  <link rel="stylesheet" href="../css/base.css">
-  <link rel="stylesheet" href="../css/components.css">
-  <link rel="stylesheet" href="style-tile.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MySkate style tile</title>
+<!-- The living look-and-feel reference. It uses the app's own CSS and drawing code, so it cannot drift from the app: change a
+     component, and this page changes with it. Open it through the local server (python3 tools/serve.py). -->
+<link rel="stylesheet" href="../css/fonts.css">
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/app.css">
+<style>
+  .tile-page { display: grid; gap: 56px; max-width: 980px; margin: 0 auto; padding: 32px 16px 80px; }
+  .tile-page > section { display: grid; gap: var(--sp-4); }
+  .tile-page h2 { font: italic 500 2rem/1.1 var(--font-display); }
+  .tile-note { color: var(--text-dim); max-width: 60ch; }
+  .swatches-t { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--sp-3); }
+  .sw { display: grid; gap: 6px; font-size: 0.85rem; color: var(--text-dim); }
+  .sw i { display: block; height: 64px; border-radius: var(--r-md); border: 1px solid var(--rule); }
+  .sw b { color: var(--text); font-weight: 600; }
+  .eights { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--sp-5); }
+  .eights figure { margin: 0; display: grid; gap: var(--sp-2); justify-items: center; text-align: center; }
+  .eights figcaption { color: var(--text-dim); }
+  .demo-eight { width: min(100%, 320px); }
+  .light-switch { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+  .panel-demo { padding: var(--sp-5); border-radius: var(--r-xl); max-width: 420px; display: grid; gap: var(--sp-3); }
+  .skates-row { display: flex; gap: var(--sp-5); align-items: center; flex-wrap: wrap; }
+  .tabbar-demo { max-width: 520px; }
+  .tabbar-demo .tab { pointer-events: none; }
+</style>
 </head>
 <body>
-
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <defs>
-    <symbol id="i-skate" viewBox="0 0 24 24"><path d="M7 3h5v8l5.5 2c1.7.6 2.5 1.8 2.5 3.4v1.1H7z"/><path d="M5 20.4h14.5c1.1 0 1.8-.9 1.5-1.8"/><path d="M9.5 17.5v2.9M16.5 17.5v2.9"/></symbol>
-    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11 12 3.5 20.5 11V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></symbol>
-    <symbol id="i-plan" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M8.5 9h7M8.5 13h7M8.5 17h4"/></symbol>
-    <symbol id="i-friends" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.8 20c0-3.5 2.8-5.8 6.2-5.8s6.2 2.3 6.2 5.8"/><circle cx="17.2" cy="9" r="2.5"/><path d="M17.6 14.3c2.3.3 3.7 2 3.7 4.7"/></symbol>
-    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 2.5c.6 3 4.6 5 4.6 9.4a4.6 4.6 0 0 1-9.2 0c0-1.9.9-3 1.9-4 .3 1.1.9 1.8 1.8 2-.8-2.7-.2-5.2.9-7.4z"/></symbol>
-    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 2.5 2.3 7.2 7.2 2.3-7.2 2.3L12 21.5l-2.3-7.2L2.5 12l7.2-2.3z"/></symbol>
-    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
-    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8.5 5v14M15.5 5v14"/></symbol>
-    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20l1-4.2L16.6 4.2a1.8 1.8 0 0 1 2.6 0l.6.6a1.8 1.8 0 0 1 0 2.6L8.2 19z"/><path d="M14.5 6.3l3.2 3.2"/></symbol>
-  </defs>
-</svg>
-
 <div class="rink-bg" aria-hidden="true">
   <div class="rink-bg__sun"></div>
-  <div class="rink-bg__texture"></div>
-  <svg class="rink-bg__ice" id="ice" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice"></svg>
   <svg class="rink-bg__sparkles" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
     <g>
       <g transform="translate(230 330) scale(1.1)"><path class="sp" style="--d:.2s" d="M0-9 2.4-2.4 9 0 2.4 2.4 0 9-2.4 2.4-9 0-2.4-2.4z"/></g>
-      <g transform="translate(845 262)"><path class="sp" style="--d:2.2s" d="M0-9 2.4-2.4 9 0 2.4 2.4 0 9-2.4 2.4-9 0-2.4-2.4z"/></g>
       <g transform="translate(1180 296) scale(1.2)"><path class="sp" style="--d:2.8s" d="M0-9 2.4-2.4 9 0 2.4 2.4 0 9-2.4 2.4-9 0-2.4-2.4z"/></g>
       <g transform="translate(700 566) scale(.9)"><path class="sp" style="--d:3.1s" d="M0-9 2.4-2.4 9 0 2.4 2.4 0 9-2.4 2.4-9 0-2.4-2.4z"/></g>
-      <g transform="translate(1400 545)"><path class="sp" style="--d:2.5s" d="M0-9 2.4-2.4 9 0 2.4 2.4 0 9-2.4 2.4-9 0-2.4-2.4z"/></g>
-      <g transform="translate(300 822)"><path class="sp" style="--d:3.3s" d="M0-9 2.4-2.4 9 0 2.4 2.4 0 9-2.4 2.4-9 0-2.4-2.4z"/></g>
-      <g transform="translate(1162 790) scale(1.1)"><path class="sp" style="--d:1.7s" d="M0-9 2.4-2.4 9 0 2.4 2.4 0 9-2.4 2.4-9 0-2.4-2.4z"/></g>
-      <g transform="translate(520 205) scale(.8)"><path class="sp" style="--d:1.4s" d="M0-9 2.4-2.4 9 0 2.4 2.4 0 9-2.4 2.4-9 0-2.4-2.4z"/></g>
-    </g>
-    <g>
-      <circle class="fleck" cx="90" cy="90" r="2"/><circle class="fleck" cx="260" cy="520" r="1.6"/><circle class="fleck" cx="440" cy="60" r="2.4"/>
-      <circle class="fleck" cx="560" cy="420" r="1.6"/><circle class="fleck" cx="720" cy="120" r="2"/><circle class="fleck" cx="960" cy="360" r="1.6"/>
-      <circle class="fleck" cx="1080" cy="60" r="2"/><circle class="fleck" cx="1500" cy="440" r="2.4"/><circle class="fleck" cx="180" cy="700" r="2"/>
-      <circle class="fleck" cx="780" cy="720" r="1.6"/><circle class="fleck" cx="1260" cy="640" r="2"/><circle class="fleck" cx="1520" cy="780" r="1.6"/>
     </g>
   </svg>
 </div>
 
-<main class="wrap" id="page">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 2.5c.6 3 4.6 5 4.6 9.4a4.6 4.6 0 0 1-9.2 0c0-1.9.9-3 1.9-4 .3 1.1.9 1.8 1.8 2-.8-2.7-.2-5.2.9-7.4z"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-eight" viewBox="-17 -9 34 18"><path d="M0 0A8 8 0 1 0-16 0A8 8 0 1 0 0 0A8 8 0 1 1 16 0A8 8 0 1 1 0 0"/></symbol>
+  </defs>
+</svg>
 
-  <header class="top">
-    <div>
-      <p class="eyebrow">Style tile, round three</p>
-      <h1>MySkate</h1>
-      <p class="lede">Golden hour, seen from under the ice.</p>
-    </div>
-    <div class="controls">
-      <div class="light" id="light" role="group" aria-label="Light of day">
-        <p class="eyebrow">Light</p>
-        <div class="cluster tight">
-          <button class="chip" type="button" data-light="sunrise" aria-pressed="false">Sunrise</button>
-          <button class="chip" type="button" data-light="golden" aria-pressed="true">Golden hour</button>
-          <button class="chip" type="button" data-light="midday" aria-pressed="false">Midday</button>
-          <button class="chip" type="button" data-light="dusk" aria-pressed="false">Dusk</button>
-        </div>
-      </div>
-      <button class="chip" id="contrast" type="button" aria-pressed="false">High contrast text</button>
-    </div>
+<main class="tile-page">
+  <header>
+    <p class="eyebrow">MySkate style tile</p>
+    <h1 style="font: italic 500 clamp(2.6rem, 9vw, 4rem)/1 var(--font-display)">Fresh ice</h1>
+    <p class="tile-note">Clean, glossy ice under a low gold sun. Type is set straight on the ice with hairline rules between things, and the week is a figure eight you trace. Nothing is drawn on the ice itself. Gold is earned, blue is learning, coral is caution.</p>
   </header>
 
-  <section class="block" aria-labelledby="h-ice">
-    <h2 id="h-ice">Your ice draws itself</h2>
-    <p class="dim">Each skill leaves its own marks on the ice behind everything. Swizzles weave, edges loop, three-turns leave tiny 3s, jumps leave a takeoff and a landing, spins leave spirals. The more you skate, the more your ice fills in.</p>
-    <div class="card card--ice ice-card">
-      <label class="field" for="ice-n">
-        <span>Skills practiced: <b id="ice-n-out">38</b></span>
-        <input class="range" id="ice-n" type="range" min="0" max="67" value="38">
-      </label>
-      <div class="cluster">
-        <button class="btn btn--small" id="ice-carve" type="button">Carve the next skill</button>
-        <button class="btn btn--glass btn--small" id="ice-peek" type="button">Peek at my ice</button>
-      </div>
-      <p class="note" id="ice-now" aria-live="polite">Pick a number, then carve one more.</p>
-      <p class="note">Blue marks are skills you are learning. Gold marks are skills you earned. Faint marks are skills you have not practiced lately.</p>
+  <section>
+    <h2>Light</h2>
+    <div class="light-switch" id="light">
+      <button class="chip" type="button" data-light="sunrise" aria-pressed="false">Sunrise</button>
+      <button class="chip" type="button" data-light="golden" aria-pressed="true">Golden hour</button>
+      <button class="chip" type="button" data-light="midday" aria-pressed="false">Midday</button>
+      <button class="chip" type="button" data-light="dusk" aria-pressed="false">Dusk</button>
     </div>
   </section>
 
-  <section class="block" aria-labelledby="h-skates">
-    <h2 id="h-skates">The skate is the reward</h2>
-    <p class="dim">Unearned skates are ghosts. Earn one and it becomes the real thing: white boot, gold trim, steel blade that catches the light.</p>
-    <div class="card hero">
-      <svg class="hero-skate" viewBox="0 0 290 300" role="img" aria-label="Figure skate standing on ice, with its reflection">
-        <defs>
-          <linearGradient id="fadeg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
-          <mask id="fade" maskUnits="userSpaceOnUse" x="0" y="197" width="290" height="110"><rect x="0" y="197" width="290" height="110" fill="url(#fadeg)"/></mask>
-        </defs>
-        <g mask="url(#fade)"><g transform="translate(0 394) scale(1 -1)"><use href="../assets/skate.svg#skate" width="290" height="210"/></g></g>
-        <use href="../assets/skate.svg#skate" width="290" height="210"/>
-      </svg>
-      <div class="hero-copy">
-        <p class="eyebrow">Earned at 4 or 5 skates</p>
-        <p class="num hero-title">Collect them all</p>
-        <div class="mini" aria-label="3 of 5 skates earned">
-          <svg class="skate"><use href="../assets/skate.svg#skate"/></svg>
-          <svg class="skate"><use href="../assets/skate.svg#skate"/></svg>
-          <svg class="skate"><use href="../assets/skate.svg#skate"/></svg>
-          <svg class="skate off"><use href="../assets/skate.svg#skate"/></svg>
-          <svg class="skate off"><use href="../assets/skate.svg#skate"/></svg>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <p class="eyebrow">Try it</p>
-      <div class="rating" id="rating" role="group" aria-label="Rating, in skates"></div>
-      <p class="rating-label" id="rating-label" aria-live="polite">Tap a skate</p>
+  <section>
+    <h2>Color has jobs</h2>
+    <div class="swatches-t">
+      <div class="sw"><i style="background: var(--sky-mid)"></i><b>Ice</b>surfaces</div>
+      <div class="sw"><i style="background: var(--ice)"></i><b>Ice cyan</b>learning, action</div>
+      <div class="sw"><i style="background: var(--ice-white)"></i><b>Ice white</b>text, primary button</div>
+      <div class="sw"><i style="background: var(--sun)"></i><b>Gold</b>earned: XP, streaks, skates</div>
+      <div class="sw"><i style="background: var(--coral)"></i><b>Coral</b>caution</div>
+      <div class="sw"><i style="background: var(--cat-spins)"></i><b>Lavender</b>spins</div>
     </div>
   </section>
 
-  <section class="block" aria-labelledby="h-tiles">
-    <h2 id="h-tiles">Tiles with a job</h2>
-    <p class="dim">Big tiles are no longer blank boxes. Each shows its thing as a picture, and the blade tile is yours to edit: some skaters sharpen at 20 hours, some at 25, some at 35.</p>
-    <div class="tiles">
-
-      <section class="card tile" id="blade-tile" aria-labelledby="blade-title">
-        <div class="tile__head">
-          <p class="eyebrow" id="blade-title">Blade life</p>
-          <button class="icon-btn icon-btn--sm" id="blade-edit" type="button" aria-expanded="false" aria-controls="blade-panel" aria-label="Edit blade settings"><svg class="ic"><use href="#i-edit"/></svg></button>
-        </div>
-        <div class="hours"><span class="num" id="blade-hours">14</span><span class="dim">of <span id="blade-limit">25</span> hours before sharpening</span></div>
-        <div class="blade" id="blade-art" style="--p:56%">
-          <svg class="blade__dull" viewBox="0 0 250 44" aria-hidden="true"><use href="../assets/skate.svg#blade" width="250" height="44"/></svg>
-          <svg class="blade__fresh" viewBox="0 0 250 44" aria-hidden="true"><use href="../assets/skate.svg#blade" width="250" height="44"/></svg>
-          <i class="blade__mark"></i>
-        </div>
-        <div class="split"><span class="chip chip--on" id="blade-state">Sharp</span><span class="dim" id="blade-left">11 hours left</span></div>
-        <div class="bar bar--blade bar--thin"><i id="blade-bar" style="--v:56%;--vn:56"></i></div>
-        <div class="edit" id="blade-panel" hidden>
-          <div class="field">
-            <span id="limit-label">Sharpen after</span>
-            <div class="limit-row" id="limit-chips" role="group" aria-labelledby="limit-label">
-              <button class="chip" type="button" data-h="20" aria-pressed="false">20 h</button>
-              <button class="chip" type="button" data-h="25" aria-pressed="true">25 h</button>
-              <button class="chip" type="button" data-h="30" aria-pressed="false">30 h</button>
-              <button class="chip" type="button" data-h="35" aria-pressed="false">35 h</button>
-              <input class="input input--num" id="limit-custom" type="number" inputmode="numeric" min="5" max="100" value="25" aria-label="Custom number of hours">
-            </div>
-          </div>
-          <div class="field">
-            <span id="now-label">Hours on these blades so far</span>
-            <div class="stepper">
-              <button class="icon-btn icon-btn--sm" id="h-dec" type="button" aria-label="One hour less">&minus;</button>
-              <input class="input input--num" id="h-now" type="number" inputmode="decimal" step="0.25" min="0" max="200" value="14" aria-labelledby="now-label">
-              <button class="icon-btn icon-btn--sm" id="h-inc" type="button" aria-label="One hour more">+</button>
-            </div>
-          </div>
-          <p class="note">Most skaters sharpen somewhere between 20 and 35 hours. Use what your coach or sharpener says. MySkate adds your on-ice time after every session.</p>
-        </div>
-        <button class="btn btn--glass btn--small" id="blade-log" type="button">I just got them sharpened</button>
-      </section>
-
-      <section class="card card--glow tile" id="xp-card" aria-labelledby="xp-title">
-        <div class="tile__head">
-          <p class="eyebrow" id="xp-title">XP level</p>
-          <button class="btn btn--gold btn--small" id="xp-add" type="button"><svg class="ic ic--fill"><use href="#i-spark"/></svg>+20 XP</button>
-        </div>
-        <div class="xp-top">
-          <div class="level" id="level" aria-label="Level">7</div>
-          <p><span class="num xp-big" id="xp-now">340</span> <span class="dim">/ <span id="xp-need">400</span> XP</span></p>
-        </div>
-        <div class="bar bar--xp" role="progressbar" aria-label="XP to next level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="85" id="xp-bar"><i id="xp-fill" style="--v:85%;--vn:85"></i></div>
-        <div>
-          <p class="eyebrow">This week</p>
-          <div class="weekbars" aria-hidden="true"><i style="--h:30%"></i><i style="--h:0%"></i><i style="--h:62%"></i><i style="--h:44%"></i><i style="--h:0%"></i><i style="--h:88%"></i><i class="today" style="--h:100%"></i></div>
-        </div>
-        <p class="note">Tap +20 XP. Keep going until the level-up.</p>
-      </section>
-
-      <section class="card tile" aria-labelledby="cur-title">
-        <div class="tile__head">
-          <p class="eyebrow" id="cur-title">Pre-Free Skate</p>
-          <span class="chip chip--on">Your level</span>
-        </div>
-        <div class="hours"><span class="num">3</span><span class="dim">of 7 skills earned</span></div>
-        <div class="mini mini--big" aria-label="3 of 7 skates earned">
-          <svg class="skate"><use href="../assets/skate.svg#skate"/></svg>
-          <svg class="skate"><use href="../assets/skate.svg#skate"/></svg>
-          <svg class="skate"><use href="../assets/skate.svg#skate"/></svg>
-          <svg class="skate off"><use href="../assets/skate.svg#skate"/></svg>
-          <svg class="skate off"><use href="../assets/skate.svg#skate"/></svg>
-          <svg class="skate off"><use href="../assets/skate.svg#skate"/></svg>
-          <svg class="skate off"><use href="../assets/skate.svg#skate"/></svg>
-        </div>
-        <p class="note">Up next: <strong>Mazurka</strong>, then the one-foot upright spin.</p>
-      </section>
-
-      <section class="card tile" aria-labelledby="slot-title">
-        <div class="tile__head">
-          <p class="eyebrow" id="slot-title">Next ice slot</p>
-          <span class="chip chip--gold">in 14 hours</span>
-        </div>
-        <div class="slotrow">
-          <div class="datebox"><span class="eyebrow">Sat</span><span class="num">17</span></div>
-          <div><p class="slot-line"><strong>7:00 am</strong></p><p class="dim">60 minute slot</p></div>
-        </div>
-        <button class="btn btn--small" type="button">Plan it</button>
-      </section>
-
-    </div>
+  <section>
+    <h2>Type</h2>
+    <p class="eyebrow">Eyebrow: Jost, small capitals</p>
+    <p style="font: italic 500 3rem/1 var(--font-display)">Bodoni italic, for titles</p>
+    <p><span class="num" style="font-size: 3rem">147</span> <span class="dim">/ 450 XP</span> &nbsp; Bodoni numerals, for the big numbers</p>
+    <p>Jost for everything else. Body text is 17px, brighter than it looks, and always on dark ice.</p>
   </section>
 
-  <section class="block" aria-labelledby="h-color">
-    <h2 id="h-color">Color with a job</h2>
-    <p class="dim">Every color means something. Blue is learning, gold is earned, coral is a heads-up.</p>
-    <ul class="swatches">
-      <li><span class="sw" style="background:linear-gradient(160deg,var(--deep-2),var(--deep-0))"></span><strong>Deep water</strong><span>Surfaces and background</span></li>
-      <li><span class="sw" style="background:linear-gradient(160deg,var(--ice-bright),var(--ice))"></span><strong>Ice cyan</strong><span>Actions and learning</span></li>
-      <li><span class="sw" style="background:linear-gradient(160deg,#fff,var(--ice-white))"></span><strong>Ice white</strong><span>Text and highlights</span></li>
-      <li><span class="sw" style="background:linear-gradient(160deg,#fff0b8,var(--sun-deep))"></span><strong>Gold</strong><span>Earned: XP, streaks, skates</span></li>
-      <li><span class="sw" style="background:linear-gradient(160deg,#ffb2a6,var(--coral-deep))"></span><strong>Coral</strong><span>Caution and stop</span></li>
-    </ul>
-    <div class="card">
-      <p class="eyebrow">Skill types</p>
-      <div class="cluster">
-        <span class="cluster tight"><i class="cat"></i>Skating skills, flow</span>
-        <span class="cluster tight"><i class="cat cat--jumps"></i>Jumps, air</span>
-        <span class="cluster tight"><i class="cat cat--spins"></i>Spins, rotation</span>
-      </div>
-    </div>
+  <section>
+    <h2>The week is a figure eight</h2>
+    <p class="tile-note">One loop per session. Gold is traced, dotted is still to come, and a spark rides at the blade. Tap it to plan, start, or go back to your session.</p>
+    <div class="eights" id="eights"></div>
+    <div class="streak"><span class="streak__eights" aria-hidden="true">
+      <svg class="ic ic--eight is-done"><use href="#i-eight"/></svg><svg class="ic ic--eight is-done"><use href="#i-eight"/></svg><svg class="ic ic--eight is-done"><use href="#i-eight"/></svg><svg class="ic ic--eight is-ghost"><use href="#i-eight"/></svg>
+    </span><span>3 weeks in a row</span></div>
   </section>
 
-  <section class="block" aria-labelledby="h-type">
-    <h2 id="h-type">Type that reads</h2>
-    <div class="type-grid">
-      <div class="card">
-        <p class="eyebrow">Bodoni Moda, big moments only</p>
-        <p class="num type-big">Level 7</p>
-        <p class="type-ital">Good morning, skater</p>
-      </div>
-      <div class="card">
-        <p class="eyebrow">Jost, everything you read and tap</p>
-        <h3>Today's plan</h3>
-        <p>Plan your session, then log it on the ice. Every skate counts, even the wobbly ones.</p>
-        <p class="dim">Supporting text is one step quieter, not faint.</p>
-      </div>
-    </div>
-    <ul class="rules">
-      <li>Bodoni only above about 28px. Its hairlines vanish at small sizes, so anything small is Jost.</li>
-      <li>Body text is 17px at weight 450, with brighter text colors than before.</li>
-      <li>Every glass surface sits on a dark tint, so text never lands on a bright patch of sky.</li>
-      <li>Try "High contrast text" above: solid surfaces, white text, calmer background. It also switches on by itself when a device asks for more contrast.</li>
-    </ul>
-  </section>
-
-  <section class="block" aria-labelledby="h-first">
-    <h2 id="h-first">First run and connecting devices</h2>
-    <p class="dim">The first time you open MySkate it asks for your skates and your level, or restores a backup file. A code can carry your setup between a computer and a phone, in either direction.</p>
-    <div class="cluster">
-      <button class="btn" id="open-onboard" type="button">Preview first run</button>
-      <button class="btn btn--glass" id="open-connect" type="button">Preview connect devices</button>
-    </div>
-  </section>
-
-  <section class="block" aria-labelledby="h-buttons">
-    <h2 id="h-buttons">Buttons and chips</h2>
-    <p class="dim">Liquid glass with a soft highlight. Press one and it squishes, then springs back.</p>
+  <section>
+    <h2>Buttons and chips</h2>
     <div class="cluster">
       <button class="btn" type="button">Start session</button>
-      <button class="btn btn--gold" type="button">Claim XP</button>
-      <button class="btn btn--glass" type="button">Add skill</button>
+      <button class="btn btn--gold" type="button">Save session</button>
       <button class="btn btn--coral" type="button">End session</button>
-    </div>
-    <div class="cluster" id="slots" role="group" aria-label="Ice slot, minutes">
-      <button class="chip" type="button" aria-pressed="false">30</button>
-      <button class="chip" type="button" aria-pressed="false">45</button>
-      <button class="chip" type="button" aria-pressed="true">60</button>
-      <button class="chip" type="button" aria-pressed="false">75</button>
-      <button class="chip" type="button" aria-pressed="false">90</button>
-      <button class="chip" type="button" aria-pressed="false">120</button>
-      <span class="chip chip--gold"><svg class="ic ic--fill"><use href="#i-flame"/></svg>3 week streak</span>
-    </div>
-  </section>
-
-  <section class="block" aria-labelledby="h-rows">
-    <h2 id="h-rows">Skill rows and friends</h2>
-    <div class="two">
-      <div class="card" id="rows">
-        <p class="eyebrow">Today's plan</p>
-        <div class="row"><button class="tick" role="checkbox" aria-checked="true" aria-label="Waltz jump done" type="button"><svg class="ic"><use href="#i-check"/></svg></button><i class="cat cat--jumps"></i><span class="grow">Waltz jump</span><span class="mini" aria-label="4 of 5 skates"><svg class="skate"><use href="../assets/skate.svg#skate"/></svg><svg class="skate"><use href="../assets/skate.svg#skate"/></svg><svg class="skate"><use href="../assets/skate.svg#skate"/></svg><svg class="skate"><use href="../assets/skate.svg#skate"/></svg><svg class="skate off"><use href="../assets/skate.svg#skate"/></svg></span></div>
-        <div class="row"><button class="tick" role="checkbox" aria-checked="true" aria-label="Mazurka done" type="button"><svg class="ic"><use href="#i-check"/></svg></button><i class="cat"></i><span class="grow">Mazurka</span><span class="mini" aria-label="2 of 5 skates"><svg class="skate"><use href="../assets/skate.svg#skate"/></svg><svg class="skate"><use href="../assets/skate.svg#skate"/></svg><svg class="skate off"><use href="../assets/skate.svg#skate"/></svg><svg class="skate off"><use href="../assets/skate.svg#skate"/></svg><svg class="skate off"><use href="../assets/skate.svg#skate"/></svg></span></div>
-        <div class="row"><button class="tick" role="checkbox" aria-checked="false" aria-label="One-foot upright spin done" type="button"><svg class="ic"><use href="#i-check"/></svg></button><i class="cat cat--spins"></i><span class="grow">One-foot upright spin</span><span class="mini" aria-label="3 of 5 skates"><svg class="skate"><use href="../assets/skate.svg#skate"/></svg><svg class="skate"><use href="../assets/skate.svg#skate"/></svg><svg class="skate"><use href="../assets/skate.svg#skate"/></svg><svg class="skate off"><use href="../assets/skate.svg#skate"/></svg><svg class="skate off"><use href="../assets/skate.svg#skate"/></svg></span></div>
-      </div>
-      <div class="card">
-        <div class="split"><p class="eyebrow">Friends, this week</p><div class="cluster tight"><span class="chip chip--on">Week</span><span class="chip">Month</span></div></div>
-        <div class="row"><span class="avatar">JM</span><span class="grow">Jordan</span><span class="num">410</span></div>
-        <div class="row row--you"><span class="avatar">You</span><span class="grow">You</span><span class="num">340</span></div>
-        <div class="row"><span class="avatar">SK</span><span class="grow">Sam</span><span class="num">255</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="block" aria-labelledby="h-phones">
-    <h2 id="h-phones">On a phone</h2>
-    <p class="dim">The same pieces, assembled at 390px wide. Tap the tabs: the glass lens slides.</p>
-    <div class="phones">
-
-      <article class="phone" aria-label="Home screen preview">
-        <header class="split">
-          <div><p class="eyebrow">Saturday</p><p class="type-ital">Good morning</p></div>
-          <span class="chip chip--gold"><svg class="ic ic--fill"><use href="#i-flame"/></svg>3 weeks</span>
-        </header>
-        <section class="card card--glow tile">
-          <div class="xp-top">
-            <div class="level">7</div>
-            <div><p class="eyebrow">XP level</p><p><span class="num xp-big">340</span> <span class="dim">/ 400 XP</span></p></div>
-          </div>
-          <div class="bar bar--xp"><i style="--v:85%;--vn:85"></i></div>
-          <div class="weekbars" aria-hidden="true"><i style="--h:30%"></i><i style="--h:0%"></i><i style="--h:62%"></i><i style="--h:44%"></i><i style="--h:0%"></i><i style="--h:88%"></i><i class="today" style="--h:100%"></i></div>
-        </section>
-        <section class="card tile">
-          <div class="split"><p class="eyebrow">Pre-Free Skate</p><p class="dim">3 of 7</p></div>
-          <div class="mini mini--big" aria-label="3 of 7 skates earned">
-            <svg class="skate"><use href="../assets/skate.svg#skate"/></svg><svg class="skate"><use href="../assets/skate.svg#skate"/></svg><svg class="skate"><use href="../assets/skate.svg#skate"/></svg><svg class="skate off"><use href="../assets/skate.svg#skate"/></svg><svg class="skate off"><use href="../assets/skate.svg#skate"/></svg><svg class="skate off"><use href="../assets/skate.svg#skate"/></svg><svg class="skate off"><use href="../assets/skate.svg#skate"/></svg>
-          </div>
-        </section>
-        <section class="card tile">
-          <div class="split"><p class="eyebrow">Blade life</p><p class="dim">14 of 25 hours</p></div>
-          <div class="blade" style="--p:56%">
-            <svg class="blade__dull" viewBox="0 0 250 44" aria-hidden="true"><use href="../assets/skate.svg#blade" width="250" height="44"/></svg>
-            <svg class="blade__fresh" viewBox="0 0 250 44" aria-hidden="true"><use href="../assets/skate.svg#blade" width="250" height="44"/></svg>
-            <i class="blade__mark"></i>
-          </div>
-        </section>
-        <button class="btn btn--block" type="button">Start session</button>
-        <nav class="tabbar" aria-label="Main">
-          <span class="lens"></span>
-          <button class="tab" type="button" aria-current="page"><svg class="ic"><use href="#i-home"/></svg>Home</button>
-          <button class="tab" type="button"><svg class="ic"><use href="#i-plan"/></svg>Plan</button>
-          <button class="tab" type="button"><svg class="ic"><use href="#i-skate"/></svg>Skate</button>
-          <button class="tab" type="button"><svg class="ic"><use href="#i-friends"/></svg>Friends</button>
-        </nav>
-      </article>
-
-      <article class="phone" aria-label="Skate screen preview">
-        <section class="card timer-card">
-          <div><p class="eyebrow">On ice</p><p class="timer">24:10</p></div>
-          <div class="timer-side"><p class="dim">20:50 left</p><p class="dim">of 45:00</p></div>
-          <button class="icon-btn" type="button" aria-label="Pause timer"><svg class="ic"><use href="#i-pause"/></svg></button>
-        </section>
-        <div class="split"><p class="type-ital">Waltz jump</p><span class="dim">2 of 5</span></div>
-        <section class="card card--ice">
-          <div class="split"><span class="num xp-big">7 of 10</span><span class="chip chip--on">70% landed</span></div>
-          <div class="pips" aria-hidden="true"><i class="pip on"></i><i class="pip on"></i><i class="pip"></i><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip"></i><i class="pip on"></i><i class="pip on"></i><i class="pip"></i></div>
-          <div class="pair"><button class="btn btn--block" type="button">+ Landed</button><button class="btn btn--glass btn--block" type="button">+ Missed</button></div>
-        </section>
-        <div class="placeholder">3D reference<br>coming soon</div>
-        <div>
-          <p class="eyebrow">How did it go?</p>
-          <div class="rating rating--flat" role="img" aria-label="3 of 5 skates">
-            <button type="button" aria-pressed="true" tabindex="-1"><svg class="skate"><use href="../assets/skate.svg#skate"/></svg></button>
-            <button type="button" aria-pressed="true" tabindex="-1"><svg class="skate"><use href="../assets/skate.svg#skate"/></svg></button>
-            <button type="button" aria-pressed="true" tabindex="-1"><svg class="skate"><use href="../assets/skate.svg#skate"/></svg></button>
-            <button type="button" aria-pressed="false" tabindex="-1"><svg class="skate"><use href="../assets/skate.svg#skate"/></svg></button>
-            <button type="button" aria-pressed="false" tabindex="-1"><svg class="skate"><use href="../assets/skate.svg#skate"/></svg></button>
-          </div>
-        </div>
-        <button class="btn btn--block" type="button">Next skill</button>
-        <nav class="tabbar" aria-label="Main">
-          <span class="lens"></span>
-          <button class="tab" type="button"><svg class="ic"><use href="#i-home"/></svg>Home</button>
-          <button class="tab" type="button"><svg class="ic"><use href="#i-plan"/></svg>Plan</button>
-          <button class="tab" type="button" aria-current="page"><svg class="ic"><use href="#i-skate"/></svg>Skate</button>
-          <button class="tab" type="button"><svg class="ic"><use href="#i-friends"/></svg>Friends</button>
-        </nav>
-      </article>
-
-    </div>
-  </section>
-
-  <section class="block" aria-labelledby="h-rules">
-    <h2 id="h-rules">Ground rules</h2>
-    <ul class="rules">
-      <li>One glow per screen: gold when it is about reward, ice when it is about the action in front of you.</li>
-      <li>Gold is for what you earned. Blue is for what you are learning. Coral is for a heads-up.</li>
-      <li>The ice behind everything is yours: it fills in as you skate, and recent skills glow brighter.</li>
-      <li>Everything that bounces, sparkles, or draws itself switches off when the device asks for reduced motion.</li>
-    </ul>
-  </section>
-
-</main>
-
-<button class="btn btn--glass fab" id="peek-back" type="button" hidden>Back to the page</button>
-
-<dialog class="sheet" id="onboard" aria-labelledby="ob-title">
-  <div class="sheet__body">
-    <div data-step="0">
-      <p class="eyebrow">Welcome</p>
-      <h2 class="sheet__title" id="ob-title">Let's set up your ice</h2>
-      <p class="note">Everything stays on your device. Choose how to start.</p>
-      <div class="choices">
-        <button class="choice choice--primary" type="button" data-go="1"><strong>Set up my skates</strong><span class="note">Takes about a minute.</span></button>
-        <label class="choice" for="ob-file"><strong>Restore a backup</strong><span class="note">Pick a MySkate backup file (JSON) and pick up where you left off.</span></label>
-        <input id="ob-file" type="file" accept=".json,application/json" hidden>
-        <p class="status" id="ob-status" aria-live="polite"></p>
-        <button class="choice" type="button" id="ob-sample"><strong>Try a sample backup</strong><span class="note">Loads a made-up file so you can see how restoring works.</span></button>
-        <button class="choice" type="button" id="ob-connect"><strong>Connect from another device</strong><span class="note">Scan a code from your computer or your phone.</span></button>
-      </div>
-    </div>
-
-    <div data-step="1" hidden>
-      <p class="eyebrow">Step 1 of 4</p>
-      <h2 class="sheet__title">Your skates</h2>
-      <label class="field"><span>Skate and blade names (optional)</span><input class="input" id="ob-skates" type="text" placeholder="Edea Piano with Gold Seal blades" autocomplete="off"></label>
-      <div class="field">
-        <span id="ob-limit-label">Sharpen after</span>
-        <div class="limit-row" id="ob-limit" role="group" aria-labelledby="ob-limit-label">
-          <button class="chip" type="button" data-h="20" aria-pressed="false">20 h</button>
-          <button class="chip" type="button" data-h="25" aria-pressed="true">25 h</button>
-          <button class="chip" type="button" data-h="30" aria-pressed="false">30 h</button>
-          <button class="chip" type="button" data-h="35" aria-pressed="false">35 h</button>
-          <input class="input input--num" id="ob-limit-custom" type="number" inputmode="numeric" min="5" max="100" value="25" aria-label="Custom number of hours">
-        </div>
-      </div>
-      <div class="field">
-        <span id="ob-since-label">Hours on your blades since the last sharpening</span>
-        <input class="input input--num" id="ob-since" type="number" inputmode="decimal" min="0" max="200" step="0.25" value="0" aria-labelledby="ob-since-label">
-      </div>
-      <p class="note">Most skaters sharpen between 20 and 35 hours. You can change this any time from the blade tile.</p>
-    </div>
-
-    <div data-step="2" hidden>
-      <p class="eyebrow">Step 2 of 4</p>
-      <h2 class="sheet__title">Your level</h2>
-      <label class="field"><span>Skating skills</span><select class="input" id="ob-skills"></select></label>
-      <label class="field"><span>Jumps and spins</span><select class="input" id="ob-jumps"></select></label>
-      <p class="note">Pick where you are working now. MySkate suggests what to try next, and you can change this any time.</p>
-    </div>
-
-    <div data-step="3" hidden>
-      <p class="eyebrow">Step 3 of 4</p>
-      <h2 class="sheet__title">Your ice time</h2>
-      <div class="field">
-        <span id="ob-slot-label">Your usual slot, in minutes</span>
-        <div class="limit-row" id="ob-slot" role="group" aria-labelledby="ob-slot-label">
-          <button class="chip" type="button" aria-pressed="false">30</button>
-          <button class="chip" type="button" aria-pressed="false">45</button>
-          <button class="chip" type="button" aria-pressed="true">60</button>
-          <button class="chip" type="button" aria-pressed="false">75</button>
-          <button class="chip" type="button" aria-pressed="false">90</button>
-          <button class="chip" type="button" aria-pressed="false">120</button>
-        </div>
-      </div>
-      <p class="note">New plans start with this slot. You can pick a different one every time.</p>
-    </div>
-
-    <div data-step="4" hidden class="done">
-      <div class="level level--xl">1</div>
-      <h2 class="sheet__title">You're set</h2>
-      <p class="note" id="ob-summary"></p>
-    </div>
-
-    <div class="sheet__foot">
-      <button class="btn btn--glass btn--small" type="button" id="ob-back" hidden>Back</button>
-      <div class="dots" id="ob-dots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i></div>
-      <button class="btn btn--small" type="button" id="ob-next" hidden>Next</button>
-      <button class="btn btn--glass btn--small" type="button" id="ob-close">Close preview</button>
-    </div>
-  </div>
-</dialog>
-
-<dialog class="sheet" id="connect" aria-labelledby="cn-title">
-  <div class="sheet__body">
-    <div>
-      <p class="eyebrow">Sample screen</p>
-      <h2 class="sheet__title" id="cn-title">Connect your devices</h2>
+      <button class="btn btn--glass" type="button">Edit plan</button>
+      <button class="btn btn--small" type="button">Small</button>
     </div>
     <div class="cluster">
-      <div class="seg" id="cn-mode" role="group" aria-label="Show or scan">
-        <button type="button" data-mode="show" aria-pressed="true">Show a code</button>
-        <button type="button" data-mode="scan" aria-pressed="false">Scan a code</button>
-      </div>
-      <div class="seg" id="cn-dir" role="group" aria-label="Direction">
-        <button type="button" data-dir="c2p" aria-pressed="true">Computer to phone</button>
-        <button type="button" data-dir="p2c" aria-pressed="false">Phone to computer</button>
-      </div>
+      <button class="chip" type="button" aria-pressed="false">45</button>
+      <button class="chip" type="button" aria-pressed="true">60</button>
+      <span class="chip chip--on">3 open</span>
+      <span class="chip chip--gold">D-3</span>
+      <span class="chip chip--coral">Due</span>
+      <button class="icon-btn" type="button" aria-label="Flame"><svg class="ic"><use href="#i-flame"/></svg></button>
     </div>
-    <div id="cn-show">
-      <div class="qr" id="cn-qr" role="img" aria-label="Sample code, not a real code"></div>
-    </div>
-    <div id="cn-scan" hidden>
-      <div class="camera"><i></i><i></i><i></i><i></i><p>Point the camera at the code on your other device</p></div>
-    </div>
-    <p class="note" id="cn-text">On your phone, open MySkate, tap Connect, then Scan a code. This sample code is not real.</p>
-    <div class="cluster tight">
-      <span class="chip chip--on">Your skates</span><span class="chip chip--on">Today's plan</span><span class="chip chip--on">Friends</span><span class="chip chip--on">Last 10 sessions</span>
-    </div>
-    <p class="note">One code holds about 3 KB, which is enough for your setup, plan, friends, and recent sessions. Your full history moves by backup file. Nothing leaves your devices.</p>
-    <div class="sheet__foot"><span></span><button class="btn btn--small" type="button" id="cn-close">Done</button></div>
-  </div>
-</dialog>
+  </section>
 
-<script type="module" src="style-tile.js"></script>
+  <section>
+    <h2>Tabs, and the bars that fill</h2>
+    <div class="seg"><button type="button" aria-pressed="true">Overview</button><button type="button" aria-pressed="false">Badges</button><button type="button" aria-pressed="false">Friends</button></div>
+    <nav class="tabbar tabbar-demo" aria-label="Example"><a class="tab" aria-current="page">Home</a><a class="tab">Ice</a><a class="tab">Plan</a><a class="tab">Skate</a><a class="tab">Progress</a><a class="tab">Me</a></nav>
+    <div class="bar bar--xp" role="img" aria-label="XP bar"><i style="--v:44%;--vn:44"></i></div>
+    <div class="bar bar--blade" role="img" aria-label="Blade bar"><i style="--v:72%;--vn:72"></i></div>
+    <div class="bar bar--thin" role="img" aria-label="Thin bar"><i style="--v:30%;--vn:30"></i></div>
+  </section>
+
+  <section>
+    <h2>Lines, sections and panels</h2>
+    <div class="lines" style="max-width: 460px">
+      <div class="line"><p class="eyebrow">Level 8</p><p class="line__val"><span class="num">147</span> <span class="dim">/ 450 XP</span></p></div>
+      <div class="bar bar--xp bar--thin" role="img" aria-label="XP"><i style="--v:33%;--vn:33"></i></div>
+      <button class="line line--btn" type="button"><span class="eyebrow">Next up</span><span class="line__name">Mazurka (right or left)</span><span class="line__go"><svg class="ic"><use href="#i-right"/></svg></span></button>
+    </div>
+    <section class="card card--glow tile" style="max-width: 460px"><div class="tile__head"><p class="eyebrow">Goals</p><span class="chip chip--on">1 open</span></div><div class="hours"><span class="num">17</span><span class="dim">badges earned</span></div><button class="btn btn--glass btn--small" type="button">Trophy case</button></section>
+    <div class="glass panel-demo"><p class="eyebrow">A panel (sheets, toasts)</p><h3>Dark and nearly solid</h3><p class="dim">Sheets and toasts are the only surfaces. They sit on a dark panel so text is always readable.</p><button class="btn btn--small" type="button">Got it</button></div>
+  </section>
+
+  <section>
+    <h2>Skates, medals and the level medallion</h2>
+    <div class="skates-row">
+      <span class="mini" role="img" aria-label="Three of five skates earned"><svg class="skate"><use href="../assets/skate.svg#skate"/></svg><svg class="skate"><use href="../assets/skate.svg#skate"/></svg><svg class="skate"><use href="../assets/skate.svg#skate"/></svg><svg class="skate off"><use href="../assets/skate.svg#skate"/></svg><svg class="skate off"><use href="../assets/skate.svg#skate"/></svg></span>
+      <span class="medal" aria-hidden="true"><svg class="ic"><use href="#i-flame"/></svg></span>
+      <span class="medal medal--locked" aria-hidden="true"><svg class="ic"><use href="#i-flame"/></svg></span>
+      <div class="level" role="img" aria-label="Level 8">8</div>
+    </div>
+  </section>
+</main>
+
+<script type="module">
+  import { eightSvg } from "../js/ui/eight.js";
+  const sess = (date, sec) => ({ date, onIceSec: sec });
+  const states = [
+    ["Nothing yet this week", { fraction: 0, complete: false, count: 0, needed: 2, loops: [null, null] }, { tiny: "Your turn", go: "PLAN IT" }],
+    ["One session: the first loop", { fraction: 0.5, complete: false, count: 1, needed: 2, loops: [sess("2026-10-13", 2400), null] }, { tiny: "Your turn", go: "STEP ON" }],
+    ["Both sessions: the eight is whole", { fraction: 1, complete: true, count: 2, needed: 2, loops: [sess("2026-10-13", 2400), sess("2026-10-16", 2520)] }, { tiny: "Your turn", go: "STEP ON" }],
+  ];
+  document.getElementById("eights").innerHTML = states.map(([cap, week, call]) => `<figure><div class="demo-eight">${eightSvg(week, call).text}</div><figcaption>${cap}</figcaption></figure>`).join("");
+
+  const root = document.documentElement;
+  document.getElementById("light").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-light]");
+    if (!b) return;
+    root.dataset.light = b.dataset.light;
+    document.querySelectorAll("#light .chip").forEach((c) => c.setAttribute("aria-pressed", String(c === b)));
+  });
+</script>
 </body>
 </html>

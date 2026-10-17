@@ -1,4 +1,4 @@
-/* Reset, typography, and the rink background: the view from under the ice. */
+/* Reset, typography, and the rink background: clean, glossy ice under a low sun. */
 
 *,
 *::before,
@@ -70,7 +70,8 @@ select {
   outline-offset: 3px;
 }
 
-/* Layers, back to front: water, sun, ice texture, your skill tracks, sparkles, vignette. */
+/* Layers, back to front: the ice, the low sun, a long diagonal sheen, sparkles, and a darker foot so type stays readable.
+   Nothing is drawn on the ice: it stays clean. */
 
 .rink-bg {
   position: fixed;
@@ -79,26 +80,17 @@ select {
   overflow: hidden;
   pointer-events: none;
   background:
-    radial-gradient(900px 620px at 16% -4%, rgba(120, 225, 255, 0.22), transparent 66%),
-    linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 42%, var(--sky-bot) 100%);
+    radial-gradient(900px 620px at 16% -4%, rgba(120, 225, 255, 0.14), transparent 66%),
+    linear-gradient(168deg, var(--sky-top) 0%, var(--sky-mid) 46%, var(--sky-bot) 100%);
 }
 
-/* The low sun, glowing through the ice: gold at the core, then peach, rose, and lilac before it meets the water. */
+/* The low sun on the ice: gold at the core, then peach, rose, and lilac before it fades into the dark. */
 .rink-bg__sun {
   position: absolute;
   inset: 0;
   background: radial-gradient(820px 500px at var(--sun-x) -10%, var(--sun-stops));
 }
 
-.rink-bg__texture {
-  position: absolute;
-  inset: 0;
-  background: url("../assets/ice-texture.svg") center / cover no-repeat;
-  mix-blend-mode: screen;
-  opacity: 0.5;
-}
-
-.rink-bg__ice,
 .rink-bg__sparkles {
   position: absolute;
   inset: 0;
@@ -106,65 +98,21 @@ select {
   height: 100%;
 }
 
-.rink-bg__ice {
-  opacity: 0.62;
+/* The sheen: a long soft streak of light across the ice, like a rink under high lamps. */
+.rink-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(112deg, transparent 26%, rgba(255, 255, 255, 0.07) 40%, transparent 56%);
 }
 
 .rink-bg::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 38%, transparent 52%, rgba(2, 8, 30, 0.55) 100%);
-}
-
-/* The marks a skater leaves. Blue is learning, gold is earned, faint is not practiced lately. */
-
-.trk__core,
-.trk__glow {
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.trk__core {
-  stroke: #d8f7ff;
-  stroke-width: 1.5;
-  opacity: 0.92;
-}
-
-.trk__glow {
-  stroke: #7fe3ff;
-  stroke-width: 6;
-  opacity: 0.2;
-}
-
-.trk__dot {
-  fill: #f2fdff;
-  opacity: 0.9;
-}
-
-.trk--earned .trk__core,
-.trk--earned .trk__dot {
-  stroke: #fff1c8;
-  fill-opacity: 1;
-}
-
-.trk--earned .trk__dot {
-  fill: #fff1c8;
-}
-
-.trk--earned .trk__glow {
-  stroke: #ffc86a;
-  opacity: 0.3;
-}
-
-.trk--stale {
-  opacity: 0.32;
-}
-
-.trk__star {
-  fill: #fff;
-  filter: drop-shadow(0 0 6px #bff3ff);
+  background:
+    linear-gradient(transparent 46%, rgba(3, 12, 30, 0.6) 100%),
+    radial-gradient(ellipse at 50% 34%, transparent 54%, rgba(2, 8, 28, 0.5) 100%);
 }
 
 .sp {
@@ -203,14 +151,12 @@ select {
   }
 }
 
-/* Readability first. Glass is the default look, but people who ask for more contrast
-   or less transparency (in their device settings or in the app) get solid, brighter surfaces.
-   Support for the transparency query is patchy, so the glass is already tinted dark underneath. */
+/* Readability first. Type sits on dark ice, and people who ask for more contrast or less transparency
+   (in their device settings or in the app) get solid, brighter surfaces and plain edges. */
 
 /* On the Skate screen the phone may be running on battery for an hour, so the background holds still. */
 [data-route="skate"] .sp,
-[data-route="skate"] .fleck,
-[data-route="skate"] .bar > i::before {
+[data-route="skate"] .fleck {
   animation: none;
 }
 
@@ -225,10 +171,11 @@ select {
     --text-faint: rgba(255, 255, 255, 0.9);
     --glass-tint: rgb(6, 24, 78);
     --glass-edge: rgba(255, 255, 255, 0.7);
+    --rule: rgba(255, 255, 255, 0.55);
+    --rule-strong: rgba(255, 255, 255, 0.8);
+    --panel: rgb(5, 18, 52);
   }
 
-  .rink-bg__ice,
-  .rink-bg__texture,
   .rink-bg__sparkles {
     opacity: 0.22;
   }
@@ -239,10 +186,11 @@ select {
   --text-faint: rgba(255, 255, 255, 0.9);
   --glass-tint: rgb(6, 24, 78);
   --glass-edge: rgba(255, 255, 255, 0.7);
+  --rule: rgba(255, 255, 255, 0.55);
+  --rule-strong: rgba(255, 255, 255, 0.8);
+  --panel: rgb(5, 18, 52);
 }
 
-:root[data-contrast="high"] .rink-bg__ice,
-:root[data-contrast="high"] .rink-bg__texture,
 :root[data-contrast="high"] .rink-bg__sparkles {
   opacity: 0.22;
 }
@@ -250,6 +198,7 @@ select {
 @media (prefers-reduced-transparency: reduce) {
   :root {
     --glass-tint: rgb(8, 30, 88);
+    --panel: rgb(6, 20, 56);
     --glass-blur: none;
   }
 }

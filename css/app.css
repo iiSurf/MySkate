@@ -16,7 +16,7 @@ a {
   width: 100%;
   max-width: 1080px;
   margin: 0 auto;
-  padding: var(--sp-5) var(--sp-4) 150px;
+  padding: var(--sp-5) var(--sp-4) 128px;
   outline: none;
 }
 
@@ -29,8 +29,8 @@ a {
 }
 
 .screen-head h1 {
-  font: italic 800 clamp(2.4rem, 9vw, 3.6rem) / 1.05 var(--font-display);
-  text-shadow: 0 0 36px rgba(255, 200, 120, 0.4);
+  font: italic 500 clamp(2.6rem, 11vw, 4rem) / 1 var(--font-display);
+  text-shadow: 0 2px 26px rgba(0, 30, 70, 0.6);
 }
 
 .screen-head .eyebrow,
@@ -78,17 +78,18 @@ h2 {
   gap: var(--sp-3);
 }
 
-/* Navigation: a floating glass bar at the bottom on phones, a sidebar on wide screens. */
+/* Navigation: words along the foot of the ice on phones (over a fade, so nothing collides with them), a list down the side on wide screens. */
 
 .nav-wrap {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: calc(10px + env(safe-area-inset-bottom));
+  bottom: 0;
   z-index: 30;
   display: flex;
   justify-content: center;
-  padding: 0 12px;
+  padding: 30px 12px calc(2px + env(safe-area-inset-bottom));
+  background: linear-gradient(rgba(4, 13, 30, 0), rgba(4, 13, 30, 0.9) 50%);
   pointer-events: none;
 }
 
@@ -102,13 +103,13 @@ h2 {
 }
 
 .toast {
-  bottom: calc(96px + env(safe-area-inset-bottom));
+  bottom: calc(84px + env(safe-area-inset-bottom));
 }
 
 @media (min-width: 960px) {
   .shell {
     display: grid;
-    grid-template-columns: 240px minmax(0, 1fr);
+    grid-template-columns: 220px minmax(0, 1fr);
     align-items: start;
     max-width: 1400px;
     margin: 0 auto;
@@ -119,33 +120,28 @@ h2 {
     top: 16px;
     bottom: auto;
     display: block;
-    padding: 24px 0 0 20px;
+    padding: 28px 0 0 20px;
+    background: none;
   }
 
   .nav-wrap .tabbar {
     width: 100%;
     flex-direction: column;
-    gap: 4px;
-    padding: 10px;
-    border-radius: var(--r-lg);
-  }
-
-  .tabbar .lens {
-    display: none;
+    gap: 2px;
   }
 
   .tab {
-    flex-direction: row;
+    display: flex;
     justify-content: flex-start;
-    gap: 14px;
-    padding: 13px 16px;
-    border-radius: var(--r-pill);
-    font-size: 1rem;
+    min-height: 0;
+    padding: 14px 16px 14px 34px;
+    font-size: 0.84rem;
   }
 
-  .tab[aria-current="page"] {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(166, 241, 255, 0.2));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  .tab::before {
+    top: 50%;
+    left: 14px;
+    margin: -3px 0 0;
   }
 
   .screen {
@@ -157,35 +153,292 @@ h2 {
   }
 }
 
-/* Home */
+/* Home: the week's figure eight, the streak, the level, and what comes next. */
 
-.hero-card {
+.home {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-5);
+}
+
+.home__hero,
+.home__rest {
+  display: grid;
+  align-content: start;
+  gap: var(--sp-5);
+  min-width: 0;
+}
+
+.home__sub {
+  margin-top: 6px;
+  color: var(--text-dim);
+  font-size: 1.1rem;
+}
+
+@media (min-width: 960px) {
+  .home {
+    grid-template-columns: minmax(0, 430px) minmax(0, 1fr);
+    gap: 56px;
+    align-items: start;
+  }
+
+  .home__hero {
+    position: sticky;
+    top: 20px;
+  }
+}
+
+.home__eight {
   display: grid;
   gap: var(--sp-3);
+  justify-items: center;
+  text-align: center;
 }
 
-.hero-card__line {
-  font-size: 1.15rem;
+.home__caption {
+  max-width: 30ch;
+  color: var(--text-dim);
+  font-size: 1.05rem;
 }
 
-.hero-card__line .num {
-  font-size: 2rem;
+.home__caption.is-whole {
+  color: #ffe3a0;
 }
+
+/* The figure eight: gold is traced, dotted is still to come, and a spark rides at the blade. It is the main button on Home. */
+
+.eight {
+  display: block;
+  width: 100%;
+  max-width: 440px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.45s var(--spring);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.eight:hover {
+  transform: scale(1.015);
+}
+
+.eight:active {
+  transform: scale(0.97);
+}
+
+.eight__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.eight__guide {
+  fill: none;
+  stroke: rgba(236, 248, 255, 0.42);
+  stroke-width: 1.6;
+  stroke-dasharray: 1.5 7;
+  stroke-linecap: round;
+}
+
+.eight__done .e {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.e--glow {
+  stroke: rgba(160, 225, 255, 0.22);
+  stroke-width: 7;
+}
+
+.e--echo1 {
+  stroke: rgba(255, 255, 255, 0.36);
+  stroke-width: 1;
+  transform: translate(-2.4px, -1.6px);
+}
+
+.e--echo2 {
+  stroke: rgba(255, 255, 255, 0.46);
+  stroke-width: 1;
+  transform: translate(2px, -2.2px);
+}
+
+.e--main {
+  stroke: #ffe9b8;
+  stroke-width: 2.8;
+  filter: drop-shadow(0 0 5px rgba(255, 214, 130, 0.9));
+}
+
+.eight__star {
+  fill: #fff;
+  filter: drop-shadow(0 0 7px #ffd98a);
+}
+
+.eight__tiny {
+  fill: rgba(236, 248, 255, 0.88);
+  font: 600 11px var(--font-ui);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.eight__big {
+  fill: #fff;
+  font: 700 25px var(--font-display);
+}
+
+.eight__go {
+  fill: #ffe3a0;
+  font: 700 14px var(--font-ui);
+  letter-spacing: 0.1em;
+}
+
+.eight__dim {
+  opacity: 0.6;
+}
+
+.eight:focus-visible {
+  outline-offset: 6px;
+  border-radius: 24px;
+}
+
+.eight__svg.is-tracing .e {
+  animation: eight-trace 1.4s cubic-bezier(0.3, 0.7, 0.2, 1) both;
+}
+
+.eight__svg.is-tracing .eight__star {
+  animation-fill-mode: backwards;
+}
+
+@keyframes eight-trace {
+  from {
+    stroke-dasharray: 0 1000;
+  }
+}
+
+/* The streak: a little gold eight for each week in a row. */
+
+.streak {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-weight: 500;
+}
+
+.streak__eights {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ic--eight {
+  width: 30px;
+  height: 17px;
+  overflow: visible;
+  stroke-width: 1.9;
+}
+
+.ic--eight.is-done {
+  color: var(--sun);
+  filter: drop-shadow(0 0 5px rgba(255, 200, 110, 0.7));
+}
+
+.ic--eight.is-ghost {
+  color: rgba(236, 248, 255, 0.45);
+  stroke-dasharray: 1.5 3.5;
+}
+
+/* Tiles end in a quiet gold link, not a big button. */
+
+.tile > .btn--glass.btn--small {
+  justify-self: start;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  color: var(--sun);
+  font-weight: 600;
+}
+
+.tile > .btn--glass.btn--small::after {
+  content: "\2192";
+  font-weight: 500;
+}
+
+.tile > .btn--glass.btn--small:hover {
+  background: none;
+  filter: brightness(1.15);
+}
+
+/* Level, what comes next, and blades: three lines on the ice. */
+
+.lines {
+  display: grid;
+  gap: var(--sp-2);
+  border-top: 1px solid var(--rule);
+}
+
+.line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: 14px 0 4px;
+}
+
+.line__val {
+  text-align: right;
+}
+
+.line__val .num {
+  font-size: 1.5rem;
+}
+
+.line--btn {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px var(--sp-3);
+  align-items: center;
+  width: 100%;
+  padding: 14px 0;
+  border: 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.line--btn .eyebrow {
+  grid-column: 1;
+}
+
+.line__name {
+  grid-column: 1;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.line__go {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  color: var(--sun);
+}
+
+.line__go .ic {
+  width: 22px;
+  height: 22px;
+}
+
 
 .nudge {
   display: grid;
   gap: var(--sp-2);
-  border-color: rgba(255, 217, 138, 0.6);
-}
-
-.xp-top {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-4);
-}
-
-.xp-big {
-  font-size: 1.9rem;
 }
 
 .stats {
@@ -197,6 +450,16 @@ h2 {
 .stat-n {
   font-size: 1.9rem;
   line-height: 1.1;
+}
+
+.xp-top {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.xp-big {
+  font-size: 1.9rem;
 }
 
 .mini--big {
@@ -213,7 +476,7 @@ h2 {
 .row--pick {
   flex-wrap: wrap;
   cursor: pointer;
-  border-radius: var(--r-md);
+  border-radius: 0;
 }
 
 /* On a narrow screen the skates and chips drop under the name instead of squeezing it. */
@@ -385,7 +648,7 @@ h2 {
 }
 
 .skill-title {
-  font: 700 clamp(1.8rem, 6vw, 2.4rem) / 1.15 var(--font-display);
+  font: italic 500 clamp(1.7rem, 6.4vw, 2.3rem) / 1.15 var(--font-display);
 }
 
 .rating {
@@ -669,9 +932,8 @@ select.input {
   gap: 4px;
   min-width: 64px;
   padding: 10px 8px;
-  border: 1px solid var(--glass-edge);
+  border: 1.5px solid var(--rule-strong);
   border-radius: var(--r-md);
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
 }
 
 .tour-node .ic {
@@ -718,16 +980,8 @@ select.input {
   margin-left: auto;
 }
 
-.tour-grow {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-4);
-  width: 100%;
-}
-
-.tour-grow .grow {
-  flex: 1;
-  min-width: 0;
+.tour-eight {
+  width: min(100%, 280px);
 }
 
 .tour__demo .pair,
@@ -942,11 +1196,10 @@ select.input {
 .ice-card {
   position: relative;
   display: grid;
-  border: 1px solid var(--glass-edge-soft);
+  border: 1px solid var(--rule);
   border-left: 5px solid var(--rk, var(--ice));
   border-radius: var(--r-md);
-  background: linear-gradient(var(--glass-tint), var(--glass-tint));
-  box-shadow: var(--glass-shadow);
+  background: rgba(4, 14, 36, 0.5);
 }
 
 .ice-card.is-pick {
@@ -1035,11 +1288,19 @@ select.input {
   min-width: 0;
 }
 
-/* Six tabs on a phone: a little tighter */
+/* Six tabs on a phone: a little tighter, and tighter again on the smallest ones so the words never touch */
 @media (max-width: 420px) {
   .tab {
-    padding: 8px 2px;
-    font-size: 0.72rem;
+    padding: 10px 1px 6px;
+    font-size: 0.7rem;
+    letter-spacing: 0.09em;
+  }
+}
+
+@media (max-width: 350px) {
+  .tab {
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
   }
 }
 
@@ -1049,7 +1310,7 @@ select.input {
   bottom: 0;
   margin: 0 calc(-1 * var(--sp-5)) calc(-1 * var(--sp-5));
   padding: var(--sp-3) var(--sp-5) var(--sp-4);
-  background: linear-gradient(rgba(6, 22, 65, 0), rgba(6, 22, 65, 0.96) 28%);
+  background: linear-gradient(rgba(6, 20, 48, 0), rgba(6, 20, 48, 0.97) 28%);
 }
 
 .ice-filters .seg button {
@@ -1321,7 +1582,7 @@ select.input {
   position: absolute;
   inset: 9px;
   border-radius: 50%;
-  background: rgba(6, 22, 65, 0.92);
+  background: rgba(5, 18, 44, 0.96);
 }
 
 .ring b {

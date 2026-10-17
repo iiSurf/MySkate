@@ -1,13 +1,12 @@
-/* MySkate: loads your saved data and the skill catalog, draws the ice, and shows one screen at a time. */
+/* MySkate: loads your saved data and the skill catalog, and shows one screen at a time. */
 
 import { loadCatalog } from "./catalog.js";
 import { loadState, saveState, exportJSON, exportCSV, requestPersistence } from "./store.js";
 import { replayXp, levelFromXp, streakWeeks, weekBars } from "./xp.js";
-import { skillStats, activeAsSession, iceSkills, totals } from "./stats.js";
+import { skillStats, activeAsSession, totals } from "./stats.js";
 import { todayISO, html, uid } from "./util.js";
 import { $, render, delegate, toast, download } from "./ui/dom.js";
-import { createIce } from "./ui/ice.js";
-import { levelUp as celebrateLevelUp, badgeUnlock, reducedMotion } from "./ui/celebrate.js";
+import { levelUp as celebrateLevelUp, badgeUnlock } from "./ui/celebrate.js";
 import { shareBadge } from "./ui/share.js";
 import { evaluateBadges, newlyEarned } from "./badges.js";
 import { goalStatus } from "./goals.js";
@@ -45,7 +44,6 @@ let ctx;
 let current = "home";
 let handlers = { actions: {}, inputs: {} };
 let cleanup = () => {};
-let ice;
 let warnedSave = false;
 
 function currentRoute() {
@@ -89,25 +87,6 @@ function derive() {
   };
 }
 
-function syncIce({ animate = false } = {}) {
-  const d = derive();
-  ice.sync(iceSkills(ctx.catalog, d.stats, d.today), { animate });
-}
-
-function placeLens(instant) {
-  const bar = $(".tabbar", nav);
-  const active = $(".tab[aria-current='page']", nav);
-  const lens = $(".lens", nav);
-  if (!bar || !active || !lens) return;
-  if (instant) lens.style.transition = "none";
-  lens.style.left = active.offsetLeft + "px";
-  lens.style.width = active.offsetWidth + "px";
-  if (instant) {
-    void lens.offsetWidth;
-    lens.style.transition = "";
-  }
-}
-
 /* A selector that finds the same control again after the screen is rebuilt. */
 function focusSelector(el) {
   if (!el || !screenEl.contains(el)) return null;
@@ -132,7 +111,6 @@ function renderRoute({ keepScroll = false } = {}) {
     if (t.dataset.route === current) t.setAttribute("aria-current", "page");
     else t.removeAttribute("aria-current");
   });
-  placeLens(false);
   document.title = `${route.title} · MySkate`;
   document.documentElement.dataset.route = current;
   if (keepScroll) window.scrollTo(0, y);
@@ -193,7 +171,6 @@ function buildContext(state, catalog, status) {
     go,
     update: () => renderRoute({ keepScroll: true }),
     applySettings,
-    syncIce,
     setState(next) {
       ctx.state = next;
       prune(ctx.state);
@@ -284,7 +261,6 @@ function buildContext(state, catalog, status) {
     async startOnboarding() {
       await runOnboarding(ctx);
       applySettings();
-      syncIce({});
       renderRoute();
       requestPersistence();
       await ctx.checkBadges({ silent: true });
@@ -324,8 +300,6 @@ function bindEvents() {
   screenEl.addEventListener("input", onInput);
   screenEl.addEventListener("change", onInput);
   addEventListener("hashchange", onRouteChange);
-  addEventListener("resize", () => placeLens(true));
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => placeLens(true));
 }
 
 function showFatal(error) {
@@ -351,8 +325,6 @@ async function boot() {
   prune(ctx.state);
   if (ctx.state.iceSessions.length !== iceBefore) save();   // sessions that have passed are gone from storage too
   applySettings();
-  ice = createIce($("#ice"), reducedMotion);
-  syncIce({});
   bindEvents();
   current = currentRoute();
   renderRoute();

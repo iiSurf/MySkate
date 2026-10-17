@@ -197,7 +197,6 @@ export function skateActions(ctx) {
       const n = Number(el.dataset.stars);
       const next = before === n ? 0 : n;
       patch(ctx, (x) => setEntry(x, id, { stars: next }));
-      ctx.syncIce({ animate: true });
       ctx.update();
       if (next > before) {
         const buttons = [...document.querySelectorAll(".rating button")];
@@ -214,7 +213,6 @@ export function skateActions(ctx) {
     landed: () => {
       const a = ctx.state.active;
       patch(ctx, (x) => recordTry(x, a.order[a.index], true));
-      ctx.syncIce({ animate: true });
       ctx.update();
     },
     missed: () => {

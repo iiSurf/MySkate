@@ -557,7 +557,6 @@ export function progressActions(ctx) {
       ctx.state.sessions = ctx.state.sessions.filter((s) => s.id !== el.dataset.id);
       ui.open = null;
       ctx.save();
-      ctx.syncIce({});
       ctx.update();
       toast("Session deleted.");
     },

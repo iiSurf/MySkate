@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { nextLevelKey, levelSkillIds, levelLabel } from "../js/catalog.js";
-import { skillStats, levelProgress, suggestNext, iceSkills, totals, landedPct, activeAsSession } from "../js/stats.js";
+import { skillStats, levelProgress, suggestNext, totals, landedPct, activeAsSession } from "../js/stats.js";
 import { bladeHours, bladeInfo, logSharpening } from "../js/blades.js";
 import { newActive, elapsedMs, pauseActive, resumeActive, setEntry, addSkill, finishActive } from "../js/timer.js";
 import { defaultState } from "../js/store.js";
@@ -100,18 +100,6 @@ test("a jump library level suggests jumps and spins", () => {
   const out = suggestNext(state, catalog, new Map(), "2026-10-15", 8);
   const lib = out.filter((s) => s.skillId.startsWith("lib."));
   assert.ok(lib.length >= 3);
-});
-
-test("the ice shows learning, earned, and stale skills in first-practiced order", () => {
-  const ids = levelSkillIds(catalog, PFS);
-  const a = session("2026-08-01", { stars: { [ids[0]]: 5 }, onIceSec: 0 });
-  const b = session("2026-10-10", { stars: { [ids[1]]: 5, [ids[2]]: 2 }, onIceSec: 0 });
-  const list = iceSkills(catalog, skillStats([a, b]), "2026-10-15");
-  const byId = Object.fromEntries(list.map((s) => [s.id, s.state]));
-  assert.equal(byId[ids[0]], "stale");
-  assert.equal(byId[ids[1]], "earned");
-  assert.equal(byId[ids[2]], "learning");
-  assert.equal(list[0].id, ids[0]);
 });
 
 test("totals add up ice time for the week, month, and all time", () => {
