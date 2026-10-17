@@ -1290,3 +1290,68 @@ select.input {
   flex: none;
   scroll-snap-align: center;
 }
+
+/* Test readiness (js/testprep.js): a ring for each part, and the last few ratings of each skill as little squares. */
+
+.rings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4) var(--sp-5);
+}
+
+.ring-box {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.ring {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: conic-gradient(var(--sun) calc(var(--v, 0) * 1%), var(--track) 0);
+}
+
+.ring::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  background: rgba(6, 22, 65, 0.92);
+}
+
+.ring b {
+  position: relative;
+  font: 600 1.15rem/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.pips--mini {
+  gap: 3px;
+  margin: 0;
+}
+
+.pips--mini .pip {
+  width: 11px;
+  height: 11px;
+  border-radius: 4px;
+}
+
+/* A row that is done but is not a checkbox (an earned skating skill) looks like a ticked one. */
+.row--pick .tick[data-on="true"] {
+  background: linear-gradient(180deg, #ffffff, var(--ice));
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.row--pick .tick[data-on="true"] .ic {
+  opacity: 1;
+}
+
+.split > .chip {
+  flex: none;
+  white-space: nowrap;
+}

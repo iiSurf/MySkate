@@ -2,7 +2,8 @@
 
 import { html, fmtMinutes, fmtDate, fmtNum, fmt1, fmtClock, todayISO, daysBetween, addDays } from "../util.js";
 import { icon, medallion, medal, bar, bladeArt, skateSvg, weekBarsHtml } from "../ui/parts.js";
-import { showBadges, showFriends } from "./progress.js";
+import { showBadges, showFriends, showTests } from "./progress.js";
+import { testList, skillsReadiness, freeReadiness, countdown } from "../testprep.js";
 import { board } from "../friends.js";
 import { initials } from "../ui/friends.js";
 import { badgeRatio, progressText } from "../badges.js";
@@ -119,6 +120,25 @@ function bladeTile(ctx) {
   </section>`;
 }
 
+/* The test you are working toward: days to go and how far along you are. Only shown once you have chosen a test. */
+function testTile(ctx, d) {
+  const { state, catalog } = ctx;
+  const goal = state.profile.test && testList(catalog).find((t) => t.id === state.profile.test.id);
+  if (!goal) return "";
+  const skills = skillsReadiness(catalog, goal.levelKey, d.stats);
+  const free = freeReadiness(goal.free, state.testChecks);
+  const cd = countdown(state.profile.test.date, d.today);
+  return html`<section class="card tile" aria-labelledby="test-title">
+    <div class="tile__head"><p class="eyebrow" id="test-title">Your test</p>${cd ? html`<span class="chip ${cd.days < 0 ? "chip--coral" : "chip--gold"}">${cd.label}</span>` : ""}</div>
+    <div class="hours"><span class="num">${goal.name}</span></div>
+    <div class="stats">
+      <div><p class="num stat-n">${skills.earned}/${skills.total}</p><p class="dim">skating skills</p></div>
+      ${free.total ? html`<div><p class="num stat-n">${free.done}/${free.total}</p><p class="dim">free skate</p></div>` : ""}
+    </div>
+    <button class="btn btn--glass btn--small" type="button" data-action="go-tests">Open test readiness</button>
+  </section>`;
+}
+
 /* Where you stand among your friends this week (their numbers are from their cards). Only shown once you have a friend. */
 function friendsTile(ctx) {
   if (!ctx.state.friends.length) return "";
@@ -232,7 +252,7 @@ export function renderHome(ctx) {
     </header>
     ${nudge(ctx)}
     ${heroCard(ctx, d)}
-    <div class="tiles">${xpTile(ctx, d)}${badgeTile(ctx)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
+    <div class="tiles">${xpTile(ctx, d)}${badgeTile(ctx)}${testTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
     ${recent(ctx, d)}`;
 }
 
@@ -274,6 +294,10 @@ export function homeActions(ctx) {
   return {
     "go-plan": () => ctx.go("plan"),
     "go-ice": () => ctx.go("ice"),
+    "go-tests": () => {
+      showTests();
+      ctx.go("progress");
+    },
     "go-friends": () => {
       showFriends();
       ctx.go("progress");

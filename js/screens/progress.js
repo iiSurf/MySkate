@@ -1,7 +1,7 @@
 /* Progress: totals, levels, every skill you have tried, and every session. */
 
-import { html, raw, fmtMinutes, fmtDate, fmt1, addDays, weekKey } from "../util.js";
-import { catDot, catName, miniSkates, bar, medallion, medal } from "../ui/parts.js";
+import { html, raw, fmtMinutes, fmtDate, fmt1, addDays, weekKey, todayISO } from "../util.js";
+import { catDot, catName, miniSkates, bar, medallion, medal, icon } from "../ui/parts.js";
 import { openSheet, confirmSheet, toast, $ } from "../ui/dom.js";
 import { levelProgress, landedPct, minutesOnIce, EARNED_AT } from "../stats.js";
 import { nextLevelKey, levelLabel } from "../catalog.js";
@@ -10,13 +10,15 @@ import { GROUPS, badgeRatio, progressText } from "../badges.js";
 import { shareBadge, shareCardLink, shareCardPicture, copyCardLink } from "../ui/share.js";
 import { board, parseFriendInput } from "../friends.js";
 import { initials, openFriend, openAddFriend } from "../ui/friends.js";
+import { testList, skillsReadiness, freeReadiness, countdown, readinessLabel, skillsToWorkOn } from "../testprep.js";
 
-const ui = { tab: "overview", open: null, filter: "all", board: "week" };
+const ui = { tab: "overview", open: null, filter: "all", board: "week", changeTest: false };
 
 const TABS = [
   ["overview", "Overview"],
   ["badges", "Badges"],
   ["friends", "Friends"],
+  ["tests", "Tests"],
   ["skills", "Skills"],
   ["sessions", "Sessions"],
 ];
@@ -24,6 +26,12 @@ const TABS = [
 /* Open Progress on the trophy case (used by the Badges tile on Home). */
 export function showBadges() {
   ui.tab = "badges";
+}
+
+/* Open Progress on test readiness (used by the Test tile on Home). */
+export function showTests() {
+  ui.tab = "tests";
+  ui.changeTest = false;
 }
 
 /* Open Progress on the friends board (used by the Friends tile on Home and by a friend's link). */
@@ -181,6 +189,62 @@ function friendsTab(ctx) {
   </div>`;
 }
 
+/* Choose the test you are working toward, and its date if you have one. */
+function testChooser(ctx, tests, current) {
+  const goal = ctx.state.profile.test;
+  const option = (t) => html`<option value="${t.id}" ${goal && goal.id === t.id ? "selected" : ""}>${t.name}</option>`;
+  return html`<section class="card card--glow tile stack">
+    <div class="tile__head"><p class="eyebrow">Test readiness</p></div>
+    <h2>Which test are you working toward?</h2>
+    <p class="dim">MySkate keeps score on the skating skills for that test from your ratings, and gives you a checklist for the free skate part to tick off yourself.</p>
+    <label class="field"><span>Test</span><select class="input" id="test-pick"><optgroup label="Standard and Skate United">${tests.filter((t) => !t.adult).map(option)}</optgroup><optgroup label="Adult">${tests.filter((t) => t.adult).map(option)}</optgroup></select></label>
+    <label class="field"><span>Test date (optional)</span><input class="input" id="test-date" type="date" min="${todayISO()}" value="${goal && goal.date ? goal.date : ""}"></label>
+    <p class="status status--warn" role="alert" hidden></p>
+    <div class="cluster"><button class="btn" type="button" data-action="save-test">Start tracking</button>${current ? html`<button class="btn btn--glass" type="button" data-action="cancel-test">Cancel</button>` : ""}</div>
+  </section>`;
+}
+
+function ring(pct, label) {
+  return html`<div class="ring" style="--v:${pct}" role="img" aria-label="${label}"><b>${pct}%</b></div>`;
+}
+
+/* Where you stand for the test you chose: the skating skills (from your ratings) and the free skate checklist (your ticks). */
+function testsTab(ctx, d) {
+  const { state, catalog } = ctx;
+  const tests = testList(catalog);
+  const goal = state.profile.test && tests.find((t) => t.id === state.profile.test.id);
+  if (!goal || ui.changeTest) return testChooser(ctx, tests, goal);
+  const skills = skillsReadiness(catalog, goal.levelKey, d.stats);
+  const free = freeReadiness(goal.free, state.testChecks);
+  const cd = countdown(state.profile.test.date, d.today);
+  const todo = skillsToWorkOn(skills);
+  const note = catalog.freeTests && catalog.freeTests.note;
+  return html`<div class="tiles">
+    <section class="card card--glow tile wide" aria-labelledby="test-title">
+      <div class="tile__head"><p class="eyebrow" id="test-title">Working toward</p><button class="chip" type="button" data-action="change-test">Change test</button></div>
+      <div class="split"><h2>${goal.name}${goal.free ? html` <span class="dim">free skate up to ${goal.free.maxTime}</span>` : ""}</h2>${cd ? html`<span class="chip ${cd.days < 0 ? "chip--coral" : "chip--gold"}">${cd.label}</span>` : ""}</div>
+      ${cd ? html`<p class="dim">${fmtDate(state.profile.test.date, { weekday: "long", month: "long", day: "numeric" })}</p>` : html`<p class="dim">No date set. Change test to add one.</p>`}
+      <div class="rings">
+        <div class="ring-box">${ring(skills.pct, `Skating skills ${skills.pct} percent`)}<p><strong>Skating skills</strong><br><span class="dim">${skills.earned} of ${skills.total} earned · ${readinessLabel(skills.pct)}</span></p></div>
+        ${free.total ? html`<div class="ring-box">${ring(free.pct, `Free skate ${free.pct} percent`)}<p><strong>Free skate</strong><br><span class="dim">${free.done} of ${free.total} ticked · ${readinessLabel(free.pct)}</span></p></div>` : ""}
+      </div>
+    </section>
+    <section class="card tile" aria-labelledby="ss-title">
+      <div class="tile__head"><p class="eyebrow" id="ss-title">Skating skills</p><span class="chip chip--on">${skills.earned} of ${skills.total}</span></div>
+      <div>${skills.rows.map((r) => html`<div class="row row--pick" role="button" tabindex="0" data-action="skill" data-id="${r.skillId}"><span class="tick" aria-hidden="true" data-on="${r.earned}">${icon("check")}</span><span class="grow">${r.name}<br><span class="dim">${r.tried ? `Latest ${r.latest} ${r.latest === 1 ? "skate" : "skates"}, best ${r.best}` : "Not tried yet"}</span></span>${r.recent.length ? html`<span class="pips pips--mini" role="img" aria-label="Last ratings: ${r.recent.join(", ")}">${r.recent.map((n) => html`<i class="pip ${n >= EARNED_AT ? "on" : ""}"></i>`)}</span>` : ""}</div>`)}</div>
+      ${todo.length ? html`<button class="btn btn--glass btn--small" type="button" data-action="plan-test">Plan the ${todo.length} not earned</button>` : html`<p class="note">Every skating skill for this test is earned. Keep them fresh before test day.</p>`}
+    </section>
+    ${goal.free
+      ? html`<section class="card tile" aria-labelledby="fs-title">
+          <div class="tile__head"><p class="eyebrow" id="fs-title">Free skate checklist</p><span class="chip chip--on">${free.done} of ${free.total}</span></div>
+          ${goal.free.also ? html`<p class="note">${goal.free.also}</p>` : ""}
+          ${free.groups.map((g) => html`<p class="eyebrow">${g.group}</p><div>${g.items.map((i) => html`<div class="row row--pick" role="checkbox" tabindex="0" aria-checked="${i.done}" data-action="test-check" data-id="${i.id}"><span class="tick" aria-hidden="true">${icon("check")}</span><span class="grow">${i.text}</span></div>`)}</div>`)}
+          <p class="note">Tick a requirement when you can do it every time. ${note || ""}</p>
+        </section>`
+      : ""}
+  </div>`;
+}
+
 function openBadge(ctx, id) {
   const b = ctx.badges().find((x) => x.id === id);
   if (!b) return;
@@ -248,7 +312,7 @@ function sessionsTab(ctx, d) {
 
 export function renderProgress(ctx) {
   const d = ctx.derive();
-  const body = ui.tab === "overview" ? overview(ctx, d) : ui.tab === "badges" ? badgesTab(ctx) : ui.tab === "friends" ? friendsTab(ctx) : ui.tab === "skills" ? skillsTab(ctx, d) : sessionsTab(ctx, d);
+  const body = ui.tab === "overview" ? overview(ctx, d) : ui.tab === "badges" ? badgesTab(ctx) : ui.tab === "friends" ? friendsTab(ctx) : ui.tab === "tests" ? testsTab(ctx, d) : ui.tab === "skills" ? skillsTab(ctx, d) : sessionsTab(ctx, d);
   return html`
     <header class="screen-head"><div><p class="eyebrow">Look how far you have come</p><h1>Progress</h1></div></header>
     <div class="seg seg--scroll" role="group" aria-label="Section">${TABS.map(([key, label]) => html`<button type="button" data-action="ptab" data-tab="${key}" aria-pressed="${ui.tab === key}">${label}</button>`)}</div>
@@ -313,6 +377,45 @@ export function progressActions(ctx) {
     },
     skill: (el) => openSkill(ctx, el.dataset.id),
     badge: (el) => openBadge(ctx, el.dataset.id),
+    "change-test": () => {
+      ui.changeTest = true;
+      ctx.update();
+    },
+    "cancel-test": () => {
+      ui.changeTest = false;
+      ctx.update();
+    },
+    "save-test": () => {
+      const id = $("#test-pick").value;
+      const date = $("#test-date").value;
+      if (date && date < todayISO()) {
+        const warn = $(".status--warn");
+        warn.textContent = "That date has passed. Pick today or later, or leave it empty.";
+        warn.hidden = false;
+        return;
+      }
+      ctx.state.profile.test = { id, date: date || "" };
+      ui.changeTest = false;
+      ctx.save();
+      ctx.update();
+    },
+    "test-check": (el) => {
+      const checks = ctx.state.testChecks;
+      if (checks[el.dataset.id]) delete checks[el.dataset.id];
+      else checks[el.dataset.id] = true;
+      ctx.save();
+      ctx.update();
+    },
+    "plan-test": () => {
+      const goal = testList(ctx.catalog).find((t) => t.id === ctx.state.profile.test.id);
+      const todo = skillsToWorkOn(skillsReadiness(ctx.catalog, goal.levelKey, ctx.derive().stats));
+      const before = ctx.state.plan.skillIds.length;
+      todo.filter((id) => !ctx.state.plan.skillIds.includes(id)).forEach((id) => ctx.state.plan.skillIds.length < 20 && ctx.state.plan.skillIds.push(id));
+      ctx.save();
+      const added = ctx.state.plan.skillIds.length - before;
+      toast(added ? `Added ${added} ${added === 1 ? "skill" : "skills"} to your plan.` : "They are already in your plan.");
+      ctx.go("plan");
+    },
     board: (el) => {
       ui.board = el.dataset.p;
       ctx.update();
