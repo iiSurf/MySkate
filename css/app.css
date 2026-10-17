@@ -1355,3 +1355,81 @@ select.input {
   flex: none;
   white-space: nowrap;
 }
+
+/* The practice calendar (js/calendar.js) */
+
+.cal,
+.cal-nav {
+  width: 100%;
+  max-width: 440px;
+  margin-inline: auto;
+}
+
+.cal {
+  display: grid;
+  gap: 4px;
+}
+
+.cal-head,
+.cal-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.cal-head span {
+  color: var(--text-faint);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.cal-week {
+  padding: 2px 0;
+  border-radius: 999px;
+}
+
+.cal-week.is-streak {
+  background: linear-gradient(90deg, rgba(255, 217, 138, 0.2), rgba(255, 217, 138, 0.04));
+}
+
+.cal-day,
+.cal-empty {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  min-width: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--text-dim);
+  font: 500 0.98rem/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+button.cal-day {
+  cursor: pointer;
+}
+
+.cal-day.has {
+  background: radial-gradient(circle at 32% 26%, #fff4c9, #ffd98a 45%, #f5a742);
+  color: #4a2f00;
+  font-weight: 600;
+}
+
+.cal-day.today {
+  outline: 2px solid var(--ice-bright);
+  outline-offset: 1px;
+}
+
+.cal-plan {
+  position: absolute;
+  bottom: 14%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 50%;
+  background: var(--ice-bright);
+  box-shadow: 0 0 0 1.5px rgba(6, 22, 65, 0.6);
+}

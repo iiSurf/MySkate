@@ -10,9 +10,11 @@ import { GROUPS, badgeRatio, progressText } from "../badges.js";
 import { shareBadge, shareCardLink, shareCardPicture, copyCardLink } from "../ui/share.js";
 import { board, parseFriendInput } from "../friends.js";
 import { initials, openFriend, openAddFriend } from "../ui/friends.js";
+import { monthGrid, shiftMonth } from "../calendar.js";
+import { occurrencesInWeek, kindName, fmtRange } from "../ice.js";
 import { testList, skillsReadiness, freeReadiness, countdown, readinessLabel, skillsToWorkOn } from "../testprep.js";
 
-const ui = { tab: "overview", open: null, filter: "all", board: "week", changeTest: false };
+const ui = { tab: "overview", open: null, filter: "all", board: "week", changeTest: false, month: null };
 
 const TABS = [
   ["overview", "Overview"],
@@ -77,6 +79,34 @@ function costCard(ctx, d) {
   </section>`;
 }
 
+/* A month of days: gold for the days you skated, a blue dot for ice you picked that is still to come, and a soft bar on the
+   weeks that count toward a streak. Tap a day to see what it holds. */
+function calendarCard(ctx, d) {
+  const ym = ui.month || d.today.slice(0, 7);
+  const g = monthGrid(ym, { sessions: ctx.state.sessions, iceSessions: ctx.state.iceSessions }, d.today);
+  const label = fmtDate(`${ym}-01`, { month: "long", year: "numeric" });
+  const cell = (c) => {
+    if (!c) return html`<span class="cal-empty"></span>`;
+    const said = `${fmtDate(c.date, { weekday: "long", month: "long", day: "numeric" })}${c.sessions ? `: ${c.sessions} ${c.sessions === 1 ? "session" : "sessions"}, ${c.minutes} minutes on ice` : ""}${c.planned ? `, ${c.planned} picked ${c.planned === 1 ? "session" : "sessions"} ahead` : ""}${c.today ? ", today" : ""}`;
+    const body = html`${c.day}${c.planned ? html`<i class="cal-plan" aria-hidden="true"></i>` : ""}`;
+    const cls = `cal-day ${c.sessions ? "has" : ""} ${c.today ? "today" : ""}`;
+    return c.sessions || c.planned ? html`<button class="${cls}" type="button" data-action="cal-day" data-date="${c.date}" aria-label="${said}">${body}</button>` : html`<span class="${cls}" aria-label="${said}">${body}</span>`;
+  };
+  return html`<section class="card tile wide" aria-labelledby="cal-title">
+    <div class="tile__head"><p class="eyebrow" id="cal-title">Practice calendar</p>${ym !== d.today.slice(0, 7) ? html`<button class="chip" type="button" data-action="cal-today">This month</button>` : ""}</div>
+    <div class="weekbar cal-nav">
+      <button class="icon-btn" type="button" data-action="cal-prev" aria-label="Previous month">${icon("left")}</button>
+      <div class="weekbar__label"><strong>${label}</strong><span class="dim">${g.daysSkated ? `${g.daysSkated} ${g.daysSkated === 1 ? "day" : "days"} skated, ${g.sessions} ${g.sessions === 1 ? "session" : "sessions"}, ${fmt1(g.minutes / 60)} h` : "No sessions this month"}</span></div>
+      <button class="icon-btn" type="button" data-action="cal-next" aria-label="Next month">${icon("right")}</button>
+    </div>
+    <div class="cal" role="group" aria-label="${label}">
+      <div class="cal-head" aria-hidden="true">${["M", "T", "W", "T", "F", "S", "S"].map((x) => html`<span>${x}</span>`)}</div>
+      ${g.weeks.map((w) => html`<div class="cal-week ${w.streak ? "is-streak" : ""}">${w.days.map(cell)}</div>`)}
+    </div>
+    <p class="note">Gold days are days you skated. A blue dot is ice you picked on the Ice tab. A glow behind a week means it counts toward your streak.</p>
+  </section>`;
+}
+
 function overview(ctx, d) {
   const { state, catalog } = ctx;
   const { totals, streak, level } = d;
@@ -119,6 +149,7 @@ function overview(ctx, d) {
       </section>
       ${levelCards}
       ${costCard(ctx, d)}
+      ${calendarCard(ctx, d)}
       <section class="card tile wide">
         <div class="tile__head"><p class="eyebrow">Hours by week</p></div>
         ${weeklyChart(ctx, d)}
@@ -243,6 +274,30 @@ function testsTab(ctx, d) {
         </section>`
       : ""}
   </div>`;
+}
+
+/* What one day of the calendar holds: the sessions you skated, and the ice you picked for it. */
+function openDay(ctx, date) {
+  const d = ctx.derive();
+  const sessions = ctx.state.sessions.filter((x) => x.date === date).sort((a, b) => a.startedAt.localeCompare(b.startedAt));
+  const rinkName = (id) => (ctx.state.rinks.find((r) => r.id === id) || { name: "a rink" }).name;
+  const planned = date >= d.today ? occurrencesInWeek(ctx.state.iceSessions.filter((x) => x.pick), weekKey(date)).filter((o) => o.date === date) : [];
+  const sheet = openSheet(
+    html`<h2 class="sheet__title sheet__title--small">${fmtDate(date, { weekday: "long", month: "long", day: "numeric" })}</h2>
+      ${sessions.map((s) => {
+        const xp = d.xp.bySession.get(s.id);
+        return html`<div class="card"><div class="split"><strong>${fmtMinutes(s.onIceSec / 60)} on ice</strong>${xp ? html`<span class="chip chip--gold">+${xp.xp} XP</span>` : ""}</div>
+          ${s.entries.map((e) => {
+            const sk = ctx.catalog.skills.get(e.skillId);
+            return html`<div class="row">${catDot(sk ? sk.cat : "skills")}<span class="grow">${sk ? sk.name : e.skillId}</span>${e.attempts ? html`<span class="chip chip--tag">${e.landed}/${e.attempts}</span>` : ""}${e.stars ? miniSkates(e.stars) : ""}</div>`;
+          })}
+          ${s.note ? html`<p class="note">${s.note}</p>` : ""}</div>`;
+      })}
+      ${planned.length ? html`<div class="card"><p class="eyebrow">Ice you picked</p>${planned.map((o) => html`<div class="row"><span class="grow"><strong>${fmtRange(o.start, o.end)}</strong><br><span class="dim">${kindName(o.kind)} at ${rinkName(o.rinkId)}</span></span></div>`)}</div>` : ""}
+      <div class="sheet__foot"><span></span><button class="btn btn--small" type="button" data-close="done">Done</button></div>`,
+    { label: fmtDate(date, { weekday: "long", month: "long", day: "numeric" }) }
+  );
+  return sheet.closed;
 }
 
 function openBadge(ctx, id) {
@@ -377,6 +432,19 @@ export function progressActions(ctx) {
     },
     skill: (el) => openSkill(ctx, el.dataset.id),
     badge: (el) => openBadge(ctx, el.dataset.id),
+    "cal-prev": () => {
+      ui.month = shiftMonth(ui.month || ctx.derive().today.slice(0, 7), -1);
+      ctx.update();
+    },
+    "cal-next": () => {
+      ui.month = shiftMonth(ui.month || ctx.derive().today.slice(0, 7), 1);
+      ctx.update();
+    },
+    "cal-today": () => {
+      ui.month = null;
+      ctx.update();
+    },
+    "cal-day": (el) => openDay(ctx, el.dataset.date),
     "change-test": () => {
       ui.changeTest = true;
       ctx.update();
