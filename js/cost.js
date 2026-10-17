@@ -5,6 +5,10 @@ import { todayISO } from "./util.js";
 
 export const COST_MAX = 999;
 
+/* Dollars per hour is only shown once there is at least this much time on the ice behind it (15 minutes), so a session that
+   was ended straight away does not make a silly rate. */
+const MIN_HOURS_FOR_RATE = 0.25;
+
 /* A cost to the cent, from a number or the text of a form field, or null when it is empty or not a sensible amount. */
 export function sanitizeCost(v) {
   const n = typeof v === "string" ? (v.trim() === "" ? null : Number(v)) : v;
@@ -28,7 +32,7 @@ function tally(list) {
     total: Math.round(total * 100) / 100,
     hours: Math.round(list.reduce((sum, s) => sum + s.onIceSec / 3600, 0) * 100) / 100,
     perSession: costed.length ? Math.round((total / costed.length) * 100) / 100 : null,
-    perHour: hours > 0 ? Math.round((total / hours) * 100) / 100 : null,
+    perHour: hours >= MIN_HOURS_FOR_RATE ? Math.round((total / hours) * 100) / 100 : null,
   };
 }
 

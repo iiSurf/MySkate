@@ -83,3 +83,11 @@ test("merging keeps the cost you already have on a session", () => {
   const { state } = mergeStates(mine, theirs);
   assert.deepEqual(state.sessions.map((s) => s.cost), [18, 12]);
 });
+
+test("dollars per hour needs at least 15 minutes on the ice behind it", () => {
+  const tiny = costByMonth([costed("2026-10-03", 16, 2)], "2026-10-17", 1)[0];
+  assert.deepEqual([tiny.total, tiny.perSession, tiny.perHour], [16, 16, null], "a session that lasted 2 seconds has no hourly rate");
+  assert.equal(costByMonth([costed("2026-10-03", 16, 900)], "2026-10-17", 1)[0].perHour, 64, "15 minutes is enough: $16 for a quarter hour");
+  assert.equal(costByMonth([costed("2026-10-03", 16, 899)], "2026-10-17", 1)[0].perHour, null);
+  assert.equal(Math.round(costSummary([costed("2026-10-03", 16, 2), costed("2026-10-04", 20, 3600)], "2026-10-17").all.perHour), 36, "short sessions still count once the total is enough");
+});

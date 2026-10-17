@@ -84,13 +84,17 @@ export function levelUp(newLevel, { title = "Level up!", message } = {}) {
   return new Promise((resolve) => {
     function close() {
       document.removeEventListener("keydown", onKey);
+      let finished = false;
       const done = () => {
+        if (finished) return;
+        finished = true;
         overlay.remove();
         resolve();
       };
       if (reducedMotion()) return done();
       overlay.classList.add("out");
       overlay.addEventListener("animationend", done, { once: true });
+      setTimeout(done, 500); // the screen must never stay covered if the browser does not report the fade finishing
     }
     function onKey(event) {
       if (event.key === "Escape") close();
@@ -143,13 +147,17 @@ export function badgeUnlock(badges, { onShare } = {}) {
   return new Promise((resolve) => {
     function close() {
       document.removeEventListener("keydown", onKey);
+      let finished = false;
       const done = () => {
+        if (finished) return;
+        finished = true;
         overlay.remove();
         resolve();
       };
       if (reducedMotion()) return done();
       overlay.classList.add("out");
       overlay.addEventListener("animationend", done, { once: true });
+      setTimeout(done, 500); // the screen must never stay covered if the browser does not report the fade finishing
     }
     function onKey(event) {
       if (event.key === "Escape") close();
