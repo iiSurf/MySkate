@@ -21,7 +21,7 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 - [x] History and progress: per-skill trend, level progress, ice time totals by week and month
 - [x] XP, level bar, and weekly streak
 - [x] Backup: export JSON (full), export CSV (read-only), restore with Merge or Replace, reminder after 7 days without a backup
-- [ ] Deployed on GitHub Pages, Portfolio card filled in, `CLAUDE.md` and `LOG.md` current
+- [x] Deployed on GitHub Pages, Portfolio card filled in, `CLAUDE.md` and `LOG.md` current
 - [x] Placeholder panels where the 3D reference will go (Skate screen, Skill detail)
 
 ### Stretch, in this order

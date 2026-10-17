@@ -184,3 +184,33 @@ A real phone, Safari, the screen wake lock, vibration, and reduced motion. Resto
 ### Next
 
 Turn on GitHub Pages for `MySkate`, check the live site, fill in the Artifact 2 card in the Portfolio, and then the stretch items in `ROADMAP.md`.
+
+## 2026-10-17 (Saturday): live and connected to the Portfolio
+
+### Plan
+
+Check the live site on GitHub Pages, then publish the Artifact 2 card in the Portfolio so MySkate opens from it.
+
+### Changes
+
+- GitHub Pages is on for `main`, root folder. Live: https://iisurf.github.io/MySkate/.
+- The Portfolio's Artifact 2 card (`cards.js` in iiSurf/Portfolio) is now `status: "done"` with the title MySkate, an "Open MySkate" button that goes to the live site, and a reflection the owner approved. The Portfolio's own `LOG.md` has an entry.
+
+### Verified
+
+- On the live site: the app boots, all 233 skills load, no failed requests, no console errors, both fonts load, and the first-run sheet appears. A full run on the live origin (skip setup, plan three skills, start, rate, end, save) saved a session and carved the first track on the ice. The test data was removed afterward.
+- On the live Portfolio: the village shows "Artifact 2, MySkate, Open", the shop shows the reflection, and the "Open MySkate" link goes to https://iisurf.github.io/MySkate/ and opens in a new tab.
+
+### Notes
+
+- All pages under `iisurf.github.io` share one browser storage area, so another project on the same account could read MySkate's saved data. Today that is only the Portfolio, which does not touch it. A backup file is still the safe copy.
+- The reflection is long, and on a small desktop window the shopkeeper's speech bubble covers a few words of it. Shortening it would fix that.
+
+### Not verified
+
+A real phone and Safari. Friend cards, connecting devices by code, and the 3D reference are still on the roadmap.
+
+### Next
+
+Try it on a phone at the rink, then pick from the stretch list in `ROADMAP.md` (friend cards, connect devices, test readiness, encrypted backups, self-hosted fonts).
+
