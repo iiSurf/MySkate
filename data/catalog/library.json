@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "id": "library",
+  "name": "Jump, spin, and element library",
+  "source": {
+    "label": "General figure skating knowledge, not taken from a test chart",
+    "url": ""
+  },
+  "checked": "2026-10-16",
+  "note": "Unverified against an official source. Rotations: single 1, double 2, triple 3; the Axel has an extra half rotation. Quadruple jumps are not included.",
+  "levels": [
+    {
+      "id": "half-and-waltz",
+      "name": "Waltz and half jumps",
+      "skills": [
+        { "id": "lib.waltz-jump", "name": "Waltz jump", "cat": "jumps", "rev": 0.5 },
+        { "id": "lib.half-flip", "name": "Half flip", "cat": "jumps", "rev": 0.5 },
+        { "id": "lib.half-lutz", "name": "Half Lutz", "cat": "jumps", "rev": 0.5 },
+        { "id": "lib.half-loop", "name": "Half loop", "cat": "jumps", "rev": 0.5 }
+      ]
+    },
+    {
+      "id": "single-jumps",
+      "name": "Single jumps",
+      "skills": [
+        { "id": "lib.single-toe-loop", "name": "Single toe loop", "cat": "jumps", "rev": 1 },
+        { "id": "lib.single-salchow", "name": "Single Salchow", "cat": "jumps", "rev": 1 },
+        { "id": "lib.single-loop", "name": "Single loop", "cat": "jumps", "rev": 1 },
+        { "id": "lib.single-flip", "name": "Single flip", "cat": "jumps", "rev": 1 },
+        { "id": "lib.single-lutz", "name": "Single Lutz", "cat": "jumps", "rev": 1 },
+        { "id": "lib.single-axel", "name": "Single Axel", "cat": "jumps", "rev": 1.5 }
+      ]
+    },
+    {
+      "id": "double-jumps",
+      "name": "Double jumps",
+      "skills": [
+        { "id": "lib.double-toe-loop", "name": "Double toe loop", "cat": "jumps", "rev": 2 },
+        { "id": "lib.double-salchow", "name": "Double Salchow", "cat": "jumps", "rev": 2 },
+        { "id": "lib.double-loop", "name": "Double loop", "cat": "jumps", "rev": 2 },
+        { "id": "lib.double-flip", "name": "Double flip", "cat": "jumps", "rev": 2 },
+        { "id": "lib.double-lutz", "name": "Double Lutz", "cat": "jumps", "rev": 2 },
+        { "id": "lib.double-axel", "name": "Double Axel", "cat": "jumps", "rev": 2.5 }
+      ]
+    },
+    {
+      "id": "triple-jumps",
+      "name": "Triple jumps",
+      "skills": [
+        { "id": "lib.triple-toe-loop", "name": "Triple toe loop", "cat": "jumps", "rev": 3 },
+        { "id": "lib.triple-salchow", "name": "Triple Salchow", "cat": "jumps", "rev": 3 },
+        { "id": "lib.triple-loop", "name": "Triple loop", "cat": "jumps", "rev": 3 },
+        { "id": "lib.triple-flip", "name": "Triple flip", "cat": "jumps", "rev": 3 },
+        { "id": "lib.triple-lutz", "name": "Triple Lutz", "cat": "jumps", "rev": 3 },
+        { "id": "lib.triple-axel", "name": "Triple Axel", "cat": "jumps", "rev": 3.5 }
+      ]
+    },
+    {
+      "id": "spins",
+      "name": "Spins",
+      "skills": [
+        { "id": "lib.two-foot-spin", "name": "Two-foot spin", "cat": "spins" },
+        { "id": "lib.upright-spin", "name": "One-foot upright spin (scratch spin)", "cat": "spins" },
+        { "id": "lib.backspin", "name": "Backspin (upright back spin)", "cat": "spins" },
+        { "id": "lib.sit-spin", "name": "Sit spin", "cat": "spins" },
+        { "id": "lib.camel-spin", "name": "Camel spin", "cat": "spins" },
+        { "id": "lib.layback-spin", "name": "Layback spin", "cat": "spins" },
+        { "id": "lib.attitude-spin", "name": "Attitude spin", "cat": "spins" },
+        { "id": "lib.cross-foot-spin", "name": "Cross-foot spin", "cat": "spins" },
+        { "id": "lib.camel-sit-combo", "name": "Camel-sit spin combination", "cat": "spins" },
+        { "id": "lib.change-foot-spin", "name": "Spin with a change of foot", "cat": "spins" },
+        { "id": "lib.flying-camel", "name": "Flying camel spin", "cat": "spins" },
+        { "id": "lib.flying-sit", "name": "Flying sit spin", "cat": "spins" }
+      ]
+    },
+    {
+      "id": "other",
+      "name": "Other elements",
+      "skills": [
+        { "id": "lib.spiral", "name": "Spiral", "cat": "skills" },
+        { "id": "lib.spread-eagle", "name": "Spread eagle", "cat": "skills" },
+        { "id": "lib.ina-bauer", "name": "Ina Bauer", "cat": "skills" },
+        { "id": "lib.split-jump", "name": "Split jump", "cat": "jumps" },
+        { "id": "lib.stag-jump", "name": "Stag jump", "cat": "jumps" },
+        { "id": "lib.ballet-jump", "name": "Ballet jump", "cat": "jumps" },
+        { "id": "lib.split-falling-leaf", "name": "Split falling leaf", "cat": "jumps" },
+        { "id": "lib.step-sequence", "name": "Step sequence", "cat": "skills" },
+        { "id": "lib.choreographic-sequence", "name": "Choreographic sequence", "cat": "skills" }
+      ]
+    }
+  ]
+}

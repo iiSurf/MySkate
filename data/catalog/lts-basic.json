@@ -1,0 +1,93 @@
+{
+  "schema": 1,
+  "id": "lts-basic",
+  "name": "Learn to Skate USA Basic Skills",
+  "source": {
+    "label": "Riedell: Figure Skating Levels, Basic Skills 1-6 (from Learn to Skate USA)",
+    "url": "https://ice-blog.riedellskates.com/figure-skating-levels-basic-skills-1-6/"
+  },
+  "checked": "2026-10-16",
+  "levels": [
+    {
+      "id": "basic-1",
+      "name": "Basic 1",
+      "skills": [
+        { "id": "basic-1.sit-stand", "name": "Sit on the ice and stand up", "cat": "skills" },
+        { "id": "basic-1.march", "name": "March forward across the ice", "cat": "skills" },
+        { "id": "basic-1.two-foot-glide", "name": "Forward two-foot glide", "cat": "skills" },
+        { "id": "basic-1.dip", "name": "Dip", "cat": "skills" },
+        { "id": "basic-1.fwd-swizzles", "name": "Forward swizzles (6-8 in a row)", "cat": "skills" },
+        { "id": "basic-1.bkwd-wiggles", "name": "Backward wiggles (6-8 in a row)", "cat": "skills" },
+        { "id": "basic-1.snowplow-stop", "name": "Beginning snowplow stop (one or both feet)", "cat": "skills" },
+        { "id": "basic-1.two-foot-hop", "name": "Two-foot hop in place", "cat": "jumps", "bonus": true }
+      ]
+    },
+    {
+      "id": "basic-2",
+      "name": "Basic 2",
+      "skills": [
+        { "id": "basic-2.scooter-pushes", "name": "Scooter pushes (right and left)", "cat": "skills" },
+        { "id": "basic-2.fwd-one-foot-glides", "name": "Forward one-foot glides (right and left)", "cat": "skills" },
+        { "id": "basic-2.bkwd-two-foot-glide", "name": "Backward two-foot glide (as long as your height)", "cat": "skills" },
+        { "id": "basic-2.rocking-horse", "name": "Rocking horse (forward swizzle, backward swizzle, repeated twice)", "cat": "skills" },
+        { "id": "basic-2.bkwd-swizzles", "name": "Backward swizzles (6-8 in a row)", "cat": "skills" },
+        { "id": "basic-2.two-foot-turns", "name": "Two-foot turns, forward to backward, in place (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "basic-2.moving-snowplow-stop", "name": "Moving snowplow stop", "cat": "skills" },
+        { "id": "basic-2.curves", "name": "Curves", "cat": "skills", "bonus": true }
+      ]
+    },
+    {
+      "id": "basic-3",
+      "name": "Basic 3",
+      "skills": [
+        { "id": "basic-3.fwd-stroking", "name": "Beginning forward stroking with correct blade use", "cat": "skills" },
+        { "id": "basic-3.half-swizzle-pumps", "name": "Forward half swizzle pumps on a circle (6-8, clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "basic-3.moving-two-foot-turns", "name": "Moving forward-to-backward two-foot turns on a circle (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "basic-3.bkwd-one-foot-glides", "name": "Beginning backward one-foot glides (focus on balance)", "cat": "skills" },
+        { "id": "basic-3.bkwd-snowplow-stop", "name": "Backward snowplow stop (right and left)", "cat": "skills" },
+        { "id": "basic-3.fwd-slalom", "name": "Forward slalom", "cat": "skills" },
+        { "id": "basic-3.fwd-pivots", "name": "Forward pivots (clockwise and counterclockwise)", "cat": "skills", "bonus": true }
+      ]
+    },
+    {
+      "id": "basic-4",
+      "name": "Basic 4",
+      "skills": [
+        { "id": "basic-4.fo-edge", "name": "Forward outside edge on a circle (right and left)", "cat": "skills" },
+        { "id": "basic-4.fi-edge", "name": "Forward inside edge on a circle (right and left)", "cat": "skills" },
+        { "id": "basic-4.fwd-crossovers", "name": "Forward crossovers (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "basic-4.bkwd-half-swizzle-pumps", "name": "Backward half swizzle pumps on a circle (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "basic-4.bkwd-one-foot-glides", "name": "Backward one-foot glides (right and left)", "cat": "skills" },
+        { "id": "basic-4.two-foot-spin", "name": "Beginning two-foot spin (up to two revolutions)", "cat": "spins" },
+        { "id": "basic-4.fwd-lunges", "name": "Forward lunges (both legs)", "cat": "skills", "bonus": true }
+      ]
+    },
+    {
+      "id": "basic-5",
+      "name": "Basic 5",
+      "skills": [
+        { "id": "basic-5.bo-edge", "name": "Backward outside edge on a circle (right and left)", "cat": "skills" },
+        { "id": "basic-5.bi-edge", "name": "Backward inside edge on a circle (right and left)", "cat": "skills" },
+        { "id": "basic-5.bkwd-crossovers", "name": "Backward crossovers (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "basic-5.fo-three-turn", "name": "Forward outside three-turn (right and left)", "cat": "skills" },
+        { "id": "basic-5.adv-two-foot-spin", "name": "Advanced two-foot spin (4-6 revolutions)", "cat": "spins" },
+        { "id": "basic-5.hockey-stop", "name": "Hockey stop (both directions)", "cat": "skills" },
+        { "id": "basic-5.side-toe-hop", "name": "Side toe hop (right and left)", "cat": "jumps", "bonus": true }
+      ]
+    },
+    {
+      "id": "basic-6",
+      "name": "Basic 6",
+      "skills": [
+        { "id": "basic-6.fi-three-turn", "name": "Forward inside three-turn (right and left)", "cat": "skills" },
+        { "id": "basic-6.bkwd-to-fwd-two-foot-turn", "name": "Moving backward-to-forward two-foot turn on a circle (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "basic-6.bkwd-stroking", "name": "Backward stroking", "cat": "skills" },
+        { "id": "basic-6.one-foot-spin", "name": "Beginning one-foot spin (2-4 revolutions, free leg position and entry optional)", "cat": "spins" },
+        { "id": "basic-6.t-stops", "name": "T-stops (right and left)", "cat": "skills" },
+        { "id": "basic-6.bunny-hop", "name": "Bunny hop", "cat": "jumps" },
+        { "id": "basic-6.fwd-spiral", "name": "Forward spiral on a straight line (right or left)", "cat": "skills" },
+        { "id": "basic-6.shoot-the-duck", "name": "Shoot the duck (right or left)", "cat": "skills", "bonus": true }
+      ]
+    }
+  ]
+}

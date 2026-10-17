@@ -1,0 +1,163 @@
+{
+  "schema": 1,
+  "id": "usfs-skating-skills",
+  "name": "U.S. Figure Skating Skating Skills tests",
+  "source": {
+    "label": "U.S. Figure Skating Skater Checklist, Skating Skills (undated); current test names from the 2023 testing structure flier",
+    "url": "https://members.usfsaonline.org/sites/default/files/media-files/Skater%20Checklist_Skating%20Skills.pdf"
+  },
+  "checked": "2026-10-16",
+  "note": "Element lists come from an undated checklist. Confirm against the current rulebook before relying on them for test prep.",
+  "levels": [
+    {
+      "id": "pre-preliminary",
+      "name": "Pre-preliminary Skating Skills",
+      "rule": "5101",
+      "skills": [
+        { "id": "ss.pre-preliminary.fwd-perimeter-stroking", "name": "Forward Perimeter Stroking", "cat": "skills" },
+        { "id": "ss.pre-preliminary.basic-consecutive-edges", "name": "Basic Consecutive Edges", "cat": "skills" },
+        { "id": "ss.pre-preliminary.fwd-spirals", "name": "Forward Right and Left Foot Spirals", "cat": "skills" },
+        { "id": "ss.pre-preliminary.waltz-eight", "name": "Waltz Eight", "cat": "skills" }
+      ]
+    },
+    {
+      "id": "preliminary",
+      "name": "Preliminary Skating Skills",
+      "rule": "5102",
+      "skills": [
+        { "id": "ss.preliminary.fwd-bkwd-crossovers", "name": "Forward and Backward Crossovers", "cat": "skills" },
+        { "id": "ss.preliminary.consecutive-spirals", "name": "Consecutive Outside and Inside Spirals", "cat": "skills" },
+        { "id": "ss.preliminary.fwd-power-three-turns", "name": "Forward Power Three-Turns", "cat": "skills" },
+        { "id": "ss.preliminary.alt-fwd-three-turns", "name": "Alternating Forward Three-Turns", "cat": "skills" },
+        { "id": "ss.preliminary.fwd-circle-eight", "name": "Forward Circle Eight", "cat": "skills" },
+        { "id": "ss.preliminary.alt-bkwd-xovers-bo", "name": "Alternating Backward Crossovers to Backward Outside Edges", "cat": "skills" }
+      ]
+    },
+    {
+      "id": "pre-bronze",
+      "name": "Pre-Bronze Skating Skills",
+      "rule": "5103",
+      "skills": [
+        { "id": "ss.pre-bronze.perimeter-power-stroking", "name": "Forward and Backward Perimeter Power Stroking", "cat": "skills" },
+        { "id": "ss.pre-bronze.fo-bi-three-turns", "name": "FO-BI Three-Turns in the Field", "cat": "skills" },
+        { "id": "ss.pre-bronze.fi-bo-three-turns", "name": "FI-BO Three-Turns in the Field", "cat": "skills" },
+        { "id": "ss.pre-bronze.power-ce-pulls", "name": "Forward and Backward Power Change of Edge Pulls", "cat": "skills" },
+        { "id": "ss.pre-bronze.bkwd-circle-eight", "name": "Backward Circle Eight", "cat": "skills" },
+        { "id": "ss.pre-bronze.five-step-mohawk", "name": "Five-Step Mohawk Sequence", "cat": "skills" }
+      ]
+    },
+    {
+      "id": "bronze",
+      "name": "Bronze Skating Skills",
+      "rule": "5104",
+      "skills": [
+        { "id": "ss.bronze.fwd-power-circle", "name": "Stroking: Forward Power Circle", "cat": "skills" },
+        { "id": "ss.bronze.bkwd-power-circle", "name": "Stroking: Backward Power Circle", "cat": "skills" },
+        { "id": "ss.bronze.eight-step-mohawk", "name": "Eight-Step Mohawk Sequence", "cat": "skills" },
+        { "id": "ss.bronze.free-skate-cross-strokes", "name": "Forward and Backward Free Skate Cross Strokes", "cat": "skills" },
+        { "id": "ss.bronze.bkwd-power-three-turns", "name": "Backward Power Three-Turns", "cat": "skills" },
+        { "id": "ss.bronze.fwd-double-three-turns", "name": "Forward Double Three-Turns", "cat": "skills" }
+      ]
+    },
+    {
+      "id": "pre-silver",
+      "name": "Pre-Silver Skating Skills",
+      "rule": "5105",
+      "skills": [
+        { "id": "ss.pre-silver.bkwd-double-three-turns", "name": "Backward Double Three-Turns", "cat": "skills" },
+        { "id": "ss.pre-silver.spiral-sequence", "name": "Spiral Sequence", "cat": "skills" },
+        { "id": "ss.pre-silver.brackets-sequence", "name": "Brackets in the Field Sequence", "cat": "skills" },
+        { "id": "ss.pre-silver.fwd-twizzles", "name": "Forward Twizzles", "cat": "skills" },
+        { "id": "ss.pre-silver.inside-slide-chasse", "name": "Inside Slide Chasse Pattern", "cat": "skills" }
+      ]
+    },
+    {
+      "id": "silver",
+      "name": "Silver Skating Skills",
+      "rule": "5106",
+      "skills": [
+        { "id": "ss.silver.inside-three-turns-rocker-choctaws", "name": "Inside Three-Turns / Rocker Choctaws", "cat": "skills" },
+        { "id": "ss.silver.outside-counters", "name": "Forward and Backward Outside Counters", "cat": "skills" },
+        { "id": "ss.silver.inside-counters", "name": "Forward and Backward Inside Counters", "cat": "skills" },
+        { "id": "ss.silver.fwd-loops", "name": "Forward Loops", "cat": "skills" },
+        { "id": "ss.silver.bkwd-rocker-choctaw", "name": "Backward Rocker Choctaw Sequence", "cat": "skills" },
+        { "id": "ss.silver.bkwd-twizzles", "name": "Backward Twizzles", "cat": "skills" }
+      ]
+    },
+    {
+      "id": "pre-gold",
+      "name": "Pre-Gold Skating Skills",
+      "rule": "5107",
+      "skills": [
+        { "id": "ss.pre-gold.outside-rockers", "name": "Forward and Backward Outside Rockers", "cat": "skills" },
+        { "id": "ss.pre-gold.inside-rockers", "name": "Forward and Backward Inside Rockers", "cat": "skills" },
+        { "id": "ss.pre-gold.power-pulls", "name": "Power Pulls", "cat": "skills" },
+        { "id": "ss.pre-gold.choctaw-sequence", "name": "Choctaw Sequence", "cat": "skills" },
+        { "id": "ss.pre-gold.bkwd-loop-pattern", "name": "Backward Loop Pattern", "cat": "skills" },
+        { "id": "ss.pre-gold.straight-line-step-sequence", "name": "Straight Line Step Sequence", "cat": "skills" }
+      ]
+    },
+    {
+      "id": "gold",
+      "name": "Gold Skating Skills",
+      "rule": "5108",
+      "skills": [
+        { "id": "ss.gold.sustained-edge-step", "name": "Sustained Edge Step", "cat": "skills" },
+        { "id": "ss.gold.spiral-sequence", "name": "Spiral Sequence", "cat": "skills" },
+        { "id": "ss.gold.bo-power-double-three-to-inside-rockers", "name": "BO Power Double Three-Turns to Power Double Inside Rockers", "cat": "skills" },
+        { "id": "ss.gold.bi-power-double-three-to-outside-rockers", "name": "BI Power Double Three-Turns to Power Double Outside Rockers", "cat": "skills" },
+        { "id": "ss.gold.serpentine-step-sequence", "name": "Serpentine Step Sequence", "cat": "skills" }
+      ]
+    },
+    {
+      "id": "adult-pre-bronze",
+      "name": "Adult Pre-Bronze Skating Skills",
+      "rule": "5111",
+      "skills": [
+        { "id": "ss.adult-pre-bronze.fwd-perimeter-stroking", "name": "Forward Perimeter Stroking", "cat": "skills" },
+        { "id": "ss.adult-pre-bronze.basic-consecutive-edges", "name": "Basic Consecutive Edges", "cat": "skills" },
+        { "id": "ss.adult-pre-bronze.fwd-bkwd-crossovers", "name": "Forward and Backward Crossovers", "cat": "skills" },
+        { "id": "ss.adult-pre-bronze.waltz-eight", "name": "Waltz Eight", "cat": "skills" },
+        { "id": "ss.adult-pre-bronze.fwd-spirals", "name": "Forward Right and Left Foot Spirals", "cat": "skills" }
+      ]
+    },
+    {
+      "id": "adult-bronze",
+      "name": "Adult Bronze Skating Skills",
+      "rule": "5112",
+      "skills": [
+        { "id": "ss.adult-bronze.perimeter-power-stroking", "name": "Forward and Backward Perimeter Power Stroking", "cat": "skills" },
+        { "id": "ss.adult-bronze.fwd-power-three-turns", "name": "Forward Power Three-Turns", "cat": "skills" },
+        { "id": "ss.adult-bronze.alt-bkwd-xovers-bo", "name": "Alternating Backward Crossovers to Backward Outside Edges", "cat": "skills" },
+        { "id": "ss.adult-bronze.fwd-circle-eight", "name": "Forward Circle Eight", "cat": "skills" },
+        { "id": "ss.adult-bronze.five-step-mohawk", "name": "Five-Step Mohawk Sequence", "cat": "skills" }
+      ]
+    },
+    {
+      "id": "adult-silver",
+      "name": "Adult Silver Skating Skills",
+      "rule": "5113",
+      "skills": [
+        { "id": "ss.adult-silver.eight-step-mohawk", "name": "Eight-Step Mohawk Sequence", "cat": "skills" },
+        { "id": "ss.adult-silver.free-skate-cross-strokes", "name": "Forward and Backward Free Skate Cross Strokes", "cat": "skills" },
+        { "id": "ss.adult-silver.fo-bi-three-turns", "name": "FO-BI Three-Turns in the Field", "cat": "skills" },
+        { "id": "ss.adult-silver.fi-bo-three-turns", "name": "FI-BO Three-Turns in the Field", "cat": "skills" },
+        { "id": "ss.adult-silver.consecutive-spirals", "name": "Consecutive Outside and Inside Spirals", "cat": "skills" },
+        { "id": "ss.adult-silver.power-ce-pulls", "name": "Forward and Backward Power Change of Edge Pulls", "cat": "skills" }
+      ]
+    },
+    {
+      "id": "adult-gold",
+      "name": "Adult Gold Skating Skills",
+      "rule": "5114",
+      "skills": [
+        { "id": "ss.adult-gold.fwd-power-circle", "name": "Stroking: Forward Power Circle", "cat": "skills" },
+        { "id": "ss.adult-gold.bkwd-power-circle", "name": "Stroking: Backward Power Circle", "cat": "skills" },
+        { "id": "ss.adult-gold.fwd-double-three-turns", "name": "Forward Double Three-Turns", "cat": "skills" },
+        { "id": "ss.adult-gold.bkwd-double-three-turns", "name": "Backward Double Three-Turns", "cat": "skills" },
+        { "id": "ss.adult-gold.bkwd-circle-eight", "name": "Backward Circle Eight", "cat": "skills" },
+        { "id": "ss.adult-gold.brackets-sequence", "name": "Brackets in the Field Sequence", "cat": "skills" }
+      ]
+    }
+  ]
+}

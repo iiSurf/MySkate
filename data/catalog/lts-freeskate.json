@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "id": "lts-freeskate",
+  "name": "Learn to Skate USA Pre-Free Skate and Free Skate",
+  "source": {
+    "label": "Riedell: Figure Skating Levels, Free Skate 1-6 (from Learn to Skate USA)",
+    "url": "https://ice-blog.riedellskates.com/?p=10546"
+  },
+  "checked": "2026-10-16",
+  "levels": [
+    {
+      "id": "pre-free-skate",
+      "name": "Pre-Free Skate",
+      "skills": [
+        { "id": "pre-free-skate.fi-open-mohawk", "name": "Forward inside open mohawk from a standstill (right to left and left to right)", "cat": "skills" },
+        { "id": "pre-free-skate.bkwd-xovers-bo-glide", "name": "Backward crossovers to a backward outside edge glide (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "pre-free-skate.bo-to-fo-transition", "name": "Backward outside edge to forward outside edge transition (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "pre-free-skate.xover-mohawk-sequence", "name": "Two forward crossovers into a forward inside mohawk, step down and cross behind, one backward crossover, step to a forward inside edge (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "pre-free-skate.mazurka", "name": "Mazurka (right or left)", "cat": "skills" },
+        { "id": "pre-free-skate.bkwd-inside-pivots", "name": "Backward inside pivots (clockwise and counterclockwise)", "cat": "skills", "bonus": true },
+        { "id": "pre-free-skate.one-foot-upright-spin", "name": "One-foot upright spin (3+ revolutions, entry and free foot position optional)", "cat": "spins" },
+        { "id": "pre-free-skate.waltz-jump", "name": "Waltz jump", "cat": "jumps" }
+      ]
+    },
+    {
+      "id": "free-skate-1",
+      "name": "Free Skate 1",
+      "skills": [
+        { "id": "free-skate-1.fwd-power-stroking", "name": "Forward power stroking (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "free-skate-1.consecutive-edges", "name": "Basic forward outside and inside consecutive edges (4-6)", "cat": "skills" },
+        { "id": "free-skate-1.bo-three-turns", "name": "Backward outside three-turns (right and left)", "cat": "skills" },
+        { "id": "free-skate-1.upright-spin-back-xovers", "name": "Upright spin entered from back crossovers (4-6 revolutions)", "cat": "spins" },
+        { "id": "free-skate-1.half-flip", "name": "Half flip", "cat": "jumps" },
+        { "id": "free-skate-1.toe-loop", "name": "Toe loop", "cat": "jumps" },
+        { "id": "free-skate-1.bonus-jump-options", "name": "Waltz jump, side toe hop, waltz jump sequence, or waltz jump, ballet jump, toe loop sequence", "cat": "jumps", "bonus": true }
+      ]
+    },
+    {
+      "id": "free-skate-2",
+      "name": "Free Skate 2",
+      "skills": [
+        { "id": "free-skate-2.alt-spirals", "name": "Alternating forward outside and inside spirals on a continuous axis (two sets)", "cat": "skills" },
+        { "id": "free-skate-2.bkwd-consecutive-edges", "name": "Basic backward outside and inside consecutive edges (4-6)", "cat": "skills" },
+        { "id": "free-skate-2.bi-three-turns", "name": "Backward inside three-turns (right and left)", "cat": "skills" },
+        { "id": "free-skate-2.spiral-variation", "name": "A variation of a forward spiral (skater's choice)", "cat": "skills", "bonus": true },
+        { "id": "free-skate-2.beginning-backspin", "name": "Beginning backspin (1-2 revolutions)", "cat": "spins" },
+        { "id": "free-skate-2.half-lutz", "name": "Half Lutz", "cat": "jumps" },
+        { "id": "free-skate-2.salchow", "name": "Salchow", "cat": "jumps" }
+      ]
+    },
+    {
+      "id": "free-skate-3",
+      "name": "Free Skate 3",
+      "skills": [
+        { "id": "free-skate-3.alt-bkwd-xovers-bo", "name": "Alternating backward crossovers to backward outside edges (four sets)", "cat": "skills" },
+        { "id": "free-skate-3.mohawk-crossover-sequence", "name": "Alternating mohawk and crossover sequence (right to left and left to right)", "cat": "skills" },
+        { "id": "free-skate-3.waltz-three-turns", "name": "Waltz three-turns: forward outside three-turn, backward outside edge glide (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "free-skate-3.toe-step-sequence", "name": "Toe step sequence (skater's choice, a variety of toe steps)", "cat": "skills", "bonus": true },
+        { "id": "free-skate-3.advanced-backspin", "name": "Advanced backspin with free foot in crossed-leg position (3+ revolutions)", "cat": "spins" },
+        { "id": "free-skate-3.loop-jump", "name": "Loop jump", "cat": "jumps" },
+        { "id": "free-skate-3.waltz-toe-or-sal-toe", "name": "Waltz jump into toe loop, or Salchow into toe loop combination", "cat": "jumps" }
+      ]
+    },
+    {
+      "id": "free-skate-4",
+      "name": "Free Skate 4",
+      "skills": [
+        { "id": "free-skate-4.fwd-power-three-turns", "name": "Forward power three-turns (right and left, three sets each)", "cat": "skills" },
+        { "id": "free-skate-4.waltz-eight", "name": "Waltz eight", "cat": "skills" },
+        { "id": "free-skate-4.fwd-to-bkwd-upright-spin", "name": "Forward upright spin to backward upright spin (3 revolutions on each foot)", "cat": "spins" },
+        { "id": "free-skate-4.sit-spin", "name": "Sit spin (3+ revolutions)", "cat": "spins" },
+        { "id": "free-skate-4.half-loop", "name": "Half loop", "cat": "jumps" },
+        { "id": "free-skate-4.flip", "name": "Flip", "cat": "jumps" },
+        { "id": "free-skate-4.split-stag-leaf", "name": "Split jump, stag jump, or split falling leaf", "cat": "jumps", "bonus": true }
+      ]
+    },
+    {
+      "id": "free-skate-5",
+      "name": "Free Skate 5",
+      "skills": [
+        { "id": "free-skate-5.bkwd-power-three-turns", "name": "Backward power three-turns: outside three-turn into mohawk (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "free-skate-5.five-step-mohawk", "name": "Five-step mohawk sequence (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "free-skate-5.camel-spin", "name": "Camel spin (3+ revolutions)", "cat": "spins" },
+        { "id": "free-skate-5.waltz-loop-combo", "name": "Waltz jump into loop jump combination", "cat": "jumps" },
+        { "id": "free-skate-5.lutz", "name": "Lutz jump", "cat": "jumps" },
+        { "id": "free-skate-5.loop-loop", "name": "Loop-loop combination", "cat": "jumps", "bonus": true }
+      ]
+    },
+    {
+      "id": "free-skate-6",
+      "name": "Free Skate 6",
+      "skills": [
+        { "id": "free-skate-6.fwd-power-pulls", "name": "Forward power pulls (right and left)", "cat": "skills" },
+        { "id": "free-skate-6.creative-step-sequence", "name": "Creative step sequence (three-turns, mohawks, and toe steps)", "cat": "skills" },
+        { "id": "free-skate-6.bkwd-outside-pivot", "name": "Backward outside pivot (entry optional)", "cat": "skills", "bonus": true },
+        { "id": "free-skate-6.camel-sit-combo", "name": "Camel-sit spin combination (2+ revolutions in each position)", "cat": "spins" },
+        { "id": "free-skate-6.layback-attitude-cross-foot", "name": "Layback, attitude, or cross-foot spin (3 revolutions)", "cat": "spins" },
+        { "id": "free-skate-6.waltz-half-loop-sal-sequence", "name": "Waltz jump, half loop, Salchow sequence", "cat": "jumps" },
+        { "id": "free-skate-6.beginning-axel", "name": "Beginning Axel", "cat": "jumps" }
+      ]
+    }
+  ]
+}

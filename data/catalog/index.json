@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "tracks": [
+    { "id": "lts-basic", "file": "lts-basic.json", "kind": "curriculum" },
+    { "id": "lts-freeskate", "file": "lts-freeskate.json", "kind": "curriculum" },
+    { "id": "lts-adult", "file": "lts-adult.json", "kind": "curriculum" },
+    { "id": "usfs-skating-skills", "file": "usfs-skating-skills.json", "kind": "tests" },
+    { "id": "library", "file": "library.json", "kind": "library" }
+  ]
+}

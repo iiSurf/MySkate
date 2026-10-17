@@ -13,7 +13,7 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 
 ### Must ship by Sunday 2026-10-18
 
-- [ ] Catalog data files: Learn to Skate USA Basic 1-6, Pre-Free Skate and Free Skate 1-6, Adult 1-6, U.S. Figure Skating Skating Skills tests, and a jump/spin/other library
+- [x] Catalog data files: Learn to Skate USA Basic 1-6, Pre-Free Skate and Free Skate 1-6, Adult 1-6, U.S. Figure Skating Skating Skills tests, and a jump/spin/other library (233 skills, `data/catalog/`)
 - [ ] Level picker, separate for skating skills and free skate (owner starts at Pre-Free Skate), with suggested next skills
 - [ ] Plan screen: pick skills, pick an ice slot (30, 45, 60, 75, 90, 120 minutes, or custom)
 - [ ] Skate mode: booked-slot countdown, actual on-ice timer with pause, skill checklist, 1-5 skate rating, notes, and a landed/missed counter for jumps

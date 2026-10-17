@@ -42,6 +42,10 @@ Two rounds of wireframes (phone and desktop). Round one: plan, skate with a plac
 - Created the repository (by the owner) and cloned it to the workspace.
 - Added `CLAUDE.md`, `ROADMAP.md`, `LOG.md`, and `.gitignore` (ignores `.DS_Store` and PDFs so source documents are never committed).
 
+- Added the catalog in `data/catalog/`: `index.json` plus `lts-basic.json` (45 skills), `lts-freeskate.json` (49), `lts-adult.json` (30), `usfs-skating-skills.json` (66, across 12 tests), and `library.json` (43). Each skill has a permanent id, a name, and a category (`skills`, `jumps`, or `spins`); bonus skills are flagged.
+- Verified with a script: every file parses, all 233 ids are unique, and every category is valid. Level counts match the sources (Basic 1-6 totals 45).
+- Not verified: the content itself against the official Learn to Skate USA documents. The Free Skate lists come from a Riedell page. The U.S. Figure Skating element lists come from an undated checklist. The library is general knowledge.
+
 ### Next
 
-Write the catalog data files, then the app shell, then deploy to Pages and check it live.
+Build the app shell (index.html, styles, JavaScript modules) that loads the catalog, then the level picker and the plan screen, then deploy to Pages and check it live.

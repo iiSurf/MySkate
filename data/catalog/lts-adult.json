@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "id": "lts-adult",
+  "name": "Learn to Skate USA Adult 1-6",
+  "source": {
+    "label": "Learn to Skate USA, Adult 1-6 Free Skate competition manual (2026)",
+    "url": "https://learntoskateusa.com/sites/default/files/2026-08/Free%20Skate%20-%20Adult%201-6.pdf"
+  },
+  "checked": "2026-10-16",
+  "levels": [
+    {
+      "id": "adult-1",
+      "name": "Adult 1",
+      "skills": [
+        { "id": "adult-1.march", "name": "Forward marching", "cat": "skills" },
+        { "id": "adult-1.two-foot-glide", "name": "Forward two-foot glide", "cat": "skills" },
+        { "id": "adult-1.fwd-swizzles", "name": "Forward swizzles (4-6 in a row)", "cat": "skills" },
+        { "id": "adult-1.snowplow-stop", "name": "Forward snowplow stop (two feet or one foot)", "cat": "skills" }
+      ]
+    },
+    {
+      "id": "adult-2",
+      "name": "Adult 2",
+      "skills": [
+        { "id": "adult-2.fwd-skating-width", "name": "Forward skating across the width of the ice", "cat": "skills" },
+        { "id": "adult-2.fwd-one-foot-glides", "name": "Forward one-foot glides", "cat": "skills" },
+        { "id": "adult-2.fwd-slalom", "name": "Forward slalom", "cat": "skills" },
+        { "id": "adult-2.bkwd-skating", "name": "Backward skating", "cat": "skills" },
+        { "id": "adult-2.bkwd-swizzles", "name": "Backward swizzles (4-6 in a row)", "cat": "skills" }
+      ]
+    },
+    {
+      "id": "adult-3",
+      "name": "Adult 3",
+      "skills": [
+        { "id": "adult-3.fwd-stroking", "name": "Forward stroking using the blade properly", "cat": "skills" },
+        { "id": "adult-3.half-swizzle-pumps", "name": "Forward half-swizzle pumps on the circle (6-8 in a row, clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "adult-3.bkwd-to-two-foot-glide", "name": "Backward skating to a long two-foot glide", "cat": "skills" },
+        { "id": "adult-3.fwd-chasses", "name": "Forward chasses on a circle (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "adult-3.bkwd-snowplow-stop", "name": "Backward snowplow stop (right and left)", "cat": "skills" }
+      ]
+    },
+    {
+      "id": "adult-4",
+      "name": "Adult 4",
+      "skills": [
+        { "id": "adult-4.fo-edge", "name": "Forward outside edge on a circle (right and left)", "cat": "skills" },
+        { "id": "adult-4.fi-edge", "name": "Forward inside edge on a circle (right and left)", "cat": "skills" },
+        { "id": "adult-4.fwd-crossovers", "name": "Forward crossovers (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "adult-4.bkwd-one-foot-glides", "name": "Backward one-foot glides (right and left)", "cat": "skills" },
+        { "id": "adult-4.hockey-stop", "name": "Hockey stop (both directions)", "cat": "skills" }
+      ]
+    },
+    {
+      "id": "adult-5",
+      "name": "Adult 5",
+      "skills": [
+        { "id": "adult-5.bo-edge", "name": "Backward outside edge on a circle (right and left)", "cat": "skills" },
+        { "id": "adult-5.bi-edge", "name": "Backward inside edge on a circle (right and left)", "cat": "skills" },
+        { "id": "adult-5.bkwd-crossovers", "name": "Backward crossovers (clockwise and counterclockwise)", "cat": "skills" },
+        { "id": "adult-5.fo-three-turn", "name": "Forward outside three-turn (right and left)", "cat": "skills" },
+        { "id": "adult-5.two-foot-spin", "name": "Beginning two-foot spin (2+ revolutions)", "cat": "spins" }
+      ]
+    },
+    {
+      "id": "adult-6",
+      "name": "Adult 6",
+      "skills": [
+        { "id": "adult-6.fwd-stroking-xover-ends", "name": "Forward stroking with crossover end patterns", "cat": "skills" },
+        { "id": "adult-6.bkwd-stroking-xover-ends", "name": "Backward stroking with crossover end patterns", "cat": "skills" },
+        { "id": "adult-6.fi-three-turn", "name": "Forward inside three-turn (right and left)", "cat": "skills" },
+        { "id": "adult-6.t-stop", "name": "T-stop", "cat": "skills" },
+        { "id": "adult-6.lunge", "name": "Lunge", "cat": "skills" },
+        { "id": "adult-6.two-foot-to-one-foot-spin", "name": "Two-foot spin into one-foot spin (2+ revolutions on one foot)", "cat": "spins" }
+      ]
+    }
+  ]
+}
