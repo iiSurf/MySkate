@@ -46,6 +46,34 @@ Two rounds of wireframes (phone and desktop). Round one: plan, skate with a plac
 - Verified with a script: every file parses, all 233 ids are unique, and every category is valid. Level counts match the sources (Basic 1-6 totals 45).
 - Not verified: the content itself against the official Learn to Skate USA documents. The Free Skate lists come from a Riedell page. The U.S. Figure Skating element lists come from an undated checklist. The library is general knowledge.
 
+## 2026-10-16 (Friday night): style tile
+
+### Plan
+
+The first sketches read as bland, so before building the app, make a small design preview page to approve the look: Duolingo-style fun, Apple-style clarity, Portfolio colors and fonts, glowing lines, subtle background designs, and not too busy.
+
+### Changes
+
+- Added the shared look in `css/`: `tokens.css` (colors, type, spacing, a night theme and a daylight theme), `base.css` (reset and the rink background: faint ice-carve lines and slow snow dots), and `components.css` (chunky pressable buttons, chips, cards, glowing XP bar, gold level badge with a level-up celebration, 1-5 skate rating, skill rows, jump counter, translucent tab bar, dashed 3D placeholder).
+- Added `design/style-tile.html` (with `.css` and `.js`): palette, type, buttons, an interactive XP demo, a rating demo, skill rows, a friends board, and two phone-sized previews (Home and Skate).
+- Added a custom skate icon (inline SVG) used for the rating and tab bar, so the app does not depend on an icon library.
+- Added `.claude/launch.json` with the local server command.
+
+### Verified
+
+Checked in the browser pane at desktop width and at 375px wide: no horizontal overflow, fonts load (Unbounded and Nunito), no console errors. Clicking +20 XP three times levels up from 7 to 8 with the right XP carry-over and 12 sparks. The rating, slot chips, and theme toggle work. Night and daylight themes both render.
+
+Two bugs found and fixed during the check: the level-up sparks were wiped by the XP re-render, and the + Landed / + Missed labels wrapped at phone width.
+
+### Not verified
+
+Reduced-motion behavior was not tested (the CSS rule is in place). Not checked on a real phone, Safari, or with the web fonts blocked. The glow strength and spacing still need the owner's approval.
+
+### Decisions
+
+- One glow per screen: the XP card (Home) or the jump counter (Skate) carries it. Ratings go flat on a screen that already has one.
+- Fonts load from Google Fonts with system fallbacks, as the Portfolio does. If we want zero third-party requests, self-host the fonts later.
+
 ### Next
 
-Build the app shell (index.html, styles, JavaScript modules) that loads the catalog, then the level picker and the plan screen, then deploy to Pages and check it live.
+Owner reviews the style tile. Then build the app shell (index.html, JavaScript modules) that loads the catalog, followed by the level picker and the plan screen, and the Pages deploy.

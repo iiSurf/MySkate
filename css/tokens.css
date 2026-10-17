@@ -1,0 +1,79 @@
+/* MySkate design tokens. "Night rink" is the default; "day" is the daylight rink. */
+
+:root {
+  --font-display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --font-body: "Nunito", -apple-system, "Segoe UI", system-ui, sans-serif;
+
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-pill: 999px;
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+
+  color-scheme: dark;
+
+  --bg: #0f1540;
+  --bg-top: #1d2468;
+  --raised: #171e55;
+  --raised-2: #222b72;
+  --line: rgba(123, 227, 255, 0.16);
+  --line-strong: rgba(123, 227, 255, 0.36);
+
+  --text: #f3f1ff;
+  --text-dim: #b9c1ee;
+  --text-faint: #8d97cf;
+
+  --ice: #4fd0d8;
+  --ice-deep: #2a97a6;
+  --neon: #7be3ff;
+  --on-ice: #06233a;
+
+  --gold: #f2b83f;
+  --gold-deep: #b98515;
+  --on-gold: #3a2600;
+  --rose: #e0457a;
+  --rose-deep: #a62d58;
+  --lavender: #c79be6;
+  --ember: #ef7a3c;
+
+  --glow: 0 0 0 1px rgba(123, 227, 255, 0.55), 0 0 24px rgba(123, 227, 255, 0.28);
+  --glow-soft: 0 0 14px rgba(123, 227, 255, 0.55);
+  --carve: rgba(123, 227, 255, 0.09);
+  --snow: rgba(255, 255, 255, 0.4);
+  --shadow: 0 14px 34px rgba(4, 7, 30, 0.45);
+}
+
+:root[data-theme="day"] {
+  color-scheme: light;
+
+  --bg: #e8f3f9;
+  --bg-top: #ffffff;
+  --raised: #ffffff;
+  --raised-2: #deedf6;
+  --line: rgba(16, 26, 69, 0.12);
+  --line-strong: rgba(16, 26, 69, 0.28);
+
+  --text: #101a45;
+  --text-dim: #3f4b7e;
+  --text-faint: #66729f;
+
+  --ice: #27b8c6;
+  --ice-deep: #1a8d99;
+  --neon: #0a8fb3;
+  --on-ice: #04222f;
+
+  --gold: #f0a91c;
+  --gold-deep: #b27a0c;
+
+  --glow: 0 0 0 1px rgba(10, 143, 179, 0.5), 0 0 22px rgba(10, 143, 179, 0.2);
+  --glow-soft: 0 0 12px rgba(10, 143, 179, 0.4);
+  --carve: rgba(16, 26, 69, 0.07);
+  --snow: rgba(16, 26, 69, 0.16);
+  --shadow: 0 14px 30px rgba(16, 26, 69, 0.14);
+}

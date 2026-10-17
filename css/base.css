@@ -1,0 +1,97 @@
+/* Reset, typography, and the rink background. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 1rem/1.55 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--neon);
+  outline-offset: 3px;
+}
+
+/* Rink background: a soft top light, faint ice-carve lines, and a few slow snow dots. */
+
+.rink-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(1100px 560px at 50% -12%, var(--bg-top), transparent 72%), var(--bg);
+}
+
+.rink-bg svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.rink-bg .carve {
+  fill: none;
+  stroke: var(--carve);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.rink-bg .snow circle {
+  fill: var(--snow);
+}
+
+.rink-bg .snow {
+  animation: snow-drift 38s ease-in-out infinite alternate;
+}
+
+@keyframes snow-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(14px, 22px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

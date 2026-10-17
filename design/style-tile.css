@@ -1,0 +1,174 @@
+/* Layout for the style tile page only. Shared pieces live in ../css/. */
+
+.wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: var(--sp-5) var(--sp-4) 72px;
+  display: grid;
+  gap: var(--sp-6);
+}
+
+.top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.top h1 {
+  font-size: clamp(2.6rem, 9vw, 4.6rem);
+  line-height: 1;
+  margin: var(--sp-2) 0;
+  text-shadow: var(--glow-soft);
+}
+
+.lede {
+  font-size: 1.15rem;
+  color: var(--text-dim);
+}
+
+.block {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.block h2 {
+  font-size: 1.05rem;
+  letter-spacing: 0;
+}
+
+.swatches {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: var(--sp-3);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.sw {
+  display: block;
+  height: 58px;
+  margin-bottom: 6px;
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--line-strong);
+}
+
+.type-grid,
+.two {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--sp-4);
+}
+
+.type-big {
+  font-size: 2.6rem;
+  line-height: 1.1;
+  margin: var(--sp-2) 0;
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.cluster.tight {
+  gap: 6px;
+}
+
+.xp-top {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
+}
+
+.xp-big {
+  font-size: 1.6rem;
+}
+
+.xp-add {
+  margin-left: auto;
+  min-height: 44px;
+  padding: 0 18px;
+}
+
+.rating-label {
+  margin-top: var(--sp-2);
+  color: var(--text-dim);
+  font-weight: 700;
+  min-height: 1.6em;
+}
+
+.slot-line {
+  font-size: 1.1rem;
+}
+
+/* Phone frames */
+
+.phones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-5);
+}
+
+.phone {
+  width: min(100%, 390px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-4) var(--sp-3);
+  border-radius: 44px;
+  border: 1.5px solid var(--line-strong);
+  background: radial-gradient(420px 220px at 50% -6%, var(--bg-top), transparent 75%), var(--bg);
+  box-shadow: var(--shadow);
+}
+
+.phone .tabbar {
+  margin-top: auto;
+}
+
+.timer-card {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.timer {
+  font-size: 2.5rem;
+  line-height: 1.05;
+}
+
+.timer-side {
+  margin-left: auto;
+  text-align: right;
+}
+
+.rules {
+  margin: 0;
+  padding-left: 1.2em;
+  color: var(--text-dim);
+  display: grid;
+  gap: var(--sp-2);
+}
+
+@media (max-width: 480px) {
+  .xp-top {
+    flex-wrap: wrap;
+  }
+
+  .xp-add {
+    margin-left: 0;
+  }
+
+  .phone {
+    border-radius: 32px;
+  }
+}

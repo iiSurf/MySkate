@@ -19,7 +19,9 @@ This is Artifact 2 for TCSS 490. Due Sunday 2026-10-18, 11:59pm. The Canvas subm
 - `ROADMAP.md` is the source of truth for scope: Must, Stretch, Later, plus feature notes and design direction.
 - `LOG.md` records what was planned and what changed, newest entry last.
 - `data/catalog/*.json` holds the skill lists. Skill ids are permanent: saved user data refers to them, so never rename an id.
-- Planned layout: `index.html`, `css/`, `js/`, `data/catalog/`.
+- `css/` holds the shared look: `tokens.css` (colors, type, spacing, night and day themes), `base.css` (reset and rink background), `components.css` (buttons, cards, bars, rating, tab bar). Use the tokens; do not hardcode colors.
+- `design/style-tile.html` is the living look-and-feel reference. Open it through the local server and update it when a component changes.
+- Planned layout: `index.html`, `css/`, `js/`, `data/catalog/`, `design/`.
 
 ## Working agreements
 
