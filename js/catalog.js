@@ -7,7 +7,15 @@ export async function loadCatalog(base = "data/catalog/", fetchFn = (...args) =>
     const data = await (await fetchFn(base + entry.file)).json();
     tracks.push({ id: data.id, name: data.name, kind: entry.kind, source: data.source, note: data.note, levels: data.levels });
   }
-  return buildCatalog(tracks);
+  const catalog = buildCatalog(tracks);
+  /* The free skate checklists for the tests. The app works without them, so a missing file does not stop it loading. */
+  try {
+    const free = await fetchFn(base + "freeskate-tests.json");
+    catalog.freeTests = free.ok === false ? null : await free.json();
+  } catch (err) {
+    catalog.freeTests = null;
+  }
+  return catalog;
 }
 
 export function buildCatalog(tracks) {

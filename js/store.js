@@ -3,6 +3,7 @@
 
 import { sanitizeCost } from "./cost.js";
 import { sanitizeFriend, MAX_FRIENDS } from "./friends.js";
+import { sanitizeTestGoal, sanitizeChecks } from "./testprep.js";
 import { sanitizeRink, sanitizeIceSession, sanitizeIceView, defaultIceView, LIMITS as ICE_LIMITS } from "./ice.js";
 
 export const SCHEMA_VERSION = 1;
@@ -29,6 +30,7 @@ export function defaultState(now = new Date()) {
       defaultCost: null,
       badgesSeen: null,
       cardId: "",
+      test: null,
     },
     blades: { name: "", limitHours: 25, baseHours: 0, countedFrom: now.toISOString() },
     sharpenings: [],
@@ -36,6 +38,7 @@ export function defaultState(now = new Date()) {
     plan: { slotMin: 60, skillIds: [] },
     cues: {},
     friends: [],
+    testChecks: {},
     rinks: [],
     iceSessions: [],
     iceView: defaultIceView(),
@@ -153,6 +156,7 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
       defaultCost: sanitizeCost(p.defaultCost),
       badgesSeen: Array.isArray(p.badgesSeen) ? [...new Set(p.badgesSeen.map((x) => str(x, 60)).filter(Boolean))].slice(0, 100) : null,
       cardId: str(p.cardId, MAX.id),
+      test: sanitizeTestGoal(p.test),
     },
     blades: {
       name: str(b.name, MAX.name),
@@ -172,6 +176,7 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
     },
     cues,
     friends: (Array.isArray(src.friends) ? src.friends : []).map(sanitizeFriend).filter(Boolean).slice(0, MAX_FRIENDS),
+    testChecks: sanitizeChecks(src.testChecks),
     rinks,
     iceSessions,
     iceView,
@@ -252,6 +257,7 @@ export function mergeStates(current, incoming) {
   merged.sharpenings = [...sharp.values()].sort((a, c) => a.date.localeCompare(c.date));
 
   merged.cues = { ...incoming.cues, ...current.cues };
+  merged.testChecks = { ...incoming.testChecks, ...current.testChecks };
 
   /* Rinks and sessions you already have win over the file's copy of the same one; the rest are added. */
   const ice = cleanIce([...current.rinks, ...incoming.rinks], [...current.iceSessions, ...incoming.iceSessions]);

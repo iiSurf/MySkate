@@ -10,7 +10,9 @@ export function realCatalog() {
     const data = JSON.parse(readFileSync(new URL(entry.file, dir), "utf8"));
     return { id: data.id, name: data.name, kind: entry.kind, source: data.source, note: data.note, levels: data.levels };
   });
-  return buildCatalog(tracks);
+  const catalog = buildCatalog(tracks);
+  catalog.freeTests = JSON.parse(readFileSync(new URL("freeskate-tests.json", dir), "utf8"));
+  return catalog;
 }
 
 let n = 0;

@@ -1,0 +1,543 @@
+{
+ "schema": 1,
+ "source": {
+  "label": "U.S. Figure Skating, 2026-27 Singles Test Requirements chart (Version 1.0, 02/27/26)",
+  "url": null
+ },
+ "note": "Our own short summary of the free skate part of each test. Always check the current rulebook and ask your coach: the chart has more detail and it changes each season.",
+ "tests": [
+  {
+   "id": "pre-preliminary",
+   "name": "Pre-Preliminary",
+   "maxTime": "1:40",
+   "items": [
+    {
+     "id": "pre-preliminary.j1",
+     "group": "Jumps",
+     "text": "A waltz jump or a single Axel"
+    },
+    {
+     "id": "pre-preliminary.j2",
+     "group": "Jumps",
+     "text": "Four different jumps: at least two are single jumps, and the other two can be half jumps (half Lutz or half flip) or single jumps"
+    },
+    {
+     "id": "pre-preliminary.j3",
+     "group": "Jumps",
+     "text": "Five jump elements in all, no jump more than twice, and no double jumps. Up to two jump combinations (or a combination and a sequence), limited to two jumps, one may have three"
+    },
+    {
+     "id": "pre-preliminary.s1",
+     "group": "Spins",
+     "text": "Two spins that have different IJS codes (a two-foot spin counts as different from a one-foot spin)"
+    },
+    {
+     "id": "pre-preliminary.s2",
+     "group": "Spins",
+     "text": "One spin in one position: at least 3 revolutions, may change feet, no flying entry"
+    },
+    {
+     "id": "pre-preliminary.s3",
+     "group": "Spins",
+     "text": "One spin that may change positions: at least 3 revolutions, may change feet, no flying entry"
+    },
+    {
+     "id": "pre-preliminary.q1",
+     "group": "Sequences",
+     "text": "One choreographic sequence: at least two different movements (spirals, spread eagles, and so on), clearly visible, with no listed jumps or spins in it"
+    }
+   ]
+  },
+  {
+   "id": "preliminary",
+   "name": "Preliminary",
+   "maxTime": "2:10",
+   "items": [
+    {
+     "id": "preliminary.j1",
+     "group": "Jumps",
+     "text": "A waltz jump or a single Axel"
+    },
+    {
+     "id": "preliminary.j2",
+     "group": "Jumps",
+     "text": "Three different single jumps"
+    },
+    {
+     "id": "preliminary.j3",
+     "group": "Jumps",
+     "text": "One two-jump combination made of two single jumps"
+    },
+    {
+     "id": "preliminary.j4",
+     "group": "Jumps",
+     "text": "Five jump elements in all, no jump more than twice. Jumps with two rotations (Salchow, toe loop, loop) are allowed and count toward the minimums"
+    },
+    {
+     "id": "preliminary.s1",
+     "group": "Spins",
+     "text": "Two spins that have different IJS codes"
+    },
+    {
+     "id": "preliminary.s2",
+     "group": "Spins",
+     "text": "One spin in one position: at least 3 revolutions, may change feet, no flying entry (two one-position spins must be in different basic positions)"
+    },
+    {
+     "id": "preliminary.s3",
+     "group": "Spins",
+     "text": "One spin that may change positions: at least 3 revolutions, may change feet, no flying entry"
+    },
+    {
+     "id": "preliminary.q1",
+     "group": "Sequences",
+     "text": "One choreographic sequence: at least two different movements, clearly visible, with no listed jumps or spins in it"
+    }
+   ]
+  },
+  {
+   "id": "pre-bronze",
+   "name": "Pre-Bronze",
+   "maxTime": "2:10",
+   "items": [
+    {
+     "id": "pre-bronze.j1",
+     "group": "Jumps",
+     "text": "A waltz jump or a single Axel"
+    },
+    {
+     "id": "pre-bronze.j2",
+     "group": "Jumps",
+     "text": "Three different single jumps from the loop, flip, Lutz, or Axel"
+    },
+    {
+     "id": "pre-bronze.j3",
+     "group": "Jumps",
+     "text": "One two-jump combination made of two single jumps"
+    },
+    {
+     "id": "pre-bronze.j4",
+     "group": "Jumps",
+     "text": "Five jump elements in all, no jump more than twice. Jumps with two rotations (except the double Axel) are allowed"
+    },
+    {
+     "id": "pre-bronze.s1",
+     "group": "Spins",
+     "text": "Two spins that have different IJS codes"
+    },
+    {
+     "id": "pre-bronze.s2",
+     "group": "Spins",
+     "text": "One spin combination, with or without a change of foot: at least 6 revolutions, may fly"
+    },
+    {
+     "id": "pre-bronze.s3",
+     "group": "Spins",
+     "text": "One spin in only one position: no change of foot, at least 4 revolutions, may fly"
+    },
+    {
+     "id": "pre-bronze.q1",
+     "group": "Sequences",
+     "text": "One choreographic sequence: at least two different movements, clearly visible, with no listed jumps or spins in it"
+    }
+   ]
+  },
+  {
+   "id": "bronze",
+   "name": "Bronze",
+   "maxTime": "2:40",
+   "items": [
+    {
+     "id": "bronze.j1",
+     "group": "Jumps",
+     "text": "A single Axel"
+    },
+    {
+     "id": "bronze.j2",
+     "group": "Jumps",
+     "text": "Three different single jumps"
+    },
+    {
+     "id": "bronze.j3",
+     "group": "Jumps",
+     "text": "One two-jump combination made of two single jumps"
+    },
+    {
+     "id": "bronze.j4",
+     "group": "Jumps",
+     "text": "Five jump elements in all, no jump more than twice. Double jumps and one triple jump are allowed"
+    },
+    {
+     "id": "bronze.s1",
+     "group": "Spins",
+     "text": "Two spins that have different IJS codes"
+    },
+    {
+     "id": "bronze.s2",
+     "group": "Spins",
+     "text": "One spin combination, with or without a change of foot: at least 8 revolutions, at least 2 in each of 2 different positions, may fly"
+    },
+    {
+     "id": "bronze.s3",
+     "group": "Spins",
+     "text": "One spin in only one position: no change of foot, at least 5 revolutions, may fly"
+    },
+    {
+     "id": "bronze.q1",
+     "group": "Sequences",
+     "text": "One step sequence that fully uses the ice surface"
+    }
+   ]
+  },
+  {
+   "id": "pre-silver",
+   "name": "Pre-Silver",
+   "maxTime": "3:10",
+   "items": [
+    {
+     "id": "pre-silver.j1",
+     "group": "Jumps",
+     "text": "A single Axel"
+    },
+    {
+     "id": "pre-silver.j2",
+     "group": "Jumps",
+     "text": "One double jump"
+    },
+    {
+     "id": "pre-silver.j3",
+     "group": "Jumps",
+     "text": "One two-jump combination with at least one double jump"
+    },
+    {
+     "id": "pre-silver.j4",
+     "group": "Jumps",
+     "text": "Three more single-jump elements (they may repeat jumps already done)"
+    },
+    {
+     "id": "pre-silver.j5",
+     "group": "Jumps",
+     "text": "Six jump elements in all, no jump more than twice. Up to three jump combinations (or two and a sequence)"
+    },
+    {
+     "id": "pre-silver.s1",
+     "group": "Spins",
+     "text": "Two spins that have different IJS codes, and one of the two must have a flying entry"
+    },
+    {
+     "id": "pre-silver.s2",
+     "group": "Spins",
+     "text": "One spin combination, with or without a change of foot: at least 8 revolutions, at least 2 in each position"
+    },
+    {
+     "id": "pre-silver.s3",
+     "group": "Spins",
+     "text": "One spin in only one position: at least 5 revolutions, may change feet"
+    },
+    {
+     "id": "pre-silver.q1",
+     "group": "Sequences",
+     "text": "One step sequence that fully uses the ice surface"
+    }
+   ],
+   "also": "Also the Adult Intermediate test (3:10)."
+  },
+  {
+   "id": "silver",
+   "name": "Silver",
+   "maxTime": "3:40",
+   "items": [
+    {
+     "id": "silver.j1",
+     "group": "Jumps",
+     "text": "A single Axel"
+    },
+    {
+     "id": "silver.j2",
+     "group": "Jumps",
+     "text": "Three different double jumps"
+    },
+    {
+     "id": "silver.j3",
+     "group": "Jumps",
+     "text": "One two-jump combination in which both jumps have at least two rotations"
+    },
+    {
+     "id": "silver.j4",
+     "group": "Jumps",
+     "text": "One more single-jump element (it may repeat a jump already done)"
+    },
+    {
+     "id": "silver.j5",
+     "group": "Jumps",
+     "text": "Six jump elements in all, no jump more than twice. Extra jumps are allowed"
+    },
+    {
+     "id": "silver.s1",
+     "group": "Spins",
+     "text": "Three spins that have different IJS codes"
+    },
+    {
+     "id": "silver.s2",
+     "group": "Spins",
+     "text": "One spin combination, with or without a change of foot: at least 10 revolutions, at least 2 in each position"
+    },
+    {
+     "id": "silver.s3",
+     "group": "Spins",
+     "text": "One flying spin with no change of foot or position: at least 6 revolutions"
+    },
+    {
+     "id": "silver.s4",
+     "group": "Spins",
+     "text": "One choreographic spin: at least 3 consecutive revolutions on one or two blades"
+    },
+    {
+     "id": "silver.q1",
+     "group": "Sequences",
+     "text": "One choreographic sequence, clearly visible"
+    }
+   ],
+   "also": "Also the Adult Novice test (3:10)."
+  },
+  {
+   "id": "pre-gold",
+   "name": "Pre-Gold",
+   "maxTime": "3:40",
+   "items": [
+    {
+     "id": "pre-gold.j1",
+     "group": "Jumps",
+     "text": "A single Axel"
+    },
+    {
+     "id": "pre-gold.j2",
+     "group": "Jumps",
+     "text": "Four different double jumps, one of which is a double flip, double Lutz, or double Axel"
+    },
+    {
+     "id": "pre-gold.j3",
+     "group": "Jumps",
+     "text": "One two-jump combination in which both jumps have at least two rotations"
+    },
+    {
+     "id": "pre-gold.j4",
+     "group": "Jumps",
+     "text": "Six jump elements in all, no jump more than twice. Extra jumps are allowed"
+    },
+    {
+     "id": "pre-gold.s1",
+     "group": "Spins",
+     "text": "Three spins that have different IJS codes"
+    },
+    {
+     "id": "pre-gold.s2",
+     "group": "Spins",
+     "text": "One spin combination: at least 10 revolutions, all 3 basic positions with at least 2 revolutions in each"
+    },
+    {
+     "id": "pre-gold.s3",
+     "group": "Spins",
+     "text": "One spin in one position: at least 6 revolutions, may change feet"
+    },
+    {
+     "id": "pre-gold.s4",
+     "group": "Spins",
+     "text": "One choreographic spin: at least 3 consecutive revolutions on one or two blades"
+    },
+    {
+     "id": "pre-gold.q1",
+     "group": "Sequences",
+     "text": "One choreographic sequence, clearly visible"
+    }
+   ],
+   "also": "Also the Adult Junior test (3:40)."
+  },
+  {
+   "id": "gold",
+   "name": "Gold",
+   "maxTime": "4:10",
+   "items": [
+    {
+     "id": "gold.j1",
+     "group": "Jumps",
+     "text": "A single Axel"
+    },
+    {
+     "id": "gold.j2",
+     "group": "Jumps",
+     "text": "Three different double jumps, one of which is a double flip, double Lutz, or double Axel"
+    },
+    {
+     "id": "gold.j3",
+     "group": "Jumps",
+     "text": "Two two-jump combinations, each with two jumps of at least two rotations"
+    },
+    {
+     "id": "gold.j4",
+     "group": "Jumps",
+     "text": "Six jump elements in all, no jump more than twice. Extra jumps are allowed"
+    },
+    {
+     "id": "gold.s1",
+     "group": "Spins",
+     "text": "Three spins that have different IJS codes"
+    },
+    {
+     "id": "gold.s2",
+     "group": "Spins",
+     "text": "One spin combination: at least 10 revolutions, all 3 basic positions with at least 2 revolutions in each"
+    },
+    {
+     "id": "gold.s3",
+     "group": "Spins",
+     "text": "One spin in one position: at least 6 revolutions, may change feet"
+    },
+    {
+     "id": "gold.s4",
+     "group": "Spins",
+     "text": "One choreographic spin: at least 3 consecutive revolutions on one or two blades"
+    },
+    {
+     "id": "gold.q1",
+     "group": "Sequences",
+     "text": "One step sequence that fully uses the ice surface"
+    },
+    {
+     "id": "gold.q2",
+     "group": "Sequences",
+     "text": "One choreographic sequence, clearly visible"
+    }
+   ],
+   "also": "Also the Adult Senior test (3:40)."
+  },
+  {
+   "id": "adult-pre-bronze",
+   "name": "Adult Pre-Bronze",
+   "maxTime": "1:40",
+   "items": [
+    {
+     "id": "adult-pre-bronze.j1",
+     "group": "Jumps",
+     "text": "Two different half jumps or allowable single jumps (no single Lutz, no single Axel, no double or triple jumps)"
+    },
+    {
+     "id": "adult-pre-bronze.j2",
+     "group": "Jumps",
+     "text": "Two jump elements in all. Each jump may repeat only once, and only in a combination or sequence"
+    },
+    {
+     "id": "adult-pre-bronze.s1",
+     "group": "Spins",
+     "text": "Two spins that have different IJS codes, each at least 3 revolutions, with no flying entry (a two-foot spin counts as different from a one-foot spin)"
+    },
+    {
+     "id": "adult-pre-bronze.q1",
+     "group": "Sequences",
+     "text": "Connecting steps throughout the program"
+    }
+   ]
+  },
+  {
+   "id": "adult-bronze",
+   "name": "Adult Bronze",
+   "maxTime": "1:50",
+   "items": [
+    {
+     "id": "adult-bronze.j1",
+     "group": "Jumps",
+     "text": "Three different jumps chosen from the single toe loop, Salchow, loop, flip, or Lutz"
+    },
+    {
+     "id": "adult-bronze.j2",
+     "group": "Jumps",
+     "text": "One two-jump or three-jump combination of a waltz jump and/or allowable single jumps (no turn or change of foot between jumps)"
+    },
+    {
+     "id": "adult-bronze.j3",
+     "group": "Jumps",
+     "text": "Four jump elements in all. No double or triple jumps, and no single Axel"
+    },
+    {
+     "id": "adult-bronze.s1",
+     "group": "Spins",
+     "text": "Two spins that have different IJS codes. A spin with a change of foot needs at least 3 revolutions on each foot, and each position needs at least 2 revolutions to count"
+    },
+    {
+     "id": "adult-bronze.q1",
+     "group": "Sequences",
+     "text": "One step sequence (it may include skating skills and spirals, and may include jumps)"
+    }
+   ]
+  },
+  {
+   "id": "adult-silver",
+   "name": "Adult Silver",
+   "maxTime": "2:10",
+   "items": [
+    {
+     "id": "adult-silver.j1",
+     "group": "Jumps",
+     "text": "Three different single jumps, two chosen from the single loop, flip, Lutz, or Axel"
+    },
+    {
+     "id": "adult-silver.j2",
+     "group": "Jumps",
+     "text": "One two-jump or three-jump combination that includes two single jumps"
+    },
+    {
+     "id": "adult-silver.j3",
+     "group": "Jumps",
+     "text": "One jump sequence, or another jump combination, made of waltz jumps or one-revolution jumps"
+    },
+    {
+     "id": "adult-silver.j4",
+     "group": "Jumps",
+     "text": "Five jump elements in all. All single jumps are allowed, and no double or triple jumps"
+    },
+    {
+     "id": "adult-silver.s1",
+     "group": "Spins",
+     "text": "Two spins that have different IJS codes. A spin with a change of foot needs at least 3 revolutions on each foot, and each position needs at least 2 revolutions to count"
+    },
+    {
+     "id": "adult-silver.q1",
+     "group": "Sequences",
+     "text": "One step sequence, clearly visible and identifiable (it may include skating skills and spirals, and may include jumps)"
+    }
+   ]
+  },
+  {
+   "id": "adult-gold",
+   "name": "Adult Gold",
+   "maxTime": "2:40",
+   "items": [
+    {
+     "id": "adult-gold.j1",
+     "group": "Jumps",
+     "text": "Four different single or allowable double jumps, two chosen from the single Lutz, single Axel, double toe loop, or double Salchow"
+    },
+    {
+     "id": "adult-gold.j2",
+     "group": "Jumps",
+     "text": "One two-jump or three-jump combination or sequence that includes two jumps of at least one rotation"
+    },
+    {
+     "id": "adult-gold.j3",
+     "group": "Jumps",
+     "text": "Five jump elements in all. At most one double jump in each combination or sequence. No double loop, flip, Lutz, or Axel, and no triple jumps"
+    },
+    {
+     "id": "adult-gold.s1",
+     "group": "Spins",
+     "text": "Three spins that have different IJS codes. A spin with a change of foot needs at least 4 revolutions on each foot, other spins at least 4, and each position needs at least 2 revolutions to count"
+    },
+    {
+     "id": "adult-gold.q1",
+     "group": "Sequences",
+     "text": "One step sequence, clearly visible and identifiable (it may include skating skills and spirals, and may include jumps)"
+    }
+   ]
+  }
+ ]
+}
