@@ -76,4 +76,39 @@ Reduced-motion behavior was not tested (the CSS rule is in place). Not checked o
 
 ### Next
 
-Owner reviews the style tile. Then build the app shell (index.html, JavaScript modules) that loads the catalog, followed by the level picker and the plan screen, and the Pages deploy.
+Owner reviews the style tile. (Feedback came back the same night; see round two below.)
+
+## 2026-10-16 (Friday night): style tile, round two
+
+### Plan
+
+Owner feedback on round one: the skates should be beautiful enough to be worth earning (a white Edea boot with gold trim was the reference); the color had no life or purpose; wants a bigger, bouncier XP celebration; wants the background to feel like looking up from under a frozen lake at skate traces, spin swirls, and a sparkle glow, in ice cyan, deep blue, ice white, and snow; prefers Bodoni, Futura, Neue Machina, Söhne, or Satoshi type; wants an Apple liquid glass feel; and wants a sunrise or golden hour theme instead of night and day.
+
+### Changes
+
+- Replaced the night/daylight themes with one golden hour theme and a light picker (sunrise, golden hour, midday, dusk) driven by `data-light`.
+- Background: new generated art `assets/ice-traces.svg` (made by `design/make-ice-traces.py`): glide lines, crossover scallops, a figure eight, two spin spirals, a dotted toe-pick trail, and fine scratches, with a glow. Layered with a warm low sun, twinkling sparkles, snow flecks, and a vignette.
+- Color with jobs: blue is learning, gold is earned, coral is caution. Skill-type dots (cyan skills, gold jumps, lavender spins). Progress bars warm from ice to gold as they fill; the sharpening bar warms to coral.
+- Skate art: an illustrated white-and-gold figure skate (mesh windows, crisscross laces with gold hooks, gold posts, steel blade with a toe pick) used for ratings. Unearned skates are gray ghosts. Earning bounces them in with sparkles. Navigation keeps a simple line skate icon.
+- Type: Bodoni Moda (display, italic titles, numerals) and Jost (UI), replacing Unbounded and Nunito. Satoshi would also work; Neue Machina and Söhne need paid licenses.
+- Liquid glass components: cards, chips, buttons, and the tab bar are translucent with a blurred backdrop, a bright top edge, and a soft highlight. Buttons squish and spring. The tab bar has a lens that slides under the current tab.
+- Level-up celebration: a full-screen overlay with rotating rays, a gold medallion that pops in, 58 confetti pieces and stars, a "Level up!" title, and a vibration on phones. "+20 XP" floats up on every tap, and the XP bar fills with a spring and a moving sheen.
+
+### Verified
+
+Checked in the browser pane at desktop width and 375px: no overflow, Bodoni Moda and Jost load, no console errors. The rating bounces in and shows the label. Three XP taps level up from 7 to 8 and open the overlay (rays, medallion, title, button). Escape closes it, returns focus to the XP button, and pops the level badge. The tab lens lands under the current tab on both phone previews. Sunrise, midday, dusk, and golden hour all render.
+
+Found and fixed along the way: the first golden hour sun blended into a gray-mauve; it is now a gold-to-rose-to-lilac gradient.
+
+### Not verified
+
+Reduced-motion behavior (the CSS and JavaScript handle it but it was not exercised). A real phone and Safari, where backdrop blur and the vibration may differ. The overlay's confetti was only seen as it faded; its motion was not watched. Pressing Escape through the pane's key tool did not close the overlay, but dispatching the same keydown event did, so the handler works. The skate art was checked large and small but not by a skater's eye.
+
+### Decisions
+
+- Google Fonts only (Bodoni Moda, Jost). Fonts that need paid licenses are out.
+- The glow rule stays: one glow per screen.
+
+### Next
+
+Owner reviews round two. Then build the app shell (index.html, JavaScript modules) that loads the catalog, followed by the level picker and the plan screen, and the Pages deploy.

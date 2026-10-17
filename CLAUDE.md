@@ -19,9 +19,10 @@ This is Artifact 2 for TCSS 490. Due Sunday 2026-10-18, 11:59pm. The Canvas subm
 - `ROADMAP.md` is the source of truth for scope: Must, Stretch, Later, plus feature notes and design direction.
 - `LOG.md` records what was planned and what changed, newest entry last.
 - `data/catalog/*.json` holds the skill lists. Skill ids are permanent: saved user data refers to them, so never rename an id.
-- `css/` holds the shared look: `tokens.css` (colors, type, spacing, night and day themes), `base.css` (reset and rink background), `components.css` (buttons, cards, bars, rating, tab bar). Use the tokens; do not hardcode colors.
+- `css/` holds the shared look: `tokens.css` (colors, type, spacing, the golden hour theme and its sunrise, midday, and dusk light variants), `base.css` (reset and the underwater rink background), `components.css` (liquid glass cards, buttons, bars, skate rating, tab bar, level-up celebration). Use the tokens; do not hardcode colors.
+- `assets/ice-traces.svg` is the skate-trace background art. `design/make-ice-traces.py` regenerates it.
 - `design/style-tile.html` is the living look-and-feel reference. Open it through the local server and update it when a component changes.
-- Planned layout: `index.html`, `css/`, `js/`, `data/catalog/`, `design/`.
+- Planned layout: `index.html`, `css/`, `js/`, `data/catalog/`, `assets/`, `design/`.
 
 ## Working agreements
 
@@ -36,4 +37,4 @@ This is Artifact 2 for TCSS 490. Due Sunday 2026-10-18, 11:59pm. The Canvas subm
 
 ## Design
 
-Fun and polished, in the spirit of Duolingo's friendliness and Apple's clarity, with subtle nods to the Portfolio site (dusk navy, ice-cyan glow, Unbounded plus Nunito fonts). Calmer than the Portfolio: one glow per screen, faint ice-carve lines in the background, chunky rounded buttons. Details are in `ROADMAP.md`.
+Professional and modern, but fun: Apple-style liquid glass, bouncy Duolingo-style rewards. Golden hour, seen from under the ice: deep water, ice cyan, ice white, snow flecks, with a low gold sun glowing through skate traces and sparkles. Fonts: Bodoni Moda for big moments and numbers, Jost for everything else. Color has jobs: blue is learning, gold is earned, coral is caution. One glow per screen. Earned skates are the white-and-gold illustration; unearned ones are ghosts. Details are in `ROADMAP.md`.

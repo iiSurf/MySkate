@@ -1,4 +1,4 @@
-/* Reset, typography, and the rink background. */
+/* Reset, typography, and the rink background: the view from under the ice. */
 
 *,
 *::before,
@@ -13,9 +13,9 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--bg);
+  background: var(--deep-0);
   color: var(--text);
-  font: 400 1rem/1.55 var(--font-body);
+  font: 400 1rem/1.55 var(--font-ui);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -31,8 +31,8 @@ h2,
 h3 {
   font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  letter-spacing: -0.01em;
+  line-height: 1.12;
 }
 
 button {
@@ -41,11 +41,11 @@ button {
 }
 
 :focus-visible {
-  outline: 3px solid var(--neon);
+  outline: 3px solid var(--ice-bright);
   outline-offset: 3px;
 }
 
-/* Rink background: a soft top light, faint ice-carve lines, and a few slow snow dots. */
+/* Layers, back to front: water, sun, skate traces, sparkles, vignette. */
 
 .rink-bg {
   position: fixed;
@@ -53,37 +53,73 @@ button {
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  background: radial-gradient(1100px 560px at 50% -12%, var(--bg-top), transparent 72%), var(--bg);
+  background:
+    radial-gradient(900px 620px at 16% -4%, rgba(120, 225, 255, 0.22), transparent 66%),
+    linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 42%, var(--sky-bot) 100%);
 }
 
-.rink-bg svg {
+/* The low sun, glowing through the ice: gold at the core, then peach, rose, and lilac before it meets the water. */
+.rink-bg__sun {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(820px 500px at var(--sun-x) -10%, var(--sun-stops));
+}
+
+.rink-bg__traces {
+  position: absolute;
+  inset: 0;
+  background: url("../assets/ice-traces.svg") center / cover no-repeat;
+  mix-blend-mode: screen;
+  opacity: 0.66;
+}
+
+.rink-bg__sparkles {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
 
-.rink-bg .carve {
-  fill: none;
-  stroke: var(--carve);
-  stroke-width: 2;
-  stroke-linecap: round;
+.rink-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 38%, transparent 52%, rgba(2, 8, 30, 0.55) 100%);
 }
 
-.rink-bg .snow circle {
+.sp {
+  fill: var(--ice-white);
+  filter: drop-shadow(0 0 5px rgba(166, 241, 255, 0.9));
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: twinkle 3.6s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+}
+
+.fleck {
   fill: var(--snow);
+  opacity: 0.55;
+  animation: drift 40s ease-in-out infinite alternate;
 }
 
-.rink-bg .snow {
-  animation: snow-drift 38s ease-in-out infinite alternate;
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.55);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-@keyframes snow-drift {
+@keyframes drift {
   from {
     transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate3d(14px, 22px, 0);
+    transform: translate3d(12px, 20px, 0);
   }
 }
 
@@ -93,5 +129,9 @@ button {
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+
+  .sp {
+    opacity: 0.8;
   }
 }

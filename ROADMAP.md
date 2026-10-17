@@ -116,11 +116,16 @@ Skill names are facts about a curriculum. Our files list names with a link to th
 
 Feedback on the first sketches: good and professional, but bland. The goal is fun to open, like Duolingo or a typical Apple app, with subtle notes from the Portfolio site, which is too busy to copy outright. Glowing lines and subtle background designs are welcome.
 
-- Theme: "rink at night" by default. Portfolio cues: dusk navy `#151a4a`, deep navy `#101a45`, lake purple `#31206e`, ice `#4fd0d8`, neon `#7be3ff`, rose `#e0457a`, gold `#f2b83f`, cream `#fff8f3`. A light "daylight rink" theme can follow, so keep colors in CSS variables.
-- Type: Unbounded for display text and numbers, Nunito for body, both from Google Fonts. Pill shapes (999px radius) for buttons and chips, 16-20px radius for cards.
-- Duolingo-style fun: chunky buttons with a darker bottom edge that presses in, an XP bar that fills with a glow, a short celebration when a level or streak is earned, friendly empty states.
-- Apple-style clarity: generous spacing, one clear action per screen, a translucent bottom tab bar on phones, a sidebar on desktop.
-- Glow and background: glowing ice-blue lines on progress bars and the active card; faint ice-carve arcs behind content; optional slow snow on Home only. One glow per screen so it stays calm.
+Round two feedback (after the first style tile): skates need to be beautiful so they are worth earning (reference: a white Edea boot with gold trim); color should have life and purpose, not just be present; a bigger, bouncier XP celebration; background like looking up from under a frozen lake at skate traces and spin swirls with a sparkle glow; colors of ice cyan, deep blue, ice-rink white, and snow; type from Bodoni, Futura, Neue Machina, Söhne, or Satoshi; liquid glass like Apple's newest iOS; a sunrise or golden hour theme instead of night and day.
+
+- Theme: golden hour, seen from under the ice. Light variants (sunrise, golden hour, midday, dusk) swap the sky and sun through `data-light`. Later idea: follow the real time of day.
+- Color has jobs. Deep water: surfaces. Ice cyan: actions and learning. Ice white: text and highlights. Gold: earned (XP, streaks, earned skates, mastered progress). Coral: caution. Skill types: skating skills cyan (flow), jumps gold (air), spins lavender (rotation). Progress bars warm from ice to gold as they fill; the sharpening bar warms to coral.
+- Skate art: unearned skates are gray ghosts. Earned skates are the white boot with gold trim, mesh windows, and a steel blade. Earning one bounces it in with sparkles. The simple line skate is only for navigation icons.
+- Type: Bodoni Moda (italic for titles, numerals for XP and levels) and Jost (UI and body), from Google Fonts with system fallbacks. Both are free. Satoshi would also work. Neue Machina and Söhne need paid licenses, so they are out for now.
+- Liquid glass: translucent cards with a blurred, saturated backdrop, a bright top edge, and a soft specular highlight. Pill buttons and chips are tinted glass that squish and spring back. The tab bar is a floating glass capsule with a lens that slides under the current tab.
+- Rewards: the XP bar fills with a spring and a moving sheen, "+20 XP" floats up, and a level-up takes over the screen with rays, a gold medallion that pops in, confetti stars, and a vibration on phones. Reduced motion shows the same screen without movement.
+- Background layers, back to front: water, low sun, skate traces (glide lines, crossovers, a figure eight, two spin spirals, a dotted toe-pick trail, scratches), twinkling sparkles, snow flecks, a vignette.
+- One glow per screen: gold when it is about reward, ice when it is about the action in front of you.
 - Motion: everything animated has a reduced-motion off state.
 - Placeholders: dashed "3D reference coming soon" panels on the Skate and Skill detail screens.
 

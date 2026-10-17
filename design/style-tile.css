@@ -3,7 +3,7 @@
 .wrap {
   max-width: 1040px;
   margin: 0 auto;
-  padding: var(--sp-5) var(--sp-4) 72px;
+  padding: var(--sp-5) var(--sp-4) 80px;
   display: grid;
   gap: var(--sp-6);
 }
@@ -12,20 +12,27 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: var(--sp-4);
+  gap: var(--sp-5);
   flex-wrap: wrap;
 }
 
 .top h1 {
-  font-size: clamp(2.6rem, 9vw, 4.6rem);
-  line-height: 1;
   margin: var(--sp-2) 0;
-  text-shadow: var(--glow-soft);
+  font-size: clamp(3.2rem, 11vw, 5.8rem);
+  font-style: italic;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 0 40px rgba(255, 200, 120, 0.5);
 }
 
 .lede {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   color: var(--text-dim);
+}
+
+.light {
+  display: grid;
+  gap: var(--sp-2);
 }
 
 .block {
@@ -34,8 +41,15 @@
 }
 
 .block h2 {
-  font-size: 1.05rem;
-  letter-spacing: 0;
+  font-size: 1.5rem;
+}
+
+.type-ital {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1.2;
 }
 
 .swatches {
@@ -43,32 +57,42 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
   gap: var(--sp-3);
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.88rem;
   color: var(--text-dim);
+}
+
+.swatches li {
+  display: grid;
+  gap: 2px;
+}
+
+.swatches strong {
+  color: var(--text);
+  font-weight: 600;
 }
 
 .sw {
   display: block;
-  height: 58px;
+  height: 64px;
   margin-bottom: 6px;
   border-radius: var(--r-md);
-  border: 1.5px solid var(--line-strong);
+  border: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), var(--glass-shadow);
 }
 
 .type-grid,
 .two {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
   gap: var(--sp-4);
 }
 
 .type-big {
-  font-size: 2.6rem;
-  line-height: 1.1;
   margin: var(--sp-2) 0;
+  font-size: 3.4rem;
+  line-height: 1.05;
 }
 
 .cluster {
@@ -79,7 +103,47 @@
 }
 
 .cluster.tight {
-  gap: 6px;
+  gap: 8px;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+  flex-wrap: wrap;
+}
+
+.hero-skate {
+  width: min(210px, 52%);
+  height: auto;
+  aspect-ratio: 96 / 80;
+  filter: drop-shadow(0 12px 22px rgba(255, 190, 100, 0.45));
+}
+
+.hero-copy {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.hero-title {
+  font-size: 2.2rem;
+  line-height: 1.1;
+}
+
+.hero .mini .skate {
+  width: 36px;
+  height: 31px;
+}
+
+.bars4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: var(--sp-4);
+  margin-top: var(--sp-3);
+}
+
+.xp-demo {
+  position: relative;
 }
 
 .xp-top {
@@ -90,24 +154,24 @@
 }
 
 .xp-big {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
 }
 
 .xp-add {
   margin-left: auto;
-  min-height: 44px;
-  padding: 0 18px;
+  min-height: 46px;
+  padding: 0 20px;
 }
 
 .rating-label {
   margin-top: var(--sp-2);
-  color: var(--text-dim);
-  font-weight: 700;
   min-height: 1.6em;
+  color: var(--text-dim);
+  font-weight: 500;
 }
 
 .slot-line {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
 }
 
 /* Phone frames */
@@ -125,10 +189,10 @@
   flex-direction: column;
   gap: var(--sp-3);
   padding: var(--sp-4) var(--sp-4) var(--sp-3);
-  border-radius: 44px;
-  border: 1.5px solid var(--line-strong);
-  background: radial-gradient(420px 220px at 50% -6%, var(--bg-top), transparent 75%), var(--bg);
-  box-shadow: var(--shadow);
+  border-radius: 46px;
+  border: 1px solid var(--glass-edge);
+  background: linear-gradient(180deg, rgba(4, 16, 54, 0.46), rgba(4, 16, 54, 0.3));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 24px 60px rgba(0, 6, 28, 0.5);
 }
 
 .phone .tabbar {
@@ -142,8 +206,9 @@
 }
 
 .timer {
-  font-size: 2.5rem;
-  line-height: 1.05;
+  font: 500 2.7rem/1.05 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 .timer-side {
@@ -169,6 +234,6 @@
   }
 
   .phone {
-    border-radius: 32px;
+    border-radius: 34px;
   }
 }
