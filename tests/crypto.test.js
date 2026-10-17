@@ -9,7 +9,7 @@ const PASS = "correct horse battery";
 
 const withSecret = () => {
   const s = defaultState();
-  s.profile.name = "Sam";
+  s.profile.name = "Samantha-Quill-Tester";
   s.sessions.push({ ...session("2026-10-05"), note: "SECRET-NOTE-ABOUT-MY-KNEE" });
   return exportJSON(s);
 };
@@ -29,7 +29,7 @@ test("the file says how it was locked and shows nothing readable", async () => {
   const file = await encryptBackup(plain, PASS, FAST);
   const f = JSON.parse(file);
   assert.deepEqual([f.app, f.encrypted, f.v, f.kdf, f.cipher, f.iter, f.exportedAt], ["MySkate", true, 1, "PBKDF2-SHA256", "AES-256-GCM", 1000, "2026-10-17T12:00:00.000Z"]);
-  assert.ok(!file.includes("SECRET-NOTE") && !file.includes("Sam") && !file.includes("sessions"), "no part of the backup shows through");
+  assert.ok(!file.includes("SECRET-NOTE") && !file.includes("Samantha-Quill") && !file.includes('"sessions"') && !file.includes("schemaVersion"), "no part of the backup shows through");
   assert.equal(Buffer.from(f.salt, "base64").length, 16);
   assert.equal(Buffer.from(f.iv, "base64").length, 12);
   assert.ok(KDF_ITERATIONS >= 600000, "real backups use many rounds");
