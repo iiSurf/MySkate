@@ -333,3 +333,20 @@ Next on the owner's list after Ice times: cost per session and per month, then b
 ### Not verified
 
 Sharing through a real phone's share sheet (only the save-as-file path was exercised). A real phone and Safari. Nothing is pushed.
+
+---
+
+## 2026-10-17 (Saturday, night): pushed to the live site
+
+### Changes
+
+- Everything since the quick tour (Ice times, calendar update and Google Calendar dates, ice cost, badges and sharing) is live at https://iisurf.github.io/MySkate/. The version that was live before is tagged `submitted-v1` in git on this computer (the tag is not pushed).
+- Two fixes found while checking the live site, both pushed: a full-screen celebration could stay up if the browser never reported its fade-out finishing (it now closes after half a second no matter what), and a session ended straight away gave an absurd cost per hour (dollars per hour now waits for 15 minutes on the ice behind it).
+
+### Verified on the live site
+
+First run (setup, then the 7-step tour), the six tabs, adding a rink and importing a Google-style calendar file (3 sessions, a skipped date handled, earlier weeks off), starring a session, a real session saved with a cost, the celebrations in order (level up, then 3 new badges) and both closing, the cost card and Home badge tile, and no console errors. 114 tests pass in four time zones.
+
+### Not verified
+
+A real phone and Safari: the share sheet, the file picker for a calendar file, the on-ice clock with the screen locked, and opening an exported calendar file in a calendar app.
