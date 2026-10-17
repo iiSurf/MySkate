@@ -27,6 +27,7 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 
 ### Stretch, in this order
 
+0. Ice times: your rinks' weekly sessions on one page, with filters, My picks, and calendar import (done)
 1. Your ice: the background draws each skill's marks as you skate (done)
 2. Blade life tile: editable sharpening limit (20, 25, 30, 35, or custom), hours since sharpening from logged on-ice time, a reset button (done)
 3. Time-budget planner: split the booked slot across the chosen skills (done, shared evenly)
@@ -72,6 +73,17 @@ Level n to n+1 costs `100 + 50 * (n - 1)` XP. XP is effort relative to your own 
 - Restore reads the chosen file on the device; nothing is uploaded. Show a preview ("14 sessions, Oct 1 to Oct 12"), then Merge or Replace. Merge matches sessions by id, so an old backup never wipes newer data or duplicates sessions.
 - iPhone flow: export through the share sheet to Files or iCloud Drive; restore picks the file from Files.
 - Optional passphrase: encrypt the export with Web Crypto (AES-GCM). A lost passphrase means a lost backup, so say so in the UI.
+
+### Ice times
+
+- The Ice tab shows one week (Monday to Sunday) of sessions from all your rinks. Days are cards in a column on phones and a grid on wide screens. Each rink has a small color, shown as a dot and a strip on its cards.
+- Rinks have no common schedule feed (web pages, PDFs, Facebook posts), and a static site cannot read other sites, so MySkate only knows what you put in: add a rink (name, city, link to its schedule page), then add sessions (type, days, start and end, optional price and note, optional from and until dates for seasonal schedules), or import a calendar file (.ics).
+- Types: Freestyle, Public skate, Stick and puck, Learn to skate, Adult skate, Other. A session that repeats on several days is saved as one session per day, so each day can be starred (or changed) on its own.
+- Star sessions to make My picks. The page toggles between All sessions and My picks, and can filter by type and rink (nothing selected means all). Picked sessions that overlap are flagged.
+- Tap a session to edit or delete it, or to "Plan this" (sets your ice slot to its length and opens Plan). Home shows "Your next ice" (the next three picks). "Add my picks to my calendar" saves a calendar file of the picks.
+- Calendar import reads the weekly (and daily) repeats, one-off events, and times in UTC or local time. It leaves out all-day events, overnight events, repeats every other week or monthly, cancelled events, and events that already ended, and says how many. Holiday exceptions (EXDATE) are not read.
+- Saved data: `rinks`, `iceSessions`, and `iceView` (your filters), all optional with defaults, so `schemaVersion` stays 1. Limits: 20 rinks, 500 sessions.
+- Later: "Find rinks near me" from OpenStreetMap (opt-in, sends your location to OpenStreetMap; the free public servers were down when tried, so it could never be the only way), a starter list for an area, and live schedules (would need a server and a parser for each rink).
 
 ### Friend cards
 

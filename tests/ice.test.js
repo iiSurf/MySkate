@@ -46,6 +46,8 @@ test("a rink needs a name, and only web links survive", () => {
   assert.equal(sanitizeRink({ name: "No id" }), null);
   assert.equal(sanitizeRink({ id: "r", name: "Highland", url: "javascript:alert(1)" }).url, "");
   assert.equal(sanitizeRink({ id: "r", name: "Highland", url: "https://example.com/ice" }).url, "https://example.com/ice");
+  for (const bad of ["https://javascript:alert(1)", "https://localhost", "https://", "ftp://example.com", "https://exa mple.com", "example.com"]) assert.equal(sanitizeRink({ id: "r", name: "Highland", url: bad }).url, "", bad);
+  assert.equal(sanitizeRink({ id: "r", name: "Highland", url: "https://example.com:8080/ice?x=1" }).url, "https://example.com:8080/ice?x=1");
   assert.equal(sanitizeRink({ id: "r", name: "Highland", color: "red" }).color, RINK_COLORS[0]);
   assert.equal(sanitizeRink({ id: "r", name: "x".repeat(500) }).name.length, 60);
 });

@@ -79,6 +79,7 @@ export function renderPlan(ctx) {
             ${SLOTS.map((m) => html`<button class="chip" type="button" data-action="slot" data-min="${m}" aria-pressed="${state.plan.slotMin === m}">${m}</button>`)}
             <input class="input input--num" type="number" inputmode="numeric" min="5" max="300" step="5" value="${customSlot ? state.plan.slotMin : ""}" placeholder="Other" data-input="slot-custom" aria-label="Custom slot in minutes">
           </div>
+          <button class="chip slot-link" type="button" data-action="go-ice">Find ice time</button>
         </section>
         ${suggested}
         ${lists}
@@ -132,6 +133,7 @@ export function planActions(ctx) {
     start: () => ctx.startSession(),
     resume: () => ctx.go("skate"),
     browse: () => openBrowse(ctx),
+    "go-ice": () => ctx.go("ice"),
   };
 }
 

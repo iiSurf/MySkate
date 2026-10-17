@@ -14,6 +14,7 @@ import { newActive } from "./timer.js";
 import { keepAwake } from "./wake.js";
 import { renderHome, homeActions, homeInputs } from "./screens/home.js";
 import { renderPlan, planActions, planInputs } from "./screens/plan.js";
+import { renderIce, iceActions } from "./screens/ice.js";
 import { renderSkate, mountSkate, skateActions, skateInputs } from "./screens/skate.js";
 import { renderProgress, progressActions } from "./screens/progress.js";
 import { renderMe, mountMe, meActions, meInputs } from "./screens/me.js";
@@ -22,6 +23,7 @@ const none = () => ({});
 
 const ROUTES = {
   home: { title: "Home", render: renderHome, actions: homeActions, inputs: homeInputs },
+  ice: { title: "Ice times", render: renderIce, actions: iceActions, inputs: none },
   plan: { title: "Plan", render: renderPlan, actions: planActions, inputs: planInputs },
   skate: { title: "Skate", render: renderSkate, mount: mountSkate, actions: skateActions, inputs: skateInputs },
   progress: { title: "Progress", render: renderProgress, actions: progressActions, inputs: none },

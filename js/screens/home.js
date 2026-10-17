@@ -1,6 +1,6 @@
 /* Home: your level, your streak, your blades, and what to do next. */
 
-import { html, fmtMinutes, fmtDate, fmtNum, fmt1, fmtClock, todayISO, daysBetween } from "../util.js";
+import { html, fmtMinutes, fmtDate, fmtNum, fmt1, fmtClock, todayISO, daysBetween, addDays } from "../util.js";
 import { icon, medallion, bar, bladeArt, skateSvg, weekBarsHtml } from "../ui/parts.js";
 import { bladeInfo, bladeHours, logSharpening } from "../blades.js";
 import { levelProgress, suggestNext, isSkating, isAir } from "../stats.js";
@@ -8,6 +8,7 @@ import { levelLabel } from "../catalog.js";
 import { confirmSheet, toast, $ } from "../ui/dom.js";
 import { twinkle } from "../ui/celebrate.js";
 import { elapsedMs } from "../timer.js";
+import { upcomingPicks, kindName, fmtRange } from "../ice.js";
 
 const ui = { bladeOpen: false };
 const LIMITS = [20, 25, 30, 35];
@@ -113,6 +114,22 @@ function bladeTile(ctx) {
   </section>`;
 }
 
+/* The next few sessions you starred on the Ice tab. Only shown once you have added a rink. */
+function iceTile(ctx, d) {
+  const { state } = ctx;
+  if (!state.rinks.length) return "";
+  const next = upcomingPicks(state.iceSessions, new Date(), 3);
+  const tomorrow = addDays(d.today, 1);
+  const day = (date) => (date === d.today ? "Today" : date === tomorrow ? "Tomorrow" : fmtDate(date));
+  return html`<section class="card tile" aria-labelledby="ice-title">
+    <div class="tile__head"><p class="eyebrow" id="ice-title">Your next ice</p></div>
+    ${next.length
+      ? html`<div>${next.map((o) => html`<div class="row"><span class="grow"><strong>${day(o.date)}</strong> · ${fmtRange(o.start, o.end)}<br><span class="dim">${kindName(o.kind)} at ${(state.rinks.find((r) => r.id === o.rinkId) || { name: "a rink" }).name}</span></span></div>`)}</div>`
+      : html`<p class="dim">${state.iceSessions.some((s) => s.pick) ? "Nothing picked in the next two weeks." : "Star the sessions you want on the Ice tab and they show up here."}</p>`}
+    <button class="btn btn--glass btn--small" type="button" data-action="go-ice">See my ice week</button>
+  </section>`;
+}
+
 function weekTile(ctx, d) {
   const { streak, totals } = d;
   const more = Math.max(0, streak.needed - streak.thisWeek);
@@ -164,7 +181,7 @@ export function renderHome(ctx) {
     </header>
     ${nudge(ctx)}
     ${heroCard(ctx, d)}
-    <div class="tiles">${xpTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}</div>
+    <div class="tiles">${xpTile(ctx, d)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}</div>
     ${recent(ctx, d)}`;
 }
 
@@ -205,6 +222,7 @@ function setHours(ctx, wanted) {
 export function homeActions(ctx) {
   return {
     "go-plan": () => ctx.go("plan"),
+    "go-ice": () => ctx.go("ice"),
     "go-skate": () => ctx.go("skate"),
     "go-progress": () => ctx.go("progress"),
     tour: () => ctx.showTour(),

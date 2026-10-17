@@ -834,3 +834,238 @@ select.input {
       "points";
   }
 }
+
+/* Ice times (screens/ice.js): the week of sessions from all your rinks. Each rink has its own small color, shown as a dot and a
+   strip on the card. A starred session gets a gold edge. */
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--rk, var(--ice));
+}
+
+.chip .dot {
+  margin-right: 2px;
+}
+
+.weekbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.weekbar__label {
+  display: grid;
+  flex: 1 1 150px;
+  min-width: 0;
+  text-align: center;
+}
+
+.weekbar__label strong {
+  font-size: 1.1rem;
+}
+
+.ice-filters {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.ice-filters .seg {
+  justify-self: start;
+}
+
+.ice-week {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-3);
+}
+
+@media (min-width: 720px) {
+  .ice-week {
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  }
+}
+
+/* The week gets a wider page than other screens, and all seven days sit side by side only when there is really room for them. */
+[data-route="ice"] .screen {
+  max-width: 1320px;
+}
+
+@media (min-width: 1700px) {
+  .ice-week {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: var(--sp-2);
+  }
+}
+
+.ice-day {
+  display: grid;
+  align-content: start;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.ice-day__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  padding: 0 4px;
+  font: 600 1rem/1.2 var(--font-ui);
+}
+
+.ice-day__head .num {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.ice-day.is-today .ice-day__head > span:first-child {
+  color: var(--sun);
+}
+
+.ice-none {
+  padding: 0 4px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 719px) {
+  .ice-day.is-empty {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-3);
+  }
+}
+
+.ice-card {
+  position: relative;
+  display: grid;
+  border: 1px solid var(--glass-edge-soft);
+  border-left: 5px solid var(--rk, var(--ice));
+  border-radius: var(--r-md);
+  background: linear-gradient(var(--glass-tint), var(--glass-tint));
+  box-shadow: var(--glass-shadow);
+}
+
+.ice-card.is-pick {
+  border-color: rgba(255, 217, 138, 0.85);
+  border-left-color: var(--rk, var(--ice));
+  background: linear-gradient(rgba(255, 217, 138, 0.12), rgba(255, 217, 138, 0.12)), linear-gradient(var(--glass-tint), var(--glass-tint));
+}
+
+.ice-card__main {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  width: 100%;
+  padding: 12px 52px 12px 12px;
+  border: 0;
+  border-radius: inherit;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ice-time {
+  font-size: 1.02rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ice-rink {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-dim);
+  font-size: 0.92rem;
+  overflow-wrap: break-word;
+}
+
+.ice-note {
+  font-size: 0.88rem;
+  overflow-wrap: break-word;
+}
+
+.ice-card__main .chip {
+  margin-top: 4px;
+  cursor: inherit;
+}
+
+.ice-star {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--text-faint);
+  cursor: pointer;
+}
+
+.ice-star .ic {
+  width: 24px;
+  height: 24px;
+}
+
+.ice-star[aria-pressed="true"] {
+  color: var(--sun);
+}
+
+.ice-clash {
+  margin: 0;
+  padding: 0 12px 10px;
+  color: #ffb4a8;
+  font-size: 0.88rem;
+}
+
+.slot-link {
+  margin-top: var(--sp-3);
+}
+
+.two-fields .input {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Six tabs on a phone: a little tighter */
+@media (max-width: 420px) {
+  .tab {
+    padding: 8px 2px;
+    font-size: 0.72rem;
+  }
+}
+
+/* Form sheets (rinks, sessions, calendar import): Save and Cancel stay at the bottom of the sheet while the form scrolls under them. */
+.sheet--form .sheet__foot {
+  position: sticky;
+  bottom: 0;
+  margin: 0 calc(-1 * var(--sp-5)) calc(-1 * var(--sp-5));
+  padding: var(--sp-3) var(--sp-5) var(--sp-4);
+  background: linear-gradient(rgba(6, 22, 65, 0), rgba(6, 22, 65, 0.96) 28%);
+}
+
+.ice-filters .seg button {
+  padding: 8px 14px;
+  white-space: nowrap;
+}
+
+@media (max-width: 360px) {
+  .ice-filters .seg button {
+    padding: 8px 10px;
+    font-size: 0.92rem;
+  }
+}
+
+.tour-ice {
+  display: grid;
+  gap: var(--sp-2);
+  width: 100%;
+}

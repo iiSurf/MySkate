@@ -239,3 +239,36 @@ The owner found MySkate hard to understand. Add a tutorial that opens the first 
 ### Not verified
 
 A real phone and Safari, and a screen reader (the step announcement is in place but only checked in the markup).
+
+---
+
+## 2026-10-17 (Saturday): Ice times
+
+### Planned
+
+The owner wanted to see local rinks, pick favorites, and see all of the week's sessions from several rinks on one page (freestyle, public skate, and so on), filtered to just the sessions they want, so they do not have to open three rink websites. Tag the live version first and push only when told.
+
+### What I found out first
+
+- Rinks have no common schedule feed. Searches turned up web pages, PDFs, monthly calendars, and Facebook posts; no calendar feed to subscribe to. A static site cannot read other sites, and scraping would need a server and a parser per rink that breaks when a rink redesigns its page. So MySkate cannot pull schedules in by itself: you enter them once a season, or import a calendar file.
+- Nearby rinks from OpenStreetMap would work in principle, but the free public servers failed (busy or error) on three tries, and it would send the owner's location to a third party. Left for later, as opt-in.
+
+### Changes
+
+- The live version is tagged `submitted-v1` in git (local only) so there is a rollback point.
+- `js/ice.js`: kinds, weekday and time helpers, cleaning of everything that comes from storage or a file, the week (a session on its days within its dates, or on one date), filters, overlap detection for picks, upcoming picks, a calendar reader (repeats weekly or daily, one-offs, UTC or floating times, COUNT and UNTIL, folded lines; all-day, overnight, unusual repeats, cancelled, and ended events are counted and left out) and a calendar writer (escaped text, 75-byte lines, repeating events for weekly sessions).
+- Saved data: `rinks`, `iceSessions`, `iceView`. All optional, cleaned on load and on import, merged by id (yours win), included in backups. `schemaVersion` stays 1.
+- The Ice tab (`js/screens/ice.js`): the week bar with arrows, All sessions or My picks, a Filter button (type and rink), the week (a column of day cards on phones, a grid on wide screens), a star on each session, overlap warnings, and a My rinks card. Sheets to add and edit a rink, add and edit a session (several days at once become one session per day), and import a calendar file. Tap a session to edit, delete, or Plan this. "Add my picks to my calendar" saves a calendar file.
+- Home: a "Your next ice" tile (the next three picks) once a rink exists. Plan: a "Find ice time" button. The tab bar has six tabs. The quick tour has a new step, "Find your ice time".
+- Form sheets keep Save and Cancel in view while the form scrolls.
+- Rink links must be http or https with a real-looking host. One bug found while testing: "javascript:alert(1)" got "https://" put in front of it and was saved as a link. It could not run, but it is now rejected, and a test covers it.
+
+### Verified
+
+- 74 tests pass (22 new for ice times, plus the tour tests extended), in three time zones (local, Tokyo, New York): weekday mapping, date ranges, sorting, filters, overlaps, upcoming picks across a week boundary, slot sizes, kind guessing, calendar reading (all the skip cases, UTC, COUNT, folded lines, junk input), a calendar export that reads back the same, saved data (defaults, old backups, orphan sessions, merge, replace).
+- In the browser: added 3 rinks and 8 sessions through the real forms (11 sessions after splitting days), filters and My picks (counts matched), overlap warnings, week arrows, starring keeps focus, editing a session to add a day, deleting a session, deleting a rink (its sessions go too), Plan this (slot became 90), importing a calendar file (3 sessions, extras counted, importing it again adds nothing), exporting picks (10 picks gave 10 events, CRLF lines). Home tile and the new tour step look right.
+- Checked at 1440x900, 1024x768, 390x844, and 320x568: no sideways scrolling, the six tabs fit, the form buttons stay in view.
+
+### Not verified
+
+A real phone and Safari. Opening an exported calendar file in a real calendar app. Real rink calendar files (only sample files were tried). The style tile was not updated for the new cards. Nothing is pushed: the live site does not have Ice times yet.

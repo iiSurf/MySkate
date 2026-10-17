@@ -19,6 +19,18 @@ export const TOUR_STEPS = [
     ],
   },
   {
+    id: "ice",
+    title: "Find your ice time",
+    lead: "Open the Ice tab to see every rink's sessions together, for the whole week.",
+    demo: "ice",
+    points: [
+      { b: "Add your rinks and their sessions once.", t: "Pick the type, the days, and the times. If a rink gives you a calendar file, import it instead." },
+      { b: "Star the ones you want.", t: "Switch to My picks to see only those, or filter by type and rink." },
+      { b: "Tap a session, then Plan this", t: "to set your ice slot to its length." },
+      { b: "Check the rink before you go.", t: "MySkate only knows what you put in, and rinks change their schedules." },
+    ],
+  },
+  {
     id: "plan",
     title: "Plan your session",
     lead: "Open the Plan tab at home or on the way to the rink.",

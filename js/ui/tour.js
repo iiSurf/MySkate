@@ -14,6 +14,10 @@ const DEMOS = {
     <div class="tour-node">${icon("skate")}<b>Skate</b></div><span class="tour-arrow">${icon("down")}</span>
     <div class="tour-node">${icon("chart")}<b>Grow</b></div>
   </div>`,
+  ice: () => html`<div class="tour-ice">
+    <article class="ice-card is-pick" style="--rk:#5fd8e6"><div class="ice-card__main"><span class="ice-time">2:30–3:30 PM</span><span class="ice-kind">Freestyle</span><span class="ice-rink"><i class="dot"></i>Highland Ice Arena</span></div><span class="ice-star" style="color:var(--sun)">${icon("star", "ic--fill")}</span></article>
+    <article class="ice-card" style="--rk:#ffb98a"><div class="ice-card__main"><span class="ice-time">7–8:30 PM</span><span class="ice-kind">Public skate</span><span class="ice-rink"><i class="dot"></i>Lynnwood Ice Center</span></div><span class="ice-star">${icon("star")}</span></article>
+  </div>`,
   plan: () => html`<div class="limit-row">${SLOTS.map((m) => html`<span class="chip ${m === 60 ? "chip--on" : ""}">${m}</span>`)}</div>
     <div class="tour-rows">
       <div class="tour-row">${catDot("skills")}<span class="grow">Forward crossovers</span><span class="chip chip--tag">Needs work</span></div>

@@ -61,7 +61,18 @@ export function fmtRange(start, end) {
 /* ---------- Cleaning anything that comes from storage or a file ---------- */
 
 const text = (v, max, fallback = "") => (typeof v === "string" ? v.trim().slice(0, max) : fallback);
-const safeUrl = (v) => (typeof v === "string" && /^https?:\/\/[^\s]+$/i.test(v.trim()) ? v.trim().slice(0, LIMITS.url) : "");
+/* A web link to a real-looking site: http or https, a host with a dot in it, and nothing that fails to parse. */
+function safeUrl(v) {
+  if (typeof v !== "string") return "";
+  const t = v.trim();
+  if (!/^https?:\/\/[^\s]+$/i.test(t)) return "";
+  try {
+    const u = new URL(t);
+    return /^https?:$/.test(u.protocol) && u.hostname.includes(".") ? t.slice(0, LIMITS.url) : "";
+  } catch (err) {
+    return "";
+  }
+}
 
 export function sanitizeRink(r) {
   if (!r || typeof r !== "object") return null;
