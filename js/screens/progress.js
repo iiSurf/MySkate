@@ -9,7 +9,7 @@ import { fmtMoney, costSummary, costByMonth, sanitizeCost } from "../cost.js";
 import { GROUPS, badgeRatio, progressText } from "../badges.js";
 import { shareBadge, shareCardLink, shareCardPicture, copyCardLink } from "../ui/share.js";
 import { board, parseFriendInput } from "../friends.js";
-import { initials, openFriend, openAddFriend } from "../ui/friends.js";
+import { avatar, openFriend, openAddFriend } from "../ui/friends.js";
 import { monthGrid, shiftMonth } from "../calendar.js";
 import { openOffIceSheet } from "../ui/officesheet.js";
 import { recentOffIce, offIceSummary, offIceByDay, offKindName } from "../office.js";
@@ -194,7 +194,7 @@ function friendsTab(ctx) {
   const me = ctx.myCard();
   const rows = board({ me, friends: state.friends, period: ui.board });
   const row = (r) => {
-    const body = html`<span class="rank num" aria-label="Place ${r.rank}">${r.rank}</span><span class="avatar" aria-hidden="true">${initials(r.name)}</span><span class="grow">${r.name}${r.you ? " (you)" : ""}<br><span class="dim">Level ${r.level} · ${r.streak} ${r.streak === 1 ? "week" : "weeks"} in a row · ${r.badges} ${r.badges === 1 ? "badge" : "badges"}</span></span><span class="chip chip--gold">${r.xp} XP</span>`;
+    const body = html`<span class="rank num" aria-label="Place ${r.rank}">${r.rank}</span>${avatar(r.name, r.look)}<span class="grow">${r.name}${r.you ? " (you)" : ""}<br><span class="dim">Level ${r.level} · ${r.streak} ${r.streak === 1 ? "week" : "weeks"} in a row · ${r.badges} ${r.badges === 1 ? "badge" : "badges"}</span></span><span class="chip chip--gold">${r.xp} XP</span>`;
     return r.you ? html`<div class="row row--you">${body}</div>` : html`<button class="row row--btn" type="button" data-action="friend" data-id="${r.id}">${body}</button>`;
   };
   return html`<div class="tiles">
@@ -208,7 +208,7 @@ function friendsTab(ctx) {
     </section>
     <section class="card tile" aria-labelledby="card-title">
       <div class="tile__head"><p class="eyebrow" id="card-title">Your card</p></div>
-      <div class="friend-head"><span class="avatar" aria-hidden="true">${initials(me.name)}</span><div><strong>${me.name}</strong><br><span class="dim">Level ${me.level} · ${me.xpTotal} XP · ${me.badges} ${me.badges === 1 ? "badge" : "badges"}</span></div></div>
+      <div class="friend-head">${avatar(me.name, me.look)}<div><strong>${me.name}</strong><br><span class="dim">Level ${me.level} · ${me.xpTotal} XP · ${me.badges} ${me.badges === 1 ? "badge" : "badges"}</span></div></div>
       ${state.profile.name.trim() ? "" : html`<p class="note">Your card says "Skater". Add your name in Me to put it on the card.</p>`}
       <div class="cluster"><button class="btn btn--small" type="button" data-action="share-card">Share my card</button><button class="btn btn--glass btn--small" type="button" data-action="card-picture">Save as a picture</button><button class="chip" type="button" data-action="copy-card">Copy link</button></div>
       <p class="note">Your friend opens the link on their phone and taps Add. The link keeps your card after the # in the address, so it is never sent to any website.</p>

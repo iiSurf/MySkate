@@ -859,8 +859,8 @@ select.input {
   flex: none;
   border-radius: 50%;
   border: 1px solid var(--glass-edge);
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.08));
-  color: var(--ice-white);
+  background: linear-gradient(150deg, var(--af, rgba(255, 255, 255, 0.3)), var(--at, rgba(255, 255, 255, 0.08)));
+  color: var(--ai, var(--ice-white));
   font: 600 0.84rem/1 var(--font-ui);
 }
 

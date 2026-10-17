@@ -14,6 +14,7 @@ import { goalStatus } from "./goals.js";
 import { homeworkDoneDates } from "./homework.js";
 import { makeCard, parseFriendHash } from "./friends.js";
 import { encryptBackup } from "./crypto.js";
+import { resolveLook } from "./looks.js";
 import { openAddFriend } from "./ui/friends.js";
 import { runOnboarding } from "./ui/onboard.js";
 import { openTour } from "./ui/tour.js";
@@ -242,6 +243,10 @@ function buildContext(state, catalog, status) {
       toast("Spreadsheet saved. Look in your downloads.");
     },
     levelUp: (level) => celebrateLevelUp(level),
+    /* What counts toward unlocking colors: your level and the badges you have earned. */
+    lookHave: () => ({ level: derive().level.level, badgeIds: ctx.badges().filter((b) => b.earned).map((b) => b.id) }),
+    /* The color to use for you: your choice if it is unlocked, otherwise the default. */
+    look: () => resolveLook(ctx.state.profile.look, ctx.lookHave()),
     /* Your friend card as of now. The card id is made the first time it is needed and stays with your data. */
     myCard() {
       const p = ctx.state.profile;
@@ -250,7 +255,7 @@ function buildContext(state, catalog, status) {
         save();
       }
       const d = derive();
-      return makeCard({ id: p.cardId, name: p.name, level: d.level.level, xpTotal: d.xp.total, xpWeek: d.bars.reduce((sum, b) => sum + b.xp, 0), streak: d.streak.weeks, badges: ctx.badges().filter((b) => b.earned).length, hours: d.totals.allMin / 60 });
+      return makeCard({ id: p.cardId, name: p.name, level: d.level.level, xpTotal: d.xp.total, xpWeek: d.bars.reduce((sum, b) => sum + b.xp, 0), streak: d.streak.weeks, badges: ctx.badges().filter((b) => b.earned).length, hours: d.totals.allMin / 60, look: ctx.look().id });
     },
     /* Every badge with whether it is earned and when, worked out from the saved sessions. */
     badges() {

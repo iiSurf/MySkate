@@ -413,3 +413,42 @@ The last stretch item: stop loading the two typefaces from Google, so the app ma
 ### Not verified
 
 Safari and a real phone. Nothing is pushed.
+
+---
+
+## 2026-10-17 (Saturday, late night): goals, coach homework, off-ice log, skater colors
+
+### Planned
+
+The owner picked four items from the Later list, in this order: goals with target dates, coach notes and homework, an off-ice training log, and a skater customizer. Left out on purpose: the 3D viewer (hand-built poses the skater would have to review) and accounts and cloud sync (a server).
+
+### Goals
+
+- `js/goals.js` and a card on Plan: a skill, a target rating (3, 4, or 5 skates), and an optional day. One goal per skill. Met by the latest rating (a bad day takes it back, as for a test), with the day it was reached remembered. Sorted by day, then how close you are. A goal you have already met cannot be set. Home has a tile for open goals; reaching goals earns two badges (Goal reached, Five goals).
+- A reusable sheet (`js/ui/skillpick.js`) to find a skill by searching, also used by homework.
+
+### Coach homework
+
+- `js/homework.js` and a card on Plan: a note, an optional skill, an optional due day, a real checkbox, "Plan it" for a linked skill, a Done list that folds away with Clear done, and a Home tile. Two badges (Homework done, Five homeworks).
+
+### Off-ice log
+
+- `js/office.js`: stretching, strength, jump drills, dance, cardio, or other, 5 to 300 minutes, on today or earlier, with a note. It does not change XP or the streak. It earns three badges (Off-ice workout, Off-ice regular, Cross-trainer), puts a green dot on the calendar day (and lists it in the day sheet), and has a Home tile. The log and the button are on the Sessions tab of Progress.
+
+### Skater colors
+
+- `js/looks.js`: six colors for your avatar and card (two free, two by level, two by badge). Every color is tested for readable letters. They show on the friends board and on your card, a friend sees your color, and the card picture is tinted with it. A color you have not unlocked falls back to the default, so a file cannot put one on your card. Colors that carry meaning in the app (gold, blue, coral) are not on the list.
+
+### Other
+
+- Fixed a test of mine that could fail by chance (short words appearing in random-looking locked-backup text): it now looks for longer strings.
+- The quick tour mentions goals and homework, and the off-ice log.
+- All the new sheets keep their buttons in view on a small phone.
+
+### Verified
+
+183 tests pass in three time zones, with new tests for each piece: goals (cleaning, met by latest rating, the day met, countdown, order, one per skill, merging), homework (cleaning, ticking, order, overdue, clearing), the off-ice log (cleaning, future days refused, week totals, milestones, badges, the calendar marks), and colors (contrast, unlock rules, saving, cards, falling back). In the browser I set a goal, planned it, then reached it with a real session (the Goal reached badge came up with the level-up); added homework, planned it, ticked it, cleared it; logged off-ice work (bad minutes and a future day refused), saw the green dot and the day sheet; chose colors (a locked one refused with what unlocks it, one unlocked by levelling up, the avatar and friend avatars in their colors, the card picture). Every page and new sheet at 320 wide has no sideways scroll, with the buttons in view. No console errors.
+
+### Not verified
+
+A real phone and Safari. Nothing is pushed.

@@ -1476,3 +1476,58 @@ button.cal-day {
   background: #7ee2a8;
   box-shadow: 0 0 0 1.5px rgba(6, 22, 65, 0.6);
 }
+
+/* Your color (js/looks.js): a swatch is an avatar in that color, with its name, and what unlocks it when it is still locked. */
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: var(--sp-2);
+}
+
+.swatch {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+  padding: var(--sp-3) var(--sp-2);
+  border: 1.5px solid transparent;
+  border-radius: var(--r-md);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.swatch .avatar {
+  width: 48px;
+  height: 48px;
+  font-size: 1rem;
+}
+
+.swatch[aria-pressed="true"] {
+  border-color: var(--ice-bright);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.swatch__name {
+  font-weight: 600;
+}
+
+.swatch__lock {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+
+.swatch.is-locked .avatar {
+  opacity: 0.4;
+  filter: grayscale(0.6);
+}
+
+.swatch.is-locked .swatch__name {
+  color: var(--text-dim);
+  font-weight: 500;
+}

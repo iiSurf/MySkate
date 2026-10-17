@@ -3,6 +3,7 @@
 
 import { fmtDate, html } from "../util.js";
 import { cardLink } from "../friends.js";
+import { lookById } from "../looks.js";
 import { toast, openSheet, $ } from "./dom.js";
 
 const W = 1080;
@@ -44,7 +45,7 @@ async function loadFonts() {
 }
 
 /* The night-ice background, with a warm glow where the medal goes and a few snow stars. */
-function scene(c, label) {
+function scene(c, label, look = null) {
   const bg = c.createLinearGradient(0, 0, 0, H);
   bg.addColorStop(0, "#061641");
   bg.addColorStop(0.6, "#0b2a66");
@@ -56,6 +57,16 @@ function scene(c, label) {
   glow.addColorStop(1, "rgba(255, 200, 110, 0)");
   c.fillStyle = glow;
   c.fillRect(0, 0, W, H);
+  if (look) {
+    /* a wash of the skater's own color rising from the bottom of the picture */
+    const tint = c.createLinearGradient(0, H * 0.45, 0, H);
+    tint.addColorStop(0, "rgba(0, 0, 0, 0)");
+    tint.addColorStop(1, `${look.to}`);
+    c.globalAlpha = 0.45;
+    c.fillStyle = tint;
+    c.fillRect(0, H * 0.45, W, H * 0.55);
+    c.globalAlpha = 1;
+  }
   c.fillStyle = "rgba(255, 255, 255, 0.75)";
   for (const [x, y, r] of [[120, 160, 14], [940, 220, 18], [200, 760, 10], [900, 800, 12], [140, 1100, 12], [960, 1060, 16], [820, 120, 9]]) {
     star(c, x, y, r, r / 3.2);
@@ -132,7 +143,7 @@ export async function badgeImage(badge, name = "") {
 export async function cardImage(card) {
   await loadFonts();
   const [canvas, c] = makeCanvas();
-  scene(c, "SKATER CARD");
+  scene(c, "SKATER CARD", card.look ? lookById(card.look) : null);
   medal(c, card.level);
   c.fillStyle = "rgba(74, 47, 0, 0.8)";
   c.font = '600 34px "Jost", system-ui, sans-serif';

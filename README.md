@@ -13,6 +13,9 @@ Live: https://iisurf.github.io/MySkate/
 - **XP and levels.** XP rewards time, practice, personal bests, and earning skills, with a level-up celebration and weekly streaks.
 - **Friends.** Send your card as a link (name, level, XP, streak, badges, hours) and add your friends' cards, then see a board of everyone. Cards hold nothing else and never go through a server.
 - **Test readiness.** Pick the test you are working toward and see days to go, your skating skills against it, and a free skate checklist (a short summary of the 2026-27 chart; check the rulebook).
+- **Goals and homework.** Set a rating goal for any skill with a day, and keep your coach's homework as a list to tick off, both on the Plan screen.
+- **Off-ice log.** Log stretching, strength, jump drills, dance, or cardio. It counts toward badges and shows on the calendar.
+- **Your color.** Pick the color of your avatar and card, with more colors unlocking as you level up and earn badges.
 - **Practice calendar.** A month of the days you skated, the ice you picked ahead, and your streak weeks.
 - **Badges.** 29 badges, from your first session to a marathon of ice time, in a trophy case on Progress. Each one shows the day you earned it and how many sessions it took, and you can share a picture of it.
 - **Ice cost.** Add what each session cost (or set your usual cost). See it by month, per session, and per hour on ice.

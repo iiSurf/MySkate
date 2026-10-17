@@ -3,6 +3,7 @@
 import { html, daysBetween, todayISO, fmtDate } from "../util.js";
 import { openSheet, confirmSheet, toast, $ } from "./dom.js";
 import { upsertFriend } from "../friends.js";
+import { lookById } from "../looks.js";
 
 export const initials = (name) =>
   String(name)
@@ -16,6 +17,12 @@ export const initials = (name) =>
 export function ageText(card) {
   const days = Math.max(0, daysBetween(todayISO(new Date(card.updatedAt)), todayISO()));
   return days === 0 ? "today" : days === 1 ? "yesterday" : `${days} days ago`;
+}
+
+/* A round avatar with the initials, in the skater's chosen colors (the default look when they have not chosen any). */
+export function avatar(name, lookId) {
+  const l = lookId ? lookById(lookId) : null;
+  return l ? html`<span class="avatar" style="--af:${l.from};--at:${l.to};--ai:${l.ink}" aria-hidden="true">${initials(name)}</span>` : html`<span class="avatar" aria-hidden="true">${initials(name)}</span>`;
 }
 
 const stats = (c) => html`<div class="stats">
@@ -33,7 +40,7 @@ export function openFriend(ctx, id) {
   if (!f) return;
   const stale = daysBetween(todayISO(new Date(f.updatedAt)), todayISO()) >= 7;
   const sheet = openSheet(
-    html`<div class="friend-head"><span class="avatar" aria-hidden="true">${initials(f.name)}</span><div><h2 class="sheet__title sheet__title--small">${f.name}</h2><p class="dim">Card from ${ageText(f)} (${fmtDate(todayISO(new Date(f.updatedAt)), { month: "short", day: "numeric" })})</p></div></div>
+    html`<div class="friend-head">${avatar(f.name, f.look)}<div><h2 class="sheet__title sheet__title--small">${f.name}</h2><p class="dim">Card from ${ageText(f)} (${fmtDate(todayISO(new Date(f.updatedAt)), { month: "short", day: "numeric" })})</p></div></div>
       ${stats(f)}
       ${stale ? html`<p class="note">These numbers are a week or more old. Ask ${f.name} to send a fresh card, then open the link to update them.</p>` : ""}
       <div class="sheet__foot"><button class="chip chip--discard" type="button" id="friend-remove">Remove</button><button class="btn btn--small" type="button" data-close="done">Done</button></div>`,
@@ -61,7 +68,7 @@ export async function openAddFriend(ctx, card) {
     invalid: "That card could not be read.",
   }[plan.status];
   const sheet = openSheet(
-    html`<div class="friend-head"><span class="avatar" aria-hidden="true">${initials(card.name)}</span><div><p class="eyebrow">${plan.status === "updated" ? "A fresh card from" : "A card from"}</p><h2 class="sheet__title sheet__title--small">${card.name}</h2></div></div>
+    html`<div class="friend-head">${avatar(card.name, card.look)}<div><p class="eyebrow">${plan.status === "updated" ? "A fresh card from" : "A card from"}</p><h2 class="sheet__title sheet__title--small">${card.name}</h2></div></div>
       ${stats(card)}
       ${message ? html`<p class="note">${message}</p>` : html`<p class="note">${plan.status === "updated" ? "This replaces their older numbers." : "Their numbers are from when the card was made. Nothing else about them comes with it."}</p>`}
       <div class="sheet__foot"><button class="btn btn--glass btn--small" type="button" data-close="cancel">${message ? "Close" : "Not now"}</button>${message ? html`<span></span>` : html`<button class="btn btn--small" type="button" id="friend-add">${plan.status === "updated" ? "Update" : "Add"} ${card.name}</button>`}</div>`,

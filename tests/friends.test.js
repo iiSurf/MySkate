@@ -105,3 +105,26 @@ test("friends are saved with your data, cleaned, and a card id stays with you", 
   theirs.friends = [card({ id: "a", name: "Theirs" }), card({ id: "b", name: "Bea" })];
   assert.deepEqual(mergeStates(mine, theirs).state.friends.map((f) => f.name), ["Mine", "Bea"]);
 });
+
+test("a card carries the skater's color, and a friend's color is only ever one of ours", () => {
+  const c = card({ look: "mint" });
+  assert.equal(c.look, "mint");
+  assert.equal(decodeCard(encodeCard(c)).look, "mint");
+  assert.equal(card().look, "", "no color chosen is kept as none");
+  assert.equal(card({ look: "neon" }).look, "");
+  const evil = Buffer.from(JSON.stringify({ v: 1, i: "x", n: "A", k: "<script>" })).toString("base64url");
+  assert.equal(decodeCard(evil).look, "", "an unknown color from a card is dropped");
+  assert.equal(sanitizeFriend({ id: "x", look: "violet" }).look, "violet");
+  assert.equal(sanitizeFriend({ id: "x", look: 5 }).look, "");
+});
+
+test("your own color is saved, and an unknown one falls back to the default", () => {
+  const state = defaultState();
+  state.profile.look = "rose";
+  assert.equal(parseBackup(exportJSON(state)).state.profile.look, "rose");
+  assert.equal(defaultState().profile.look, "sky");
+  assert.equal(sanitizeState({ profile: { look: "neon" } }).profile.look, "sky");
+  const old = JSON.parse(exportJSON(state));
+  delete old.profile.look;
+  assert.equal(parseBackup(JSON.stringify(old)).state.profile.look, "sky");
+});

@@ -39,6 +39,7 @@ export const TOUR_STEPS = [
       { b: "Pick your ice slot.", t: `Tap ${SLOTS.slice(0, -1).join(", ")}, or ${SLOTS[SLOTS.length - 1]} minutes. Booked something else? Type your own.` },
       { b: "Tap skills to add them.", t: "MySkate suggests what to try next from your level and what still needs work." },
       { b: "Check the plan.", t: "Your slot is shared evenly between the skills. Move one earlier or later, or take it out." },
+      { b: "Set goals and add homework.", t: "Tap Add a goal for a skill, a rating, and a day, or Add homework for what your coach asks you to work on." },
     ],
   },
   {

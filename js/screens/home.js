@@ -5,7 +5,7 @@ import { icon, medallion, medal, bar, bladeArt, skateSvg, weekBarsHtml } from ".
 import { showBadges, showFriends, showTests } from "./progress.js";
 import { testList, skillsReadiness, freeReadiness, countdown } from "../testprep.js";
 import { board } from "../friends.js";
-import { initials } from "../ui/friends.js";
+import { avatar } from "../ui/friends.js";
 import { badgeRatio, progressText } from "../badges.js";
 import { bladeInfo, bladeHours, logSharpening } from "../blades.js";
 import { levelProgress, suggestNext, isSkating, isAir } from "../stats.js";
@@ -184,7 +184,7 @@ function friendsTile(ctx) {
   return html`<section class="card tile" aria-labelledby="friends-title">
     <div class="tile__head"><p class="eyebrow" id="friends-title">Friends, last 7 days</p></div>
     <div class="hours"><span class="num">#${mine.rank}</span><span class="dim">of ${rows.length}</span></div>
-    <div>${rows.slice(0, 3).map((r) => html`<div class="row ${r.you ? "row--you" : ""}"><span class="avatar" aria-hidden="true">${initials(r.name)}</span><span class="grow">${r.name}${r.you ? " (you)" : ""}</span><span class="chip chip--gold">${r.xp} XP</span></div>`)}</div>
+    <div>${rows.slice(0, 3).map((r) => html`<div class="row ${r.you ? "row--you" : ""}">${avatar(r.name, r.look)}<span class="grow">${r.name}${r.you ? " (you)" : ""}</span><span class="chip chip--gold">${r.xp} XP</span></div>`)}</div>
     <button class="btn btn--glass btn--small" type="button" data-action="go-friends">Open friends</button>
   </section>`;
 }

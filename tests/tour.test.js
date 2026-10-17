@@ -28,7 +28,7 @@ test("the tour quotes the real numbers", () => {
 
 test("the buttons the tour talks about really have those labels", () => {
   const screens = ["home", "plan", "skate", "me", "ice", "progress"].map((n) => read(`js/screens/${n}.js`)).join("\n");
-  for (const label of ["Start session", "End session", "Next skill", "+ Landed", "+ Missed", "Undo last try", "I just got them sharpened", "Save a backup", "Show me how MySkate works", "Plan this", "My picks", "Badges", "Tests", "Friends"]) {
+  for (const label of ["Start session", "End session", "Next skill", "+ Landed", "+ Missed", "Undo last try", "I just got them sharpened", "Save a backup", "Show me how MySkate works", "Plan this", "My picks", "Badges", "Tests", "Friends", "Add a goal", "Add homework", "Log off-ice work"]) {
     assert.ok(everything.includes(label), `the tour should mention "${label}"`);
     assert.ok(screens.includes(label), `no screen has a button labelled "${label}", but the tour tells people to tap it`);
   }

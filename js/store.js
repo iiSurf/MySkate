@@ -7,6 +7,7 @@ import { sanitizeTestGoal, sanitizeChecks } from "./testprep.js";
 import { sanitizeGoals } from "./goals.js";
 import { sanitizeHomeworkList } from "./homework.js";
 import { sanitizeOffIceList } from "./office.js";
+import { sanitizeLookId, DEFAULT_LOOK } from "./looks.js";
 import { sanitizeRink, sanitizeIceSession, sanitizeIceView, defaultIceView, LIMITS as ICE_LIMITS } from "./ice.js";
 
 export const SCHEMA_VERSION = 1;
@@ -34,6 +35,7 @@ export function defaultState(now = new Date()) {
       badgesSeen: null,
       cardId: "",
       test: null,
+      look: DEFAULT_LOOK,
     },
     blades: { name: "", limitHours: 25, baseHours: 0, countedFrom: now.toISOString() },
     sharpenings: [],
@@ -163,6 +165,7 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
       badgesSeen: Array.isArray(p.badgesSeen) ? [...new Set(p.badgesSeen.map((x) => str(x, 60)).filter(Boolean))].slice(0, 100) : null,
       cardId: str(p.cardId, MAX.id),
       test: sanitizeTestGoal(p.test),
+      look: sanitizeLookId(p.look),
     },
     blades: {
       name: str(b.name, MAX.name),

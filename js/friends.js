@@ -1,7 +1,9 @@
-/* Friend cards: a small snapshot of a skater (name, level, XP, streak, badges, hours on the ice) that travels as a link, and the
+/* Friend cards: a small snapshot of a skater (name, level, XP, streak, badges, hours on the ice, and the color of their avatar) that travels as a link, and the
    board that ranks you and your friends. There is no server, so a friend's numbers are as of the day their card was made, and
    the board says so. A card holds no sessions, notes, or anything else, and the link keeps the card after the # so it is never
    sent to any website. Pure logic, no page code. */
+
+import { sanitizeCardLook } from "./looks.js";
 
 export const CARD_VERSION = 1;
 export const MAX_FRIENDS = 100;
@@ -28,13 +30,14 @@ export function sanitizeFriend(f) {
     streak: Math.round(clamp(f.streak, 0, 999)),
     badges: Math.round(clamp(f.badges, 0, 999)),
     hours: Math.round(clamp(f.hours, 0, 99999) * 10) / 10,
+    look: sanitizeCardLook(f.look),
     updatedAt: stamp(f.updatedAt) || new Date(0).toISOString(),
   };
 }
 
 /* The card for you, as of now. */
-export function makeCard({ id, name, level, xpTotal, xpWeek, streak, badges, hours }, now = new Date()) {
-  return sanitizeFriend({ id, name: name || "Skater", level, xpTotal, xpWeek, streak, badges, hours, updatedAt: now.toISOString() });
+export function makeCard({ id, name, level, xpTotal, xpWeek, streak, badges, hours, look }, now = new Date()) {
+  return sanitizeFriend({ id, name: name || "Skater", level, xpTotal, xpWeek, streak, badges, hours, look, updatedAt: now.toISOString() });
 }
 
 const toB64 = (text) => {
@@ -50,7 +53,7 @@ const fromB64 = (code) => {
 /* The card as a short text made of letters, digits, - and _. */
 export function encodeCard(card) {
   const c = sanitizeFriend(card);
-  return toB64(JSON.stringify({ v: CARD_VERSION, i: c.id, n: c.name, l: c.level, x: c.xpTotal, w: c.xpWeek, s: c.streak, b: c.badges, h: c.hours, t: c.updatedAt }));
+  return toB64(JSON.stringify({ v: CARD_VERSION, i: c.id, n: c.name, l: c.level, x: c.xpTotal, w: c.xpWeek, s: c.streak, b: c.badges, h: c.hours, k: c.look, t: c.updatedAt }));
 }
 
 /* A card back from its text, or null if it is not a card (too long, not readable, from a newer version, or missing its id). */
@@ -59,7 +62,7 @@ export function decodeCard(code) {
   try {
     const d = JSON.parse(fromB64(code));
     if (!d || typeof d !== "object" || d.v !== CARD_VERSION) return null;
-    return sanitizeFriend({ id: d.i, name: d.n, level: d.l, xpTotal: d.x, xpWeek: d.w, streak: d.s, badges: d.b, hours: d.h, updatedAt: d.t });
+    return sanitizeFriend({ id: d.i, name: d.n, level: d.l, xpTotal: d.x, xpWeek: d.w, streak: d.s, badges: d.b, hours: d.h, look: d.k, updatedAt: d.t });
   } catch (err) {
     return null;
   }

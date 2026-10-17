@@ -40,10 +40,10 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 
 ### Later
 
-- Skater customizer (stretch of the stretch): colors first, drawn in 2D, same settings reused on the 3D figure later. Default look is leggings and a top. A dress is an option, not the default. Cosmetics unlock with XP levels and badges.
+- Skater customizer: done in a first form (colors for your avatar and card, some unlocked by level and badges; see Skater colors below). Drawing a skater figure, and clothes, wait for the 3D figure. Default look when that comes: leggings and a top. A dress is an option, not the default.
 - 3D reference viewer: Three.js mannequin with drag to rotate, pinch to zoom, camera presets (front, side, back, top), and play/pause keyframed poses stored as data. Poses are hand-built approximations and need the skater's review, labelled "reference illustration, not coaching". A slider-based pose editor could let a skater or coach author correct poses.
 - Accounts, cloud sync, and a live leaderboard through a hosted free tier (Supabase or Firebase). MongoDB Atlas would need a serverless function in between, because a browser cannot talk to it directly and Atlas's Data API shut down on 2025-09-30. Free-tier limits are not verified.
-- Coach notes and homework, personal cue notes per skill, goals with target dates, off-ice training log.
+- Coach notes and homework (done), personal cue notes per skill (done), goals with target dates (done), off-ice training log (done). Left: notes from a coach on a whole session, and sharing homework with a coach.
 
 ## Feature notes
 
@@ -108,6 +108,20 @@ Level n to n+1 costs `100 + 50 * (n - 1)` XP. XP is effort relative to your own 
 - Share my card (the phone's share sheet, or the link copied), Copy link, and Save as a picture (a 1080 by 1350 picture drawn on the device). Opening a friend's link (or pasting it into Add a friend) shows who it is and offers Add or Update. Opening it on a new device waits until setup is done.
 - Progress has a Friends tab: the board ranks you and your friends by XP for the last 7 days or all time (ties share a place), with your own row live and each friend's as of their card (the board says so, and a friend sheet says how old the card is). Home has a tile with your place among friends once you have a friend.
 - There is no live sync: that would need a server and accounts. A fresh card is one tap away for the friend.
+
+### Goals, coach homework, and the off-ice log
+
+- Goals (on Plan): a skill, a rating to reach (3, 4, or 5 skates), and an optional day. One goal per skill (setting another for the same skill changes it). A goal is reached when the skill's latest rating is at or above the target, like a test, so a bad day takes it back. Each shows the progress bar, the countdown (D-12, Passed), and "Plan it". Reaching one earns Goal reached (and Five goals), and the Home tile lists the open ones. You cannot set a goal you have already met.
+- Coach homework (on Plan): a note (200 characters), an optional skill, an optional due day, ticked off with a real checkbox. Open items sort by due day, overdue ones turn coral, "Plan it" adds the linked skill to the plan, done ones fold away (Clear done), and finishing them earns Homework done (and Five homeworks). A Home tile lists what is open.
+- Off-ice log (on the Sessions tab of Progress): stretching, strength, jump drills, dance, cardio, or other, 5 to 300 minutes, on today or an earlier day, with a note. It does not change XP or the weekly streak (those are for ice time). It counts toward the badges Off-ice workout, Off-ice regular (10), and Cross-trainer (3 kinds); the calendar shows a green dot on those days; Home shows the week's minutes.
+- Saved data: `goals`, `homework`, and `offIce`, all optional. Limits: 30 goals, 60 homework, 1000 off-ice workouts.
+- The pieces are `js/goals.js`, `js/homework.js`, and `js/office.js` (pure logic with tests), `js/ui/skillpick.js` (a search sheet to choose a skill), and `js/ui/officesheet.js`.
+
+### Skater colors
+
+- Me has Your color: six colors for your avatar (initials on a gradient). Sky and Rose are free; Mint needs level 2, Violet level 4, Sunset the Getting regular badge, and Midnight the Skill collector badge. A locked color says what unlocks it. The color shows on the friends board, on the card you send (a friend sees your color on your avatar), and tints the card picture.
+- These colors are only about who you are. Colors that mean something in MySkate (gold for earned, blue for learning, coral for caution) are not on the list. A color you have not unlocked cannot be used even if a file says so (it falls back to Sky). A card's color is only ever one of the six.
+- Saved data: `profile.look`; a card also carries the color id (`k`).
 
 ### Test readiness
 

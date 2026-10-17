@@ -7,6 +7,8 @@ import { parseBackup, mergeStates, replaceState, defaultState, requestPersistenc
 import { SLOTS } from "../plan.js";
 import { sanitizeCost } from "../cost.js";
 import { readBackup, openLockSheet } from "../ui/unlock.js";
+import { LOOKS, isUnlocked, unlockText } from "../looks.js";
+import { avatar } from "../ui/friends.js";
 
 const LIGHT_NAMES = { sunrise: "Sunrise", golden: "Golden hour", midday: "Midday", dusk: "Dusk" };
 
@@ -15,6 +17,7 @@ export function renderMe(ctx) {
   const last = state.backup.lastExportAt;
   const lastText = last ? `Last backup: ${fmtDate(todayISO(new Date(last)), { weekday: "long", month: "long", day: "numeric" })}.` : "You have not saved a backup yet.";
   const safe = (url) => (typeof url === "string" && /^https:\/\//.test(url) ? url : "");
+  const have = ctx.lookHave();
   return html`
     <header class="screen-head"><div><p class="eyebrow">Your setup</p><h1>Me</h1></div></header>
     <section class="card card--ice help-card" aria-labelledby="help-title">
@@ -33,6 +36,15 @@ export function renderMe(ctx) {
         </div>
         <label class="field"><span>Usual cost per session (optional)</span><input class="input input--num" type="number" inputmode="decimal" min="0" max="999" step="0.5" value="${state.profile.defaultCost ?? ""}" data-input="default-cost" placeholder="18"></label>
         <p class="note">When you save a session it starts with this cost, and you can change it for any one session. Blade settings are on Home, in the Blade life tile.</p>
+      </section>
+
+      <section class="card stack">
+        <h2>Your color</h2>
+        <p class="dim">The color of your avatar on the friends board and on the card you send. Some colors unlock as you level up and earn badges.</p>
+        <div class="swatches" role="group" aria-label="Your color">${LOOKS.map((l) => {
+          const open = isUnlocked(l, have);
+          return html`<button class="swatch ${open ? "" : "is-locked"}" type="button" data-action="look" data-id="${l.id}" aria-pressed="${state.profile.look === l.id && open}" aria-label="${l.name}${open ? "" : ", locked. " + unlockText(l)}">${avatar(state.profile.name.trim() || "Me", l.id)}<span class="swatch__name">${l.name}</span>${open ? "" : html`<span class="swatch__lock">${unlockText(l)}</span>`}</button>`;
+        })}</div>
       </section>
 
       <section class="card stack">
@@ -151,6 +163,14 @@ export function meActions(ctx) {
       ctx.update();
     },
     tour: () => ctx.showTour(),
+    look: (el) => {
+      const look = LOOKS.find((l) => l.id === el.dataset.id);
+      if (!look) return;
+      if (!isUnlocked(look, ctx.lookHave())) return toast(`${unlockText(look)} to unlock ${look.name}.`, 4000);
+      ctx.state.profile.look = look.id;
+      ctx.save();
+      ctx.update();
+    },
     export: () => ctx.exportBackup(),
     "export-locked": () => openLockSheet((passphrase) => ctx.exportBackupLocked(passphrase)),
     "export-csv": () => ctx.exportCSV(),
