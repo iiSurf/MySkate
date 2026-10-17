@@ -11,6 +11,8 @@ import { shareBadge, shareCardLink, shareCardPicture, copyCardLink } from "../ui
 import { board, parseFriendInput } from "../friends.js";
 import { initials, openFriend, openAddFriend } from "../ui/friends.js";
 import { monthGrid, shiftMonth } from "../calendar.js";
+import { openOffIceSheet } from "../ui/officesheet.js";
+import { recentOffIce, offIceSummary, offIceByDay, offKindName } from "../office.js";
 import { occurrencesInWeek, kindName, fmtRange } from "../ice.js";
 import { testList, skillsReadiness, freeReadiness, countdown, readinessLabel, skillsToWorkOn } from "../testprep.js";
 
@@ -83,14 +85,14 @@ function costCard(ctx, d) {
    weeks that count toward a streak. Tap a day to see what it holds. */
 function calendarCard(ctx, d) {
   const ym = ui.month || d.today.slice(0, 7);
-  const g = monthGrid(ym, { sessions: ctx.state.sessions, iceSessions: ctx.state.iceSessions }, d.today);
+  const g = monthGrid(ym, { sessions: ctx.state.sessions, iceSessions: ctx.state.iceSessions, offIce: ctx.state.offIce }, d.today);
   const label = fmtDate(`${ym}-01`, { month: "long", year: "numeric" });
   const cell = (c) => {
     if (!c) return html`<span class="cal-empty"></span>`;
-    const said = `${fmtDate(c.date, { weekday: "long", month: "long", day: "numeric" })}${c.sessions ? `: ${c.sessions} ${c.sessions === 1 ? "session" : "sessions"}, ${c.minutes} minutes on ice` : ""}${c.planned ? `, ${c.planned} picked ${c.planned === 1 ? "session" : "sessions"} ahead` : ""}${c.today ? ", today" : ""}`;
-    const body = html`${c.day}${c.planned ? html`<i class="cal-plan" aria-hidden="true"></i>` : ""}`;
+    const said = `${fmtDate(c.date, { weekday: "long", month: "long", day: "numeric" })}${c.sessions ? `: ${c.sessions} ${c.sessions === 1 ? "session" : "sessions"}, ${c.minutes} minutes on ice` : ""}${c.off ? `, ${c.off} off-ice ${c.off === 1 ? "workout" : "workouts"}` : ""}${c.planned ? `, ${c.planned} picked ${c.planned === 1 ? "session" : "sessions"} ahead` : ""}${c.today ? ", today" : ""}`;
+    const body = html`${c.day}${c.off ? html`<i class="cal-off" aria-hidden="true"></i>` : ""}${c.planned ? html`<i class="cal-plan" aria-hidden="true"></i>` : ""}`;
     const cls = `cal-day ${c.sessions ? "has" : ""} ${c.today ? "today" : ""}`;
-    return c.sessions || c.planned ? html`<button class="${cls}" type="button" data-action="cal-day" data-date="${c.date}" aria-label="${said}">${body}</button>` : html`<span class="${cls}" aria-label="${said}">${body}</span>`;
+    return c.sessions || c.planned || c.off ? html`<button class="${cls}" type="button" data-action="cal-day" data-date="${c.date}" aria-label="${said}">${body}</button>` : html`<span class="${cls}" aria-label="${said}">${body}</span>`;
   };
   return html`<section class="card tile wide" aria-labelledby="cal-title">
     <div class="tile__head"><p class="eyebrow" id="cal-title">Practice calendar</p>${ym !== d.today.slice(0, 7) ? html`<button class="chip" type="button" data-action="cal-today">This month</button>` : ""}</div>
@@ -103,7 +105,7 @@ function calendarCard(ctx, d) {
       <div class="cal-head" aria-hidden="true">${["M", "T", "W", "T", "F", "S", "S"].map((x) => html`<span>${x}</span>`)}</div>
       ${g.weeks.map((w) => html`<div class="cal-week ${w.streak ? "is-streak" : ""}">${w.days.map(cell)}</div>`)}
     </div>
-    <p class="note">Gold days are days you skated. A blue dot is ice you picked on the Ice tab. A glow behind a week means it counts toward your streak.</p>
+    <p class="note">Gold days are days you skated. A blue dot at the bottom is ice you picked on the Ice tab, and a green dot at the top is off-ice work. A glow behind a week means it counts toward your streak.</p>
   </section>`;
 }
 
@@ -281,6 +283,7 @@ function openDay(ctx, date) {
   const d = ctx.derive();
   const sessions = ctx.state.sessions.filter((x) => x.date === date).sort((a, b) => a.startedAt.localeCompare(b.startedAt));
   const rinkName = (id) => (ctx.state.rinks.find((r) => r.id === id) || { name: "a rink" }).name;
+  const offToday = offIceByDay(ctx.state.offIce)[date] || [];
   const planned = date >= d.today ? occurrencesInWeek(ctx.state.iceSessions.filter((x) => x.pick), weekKey(date)).filter((o) => o.date === date) : [];
   const sheet = openSheet(
     html`<h2 class="sheet__title sheet__title--small">${fmtDate(date, { weekday: "long", month: "long", day: "numeric" })}</h2>
@@ -293,6 +296,7 @@ function openDay(ctx, date) {
           })}
           ${s.note ? html`<p class="note">${s.note}</p>` : ""}</div>`;
       })}
+      ${offToday.length ? html`<div class="card"><p class="eyebrow">Off-ice</p>${offToday.map((e) => html`<div class="row"><span class="grow">${offKindName(e.kind)} · ${e.minutes} min${e.note ? html`<br><span class="dim">${e.note}</span>` : ""}</span></div>`)}</div>` : ""}
       ${planned.length ? html`<div class="card"><p class="eyebrow">Ice you picked</p>${planned.map((o) => html`<div class="row"><span class="grow"><strong>${fmtRange(o.start, o.end)}</strong><br><span class="dim">${kindName(o.kind)} at ${rinkName(o.rinkId)}</span></span></div>`)}</div>` : ""}
       <div class="sheet__foot"><span></span><button class="btn btn--small" type="button" data-close="done">Done</button></div>`,
     { label: fmtDate(date, { weekday: "long", month: "long", day: "numeric" }), sticky: true }
@@ -338,10 +342,21 @@ function skillsTab(ctx, d) {
       : html`<section class="card"><p class="dim">${ui.filter === "all" ? "Skills show up here after your first session." : "Nothing here yet."}</p></section>`}`;
 }
 
+/* The off-ice log: a button to log work away from the rink, this week's total, and the latest workouts. */
+function offIceCard(ctx, d) {
+  const list = ctx.state.offIce;
+  const sum = offIceSummary(list, d.today);
+  const recent = recentOffIce(list).slice(0, 8);
+  return html`<section class="card" aria-labelledby="off-title">
+    <div class="split"><p class="eyebrow" id="off-title">Off-ice log</p><button class="chip" type="button" data-action="log-off">Log off-ice work</button></div>
+    ${list.length ? html`<p class="dim">This week: ${sum.weekMin} min in ${sum.weekCount} ${sum.weekCount === 1 ? "workout" : "workouts"}. In all: ${fmt1(sum.allMin / 60)} h.</p><div>${recent.map((e) => html`<div class="row"><span class="grow">${offKindName(e.kind)} · ${e.minutes} min<br><span class="dim">${fmtDate(e.date, { weekday: "short", month: "short", day: "numeric" })}${e.note ? " · " + e.note : ""}</span></span><button class="icon-btn icon-btn--sm" type="button" data-action="off-remove" data-id="${e.id}" aria-label="Delete ${offKindName(e.kind)} on ${fmtDate(e.date)}">${icon("x")}</button></div>`)}</div>` : html`<p class="dim">Stretching, strength, jump drills, dance, or cardio away from the rink. It counts toward badges and shows on the calendar.</p>`}
+  </section>`;
+}
+
 function sessionsTab(ctx, d) {
   const list = [...ctx.state.sessions].sort((a, b) => b.startedAt.localeCompare(a.startedAt));
-  if (!list.length) return html`<section class="card"><p class="dim">No sessions yet. Plan one and get on the ice.</p></section>`;
-  return html`<div class="stack">${list.map((s) => {
+  if (!list.length) return html`<div class="stack">${offIceCard(ctx, d)}<section class="card"><p class="dim">No sessions yet. Plan one and get on the ice.</p></section></div>`;
+  return html`<div class="stack">${offIceCard(ctx, d)}${list.map((s) => {
     const xp = d.xp.bySession.get(s.id);
     const open = ui.open === s.id;
     return html`<section class="card">
@@ -445,6 +460,12 @@ export function progressActions(ctx) {
       ctx.update();
     },
     "cal-day": (el) => openDay(ctx, el.dataset.date),
+    "log-off": () => openOffIceSheet(ctx),
+    "off-remove": (el) => {
+      ctx.state.offIce = ctx.state.offIce.filter((x) => x.id !== el.dataset.id);
+      ctx.save();
+      ctx.update();
+    },
     "change-test": () => {
       ui.changeTest = true;
       ctx.update();

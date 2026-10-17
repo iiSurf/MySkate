@@ -1463,3 +1463,16 @@ button.cal-day {
   text-decoration: line-through;
   text-decoration-color: rgba(255, 255, 255, 0.35);
 }
+
+/* A green dot at the top of a calendar day marks off-ice work */
+.cal-off {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 50%;
+  background: #7ee2a8;
+  box-shadow: 0 0 0 1.5px rgba(6, 22, 65, 0.6);
+}

@@ -17,6 +17,8 @@ import { upcomingPicks, kindName, fmtRange } from "../ice.js";
 import { costSummary, fmtMoney } from "../cost.js";
 import { sortedGoals } from "../goals.js";
 import { sortedHomework } from "../homework.js";
+import { offIceSummary } from "../office.js";
+import { openOffIceSheet } from "../ui/officesheet.js";
 
 const ui = { bladeOpen: false };
 const LIMITS = [20, 25, 30, 35];
@@ -119,6 +121,17 @@ function bladeTile(ctx) {
       <p class="note">Most skaters sharpen between 20 and 35 hours. Use what your coach or sharpener says. MySkate adds your on-ice time after every session.${last ? ` Last sharpened ${fmtDate(last.date, { month: "short", day: "numeric" })} at ${fmtNum(last.hours)} hours.` : ""}</p>
     </div>
     <button class="btn btn--glass btn--small" type="button" data-action="blade-log">I just got them sharpened</button>
+  </section>`;
+}
+
+/* Off-ice work this week. Only shown once you have logged some. */
+function offIceTile(ctx, d) {
+  if (!ctx.state.offIce.length) return "";
+  const sum = offIceSummary(ctx.state.offIce, d.today);
+  return html`<section class="card tile" aria-labelledby="off-title">
+    <div class="tile__head"><p class="eyebrow" id="off-title">Off-ice this week</p></div>
+    <div class="hours"><span class="num">${sum.weekMin}</span><span class="dim">minutes in ${sum.weekCount} ${sum.weekCount === 1 ? "workout" : "workouts"}</span></div>
+    <button class="btn btn--glass btn--small" type="button" data-action="log-off">Log off-ice work</button>
   </section>`;
 }
 
@@ -276,7 +289,7 @@ export function renderHome(ctx) {
     </header>
     ${nudge(ctx)}
     ${heroCard(ctx, d)}
-    <div class="tiles">${xpTile(ctx, d)}${badgeTile(ctx)}${homeworkTile(ctx, d)}${goalsTile(ctx, d)}${testTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
+    <div class="tiles">${xpTile(ctx, d)}${badgeTile(ctx)}${homeworkTile(ctx, d)}${goalsTile(ctx, d)}${offIceTile(ctx, d)}${testTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
     ${recent(ctx, d)}`;
 }
 
@@ -318,6 +331,7 @@ export function homeActions(ctx) {
   return {
     "go-plan": () => ctx.go("plan"),
     "go-ice": () => ctx.go("ice"),
+    "log-off": () => openOffIceSheet(ctx),
     "go-tests": () => {
       showTests();
       ctx.go("progress");
