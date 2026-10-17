@@ -1,5 +1,7 @@
 /* Blade life: hours on the blades since they were last sharpened, against the skater's own limit. */
 
+import { todayISO } from "./util.js";
+
 /* Hours so far = the hours entered at setup or at the last sharpening, plus the on-ice time of every session since. */
 export function bladeHours(state) {
   const from = Date.parse(state.blades.countedFrom) || 0;
@@ -27,7 +29,7 @@ export function bladeInfo(state) {
 /* Start counting again from now, and remember when and at how many hours it happened. */
 export function logSharpening(state, now = new Date()) {
   const hours = bladeHours(state);
-  state.sharpenings.push({ date: now.toISOString().slice(0, 10), hours: Math.round(hours * 100) / 100 });
+  state.sharpenings.push({ date: todayISO(now), hours: Math.round(hours * 100) / 100 });
   state.blades.baseHours = 0;
   state.blades.countedFrom = now.toISOString();
 }

@@ -89,6 +89,11 @@ export function fmtNum(n) {
   return String(Math.round(n * 100) / 100);
 }
 
+/* One decimal, for hours. */
+export function fmt1(n) {
+  return String(Math.round(n * 10) / 10);
+}
+
 export function clamp(n, lo, hi) {
   return Math.min(hi, Math.max(lo, n));
 }

@@ -1,0 +1,562 @@
+/* Layout and the few pieces only the app uses. Shared pieces live in components.css. */
+
+a {
+  color: var(--ice-bright);
+}
+
+.shell {
+  min-height: 100dvh;
+}
+
+.screen {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--sp-5);
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: var(--sp-5) var(--sp-4) 150px;
+  outline: none;
+}
+
+.screen-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+}
+
+.screen-head h1 {
+  font: italic 800 clamp(2.4rem, 9vw, 3.6rem) / 1.05 var(--font-display);
+  text-shadow: 0 0 36px rgba(255, 200, 120, 0.4);
+}
+
+.screen-head .eyebrow,
+.screen > h2 {
+  text-shadow: 0 1px 14px rgba(2, 10, 40, 0.85);
+}
+
+h2 {
+  font-size: 1.35rem;
+}
+
+.stack {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--sp-4);
+  align-items: start;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: var(--sp-4);
+  align-items: start;
+}
+
+.tiles .wide {
+  grid-column: 1 / -1;
+}
+
+.two-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+
+/* Navigation: a floating glass bar at the bottom on phones, a sidebar on wide screens. */
+
+.nav-wrap {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  padding: 0 12px;
+  pointer-events: none;
+}
+
+.nav-wrap .tabbar {
+  width: min(100%, 520px);
+  pointer-events: auto;
+}
+
+.tab {
+  text-decoration: none;
+}
+
+.toast {
+  bottom: calc(96px + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 960px) {
+  .shell {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    align-items: start;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .nav-wrap {
+    position: sticky;
+    top: 16px;
+    bottom: auto;
+    display: block;
+    padding: 24px 0 0 20px;
+  }
+
+  .nav-wrap .tabbar {
+    width: 100%;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px;
+    border-radius: var(--r-lg);
+  }
+
+  .tabbar .lens {
+    display: none;
+  }
+
+  .tab {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 13px 16px;
+    border-radius: var(--r-pill);
+    font-size: 1rem;
+  }
+
+  .tab[aria-current="page"] {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(166, 241, 255, 0.2));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  .screen {
+    padding-bottom: 64px;
+  }
+
+  .toast {
+    bottom: 28px;
+  }
+}
+
+/* Home */
+
+.hero-card {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.hero-card__line {
+  font-size: 1.15rem;
+}
+
+.hero-card__line .num {
+  font-size: 2rem;
+}
+
+.nudge {
+  display: grid;
+  gap: var(--sp-2);
+  border-color: rgba(255, 217, 138, 0.6);
+}
+
+.xp-top {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.xp-big {
+  font-size: 1.9rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+  gap: var(--sp-3);
+}
+
+.stat-n {
+  font-size: 1.9rem;
+  line-height: 1.1;
+}
+
+.mini--big {
+  flex-wrap: wrap;
+}
+
+.mini--big .skate {
+  width: 38px;
+  height: 28px;
+}
+
+/* Lists, plans, and rows you can tap */
+
+.row--pick {
+  flex-wrap: wrap;
+  cursor: pointer;
+  border-radius: var(--r-md);
+}
+
+/* On a narrow screen the skates and chips drop under the name instead of squeezing it. */
+.row--pick .grow {
+  flex: 1 1 160px;
+}
+
+.row--pick .mini,
+.row--pick .chip--tag {
+  margin-left: auto;
+}
+
+.row--pick:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.row--pick .tick {
+  pointer-events: none;
+}
+
+.row--pick[aria-checked="true"] .tick {
+  background: linear-gradient(180deg, #ffffff, var(--ice));
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: scale(1.08);
+}
+
+.row--pick[aria-checked="true"] .tick .ic {
+  opacity: 1;
+}
+
+.row .chip {
+  flex: none;
+}
+
+.chip--tag {
+  padding: 2px 10px;
+  font-size: 0.78rem;
+  cursor: default;
+  box-shadow: none;
+}
+
+.chip--discard {
+  justify-self: start;
+  border-color: rgba(255, 170, 160, 0.6);
+  color: #ffc4bb;
+}
+
+.chip:disabled,
+.btn:disabled,
+.icon-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.plan-grid,
+.skate-grid {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+@media (min-width: 960px) {
+  .plan-grid,
+  .skate-grid {
+    grid-template-columns: minmax(0, 1fr) 360px;
+    align-items: start;
+  }
+
+  .plan-summary {
+    position: sticky;
+    top: 16px;
+  }
+}
+
+.plan-summary {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.plan-list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 8px 4px;
+  border-top: 1px solid var(--glass-edge-soft);
+}
+
+.plan-item:first-child {
+  border-top: 0;
+}
+
+.plan-item .grow {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.plan-n {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.plan-tools {
+  display: flex;
+  gap: 4px;
+}
+
+.queue-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: 8px 6px;
+  border: 0;
+  border-radius: var(--r-md);
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.plan-item.is-current {
+  background: rgba(166, 241, 255, 0.12);
+  border-radius: var(--r-md);
+}
+
+.browse-list {
+  max-height: min(40vh, 360px);
+  overflow: auto;
+}
+
+/* Skate screen */
+
+.timer-card {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.timer {
+  font: 500 2.7rem/1.05 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.timer-side {
+  margin-left: auto;
+  text-align: right;
+}
+
+.skill-card {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.skill-title {
+  font: 700 clamp(1.8rem, 6vw, 2.4rem) / 1.15 var(--font-display);
+}
+
+.rating {
+  flex-wrap: wrap;
+}
+
+.rating-label {
+  margin-top: var(--sp-2);
+  min-height: 1.6em;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.pip.miss {
+  border-color: var(--coral);
+}
+
+.note-box summary {
+  padding: var(--sp-2) 0;
+  color: var(--text-dim);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.note-input {
+  width: 100%;
+  padding: 12px 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.idle-card {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+/* Progress */
+
+.wkchart {
+  display: flex;
+  align-items: stretch;
+  gap: var(--sp-2);
+  height: 160px;
+}
+
+.wk {
+  flex: 1;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 6px;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.wk i {
+  align-self: end;
+  justify-self: center;
+  width: min(100%, 44px);
+  height: var(--h);
+  border-radius: 8px 8px 3px 3px;
+  background: linear-gradient(180deg, var(--ice-bright), var(--ice));
+}
+
+.wk i.today {
+  background: linear-gradient(180deg, #ffeab0, #f5a742);
+  box-shadow: 0 0 12px rgba(255, 190, 100, 0.6);
+}
+
+.wk i.none {
+  opacity: 0.3;
+}
+
+.sess-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sess-head .grow {
+  flex: 1;
+}
+
+.sess-body {
+  display: grid;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.spark {
+  width: 100%;
+  max-width: 320px;
+}
+
+/* Forms, sheets, and lists on the Me screen */
+
+.choices {
+  display: grid;
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+}
+
+.done {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-3);
+  text-align: center;
+}
+
+.sheet__title--small {
+  font: italic 800 1.8rem / 1.1 var(--font-display);
+}
+
+.sources {
+  display: grid;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 480px) {
+  .xp-top {
+    flex-wrap: wrap;
+  }
+
+  .two-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Never let one wide child (a long select option, a row of chips) stretch a whole column past the screen. */
+
+.screen > *,
+.stack > *,
+.grid-2 > *,
+.tiles > *,
+.plan-grid > *,
+.skate-grid > * {
+  min-width: 0;
+}
+
+.stack,
+.plan-grid,
+.skate-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.field {
+  min-width: 0;
+}
+
+.input {
+  max-width: 100%;
+}
+
+select.input {
+  width: 100%;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: 960px) {
+  .plan-grid,
+  .skate-grid {
+    grid-template-columns: minmax(0, 1fr) 360px;
+  }
+}

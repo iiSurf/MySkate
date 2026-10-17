@@ -32,8 +32,10 @@
 .num {
   font-family: var(--font-display);
   font-weight: 700;
-  font-optical-sizing: auto;
-  letter-spacing: -0.015em;
+  /* A sturdier optical size, so the thin strokes of numerals do not vanish at everyday sizes. */
+  font-optical-sizing: none;
+  font-variation-settings: "opsz" 14;
+  letter-spacing: -0.01em;
 }
 
 /* Liquid glass: a dark tint underneath (so text never sits on a bright patch), a soft highlight,
