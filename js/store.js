@@ -1,6 +1,7 @@
 /* Saved data: the shape, loading and saving, backup files, and merging an old backup into newer progress.
    Anything that comes from a file is untrusted, so every field is checked and trimmed before it is used. */
 
+import { sanitizeCost } from "./cost.js";
 import { sanitizeRink, sanitizeIceSession, sanitizeIceView, defaultIceView, LIMITS as ICE_LIMITS } from "./ice.js";
 
 export const SCHEMA_VERSION = 1;
@@ -24,6 +25,7 @@ export function defaultState(now = new Date()) {
       defaultSlotMin: 60,
       onboarded: false,
       tourSeen: false,
+      defaultCost: null,
     },
     blades: { name: "", limitHours: 25, baseHours: 0, countedFrom: now.toISOString() },
     sharpenings: [],
@@ -65,6 +67,7 @@ function sanitizeSession(s) {
     onIceSec: Math.round(num(s.onIceSec, 0, 86400, 0)),
     entries: (Array.isArray(s.entries) ? s.entries : []).map(sanitizeEntry).filter(Boolean).slice(0, 200),
     note: str(s.note, MAX.note),
+    cost: sanitizeCost(s.cost),
   };
 }
 
@@ -159,6 +162,7 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
       defaultSlotMin: Math.round(num(p.defaultSlotMin, 5, 300, 60)),
       onboarded: p.onboarded === true,
       tourSeen: p.tourSeen === true,
+      defaultCost: sanitizeCost(p.defaultCost),
     },
     blades: {
       name: str(b.name, MAX.name),
@@ -174,6 +178,7 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
     plan: {
       slotMin: Math.round(num(plan.slotMin, 5, 300, 60)),
       skillIds: (Array.isArray(plan.skillIds) ? plan.skillIds : []).map((x) => str(x, MAX.skillId)).filter(Boolean).slice(0, 40),
+      cost: sanitizeCost(plan.cost),
     },
     cues,
     friends: (Array.isArray(src.friends) ? src.friends : []).map(sanitizeFriend).filter(Boolean).slice(0, 100),
@@ -291,7 +296,7 @@ function structuredCloneSafe(value) {
 
 /* A spreadsheet export, one row per skill rating. Cells that start like a formula get a leading apostrophe. */
 export function exportCSV(state, catalog) {
-  const header = ["date", "booked_min", "on_ice_min", "track", "level", "skill", "type", "skates", "landed", "attempts", "note"];
+  const header = ["date", "booked_min", "on_ice_min", "track", "level", "skill", "type", "skates", "landed", "attempts", "note", "session_cost"];
   const cell = (v) => {
     let text = String(v ?? "");
     if (/^[=+\-@\t\r]/.test(text)) text = "'" + text;
@@ -314,6 +319,7 @@ export function exportCSV(state, catalog) {
           e.landed,
           e.attempts,
           e.note,
+          s.cost === null || s.cost === undefined ? "" : s.cost,
         ]
           .map(cell)
           .join(",")

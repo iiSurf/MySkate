@@ -173,10 +173,12 @@ test("CSV has one row per rating and protects against spreadsheet formulas", () 
   const csv = exportCSV(state, catalog);
   const lines = csv.trim().split("\n");
   assert.equal(lines.length, 2);
-  assert.match(lines[0], /^date,booked_min,on_ice_min,track,level,skill,type,skates,landed,attempts,note$/);
+  assert.match(lines[0], /^date,booked_min,on_ice_min,track,level,skill,type,skates,landed,attempts,note,session_cost$/);
   assert.match(lines[1], /Waltz jump/);
   assert.match(lines[1], /,4,7,10,/);
-  assert.match(lines[1], /"'=HYPERLINK\(""http:\/\/example.com""\), ""quoted"""$/);
+  assert.match(lines[1], /"'=HYPERLINK\(""http:\/\/example.com""\), ""quoted""",$/, "the cost column is empty when the session has no cost");
+  s.cost = 18.5;
+  assert.match(exportCSV(state, catalog).trim().split("\n")[1], /""quoted""",18.5$/);
 });
 
 test("the quick tour flag starts false, only a real true counts, and an old backup without it loads", () => {
