@@ -26,6 +26,7 @@ import { dropEnded } from "./ice.js";
 import { renderSkate, mountSkate, skateActions, skateInputs } from "./screens/skate.js";
 import { renderProgress, progressActions, showFriends } from "./screens/progress.js";
 import { renderMe, mountMe, meActions, meInputs } from "./screens/me.js";
+import { renderCompete, mountCompete, competeActions, competeInputs } from "./screens/compete.js";
 
 const none = () => ({});
 
@@ -36,6 +37,8 @@ const ROUTES = {
   skate: { title: "Skate", render: renderSkate, mount: mountSkate, actions: skateActions, inputs: skateInputs },
   progress: { title: "Progress", render: renderProgress, actions: progressActions, inputs: none },
   me: { title: "Me", render: renderMe, mount: mountMe, actions: meActions, inputs: meInputs },
+  /* Competitions has no tab of its own: you reach it from Home and Plan, and Plan stays lit while you are in it. */
+  compete: { title: "Competitions", render: renderCompete, mount: mountCompete, actions: competeActions, inputs: competeInputs, nav: "plan" },
 };
 
 const screenEl = $("#screen");
@@ -108,7 +111,7 @@ function renderRoute({ keepScroll = false } = {}) {
   handlers = { actions: route.actions(ctx), inputs: route.inputs(ctx) };
   cleanup = route.mount ? route.mount(ctx) || (() => {}) : () => {};
   nav.querySelectorAll(".tab").forEach((t) => {
-    if (t.dataset.route === current) t.setAttribute("aria-current", "page");
+    if (t.dataset.route === (route.nav || current)) t.setAttribute("aria-current", "page");
     else t.removeAttribute("aria-current");
   });
   document.title = `${route.title} · MySkate`;

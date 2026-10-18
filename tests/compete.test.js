@@ -5,7 +5,7 @@ import {
   fmtMmSs, parseMmSs, daysUntil, countdownText, upcomingEvents, pastEvents, nextEvent, ordinal, placingText,
   newProgram, newEvent, programStatus, readiness, nextSpot, addElement, updateElement, moveElement, removeElement, shiftElement,
   spreadEvenly, setLength, addMoment, removeMoment, timelineBlocks, overlaps, programSpan, cueAt, routePoints, smoothPath,
-  sortDay, dayRange, parseCompeteHash, competeHref, DEFAULT_BRING,
+  seasonLabel, roman, sortDay, dayRange, parseCompeteHash, competeHref, DEFAULT_BRING,
 } from "../js/compete.js";
 
 let n = 0;
@@ -304,4 +304,19 @@ test("each view has an address, and a bad one is the hub", () => {
   assert.equal(competeHref({ view: "program", id: "abc" }), "#/compete/p/abc/layout");
   assert.equal(competeHref({ view: "event", id: "e1", results: true }), "#/compete/e/e1/results");
   for (const href of ["#/compete/p/abc/timing", "#/compete/e/e1/results", "#/compete/e/e1"]) assert.notDeepEqual(parseCompeteHash(href), { view: "hub" });
+});
+
+test("the season runs July to June", () => {
+  assert.equal(seasonLabel("2026-10-17"), "2026–27");
+  assert.equal(seasonLabel("2027-03-06"), "2026–27");
+  assert.equal(seasonLabel("2026-07-01"), "2026–27");
+  assert.equal(seasonLabel("2026-06-30"), "2025–26");
+  assert.equal(seasonLabel("2099-12-31"), "2099–00");
+  assert.equal(seasonLabel("nope"), "");
+});
+
+test("elements are numbered like a running order", () => {
+  assert.deepEqual([1, 2, 3, 4, 5, 6, 9, 14, 19, 40].map(roman), ["I", "II", "III", "IV", "V", "VI", "IX", "XIV", "XIX", "XL"]);
+  assert.equal(roman(0), "");
+  assert.equal(roman("x"), "");
 });

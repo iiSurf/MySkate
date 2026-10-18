@@ -46,6 +46,28 @@
       { id: "i2", rinkId: "r1", kind: "public", days: [6], date: null, start: "14:00", end: "15:30", price: 12, note: "", from: null, to: null, skip: [], every: 1, imported: false, pick: false },
     ];
   }
+  if (q.get("compete") === "1") {
+    const ev = { id: "e1", name: "Fall Classic", date: iso(-28), place: "Highland Ice Arena", note: "", result: null,
+      day: [
+        { id: "d1", label: "Arrive and check in", time: "07:30", mins: 30, mine: false },
+        { id: "d2", label: "Warm-up, group 2", time: "09:10", mins: 15, mine: false },
+        { id: "d3", label: "Zamboni", time: "09:25", mins: 15, mine: false },
+        { id: "d4", label: "Moonlight", time: "09:48", mins: 4, mine: true },
+        { id: "d5", label: "Awards", time: "11:30", mins: 20, mine: false },
+      ],
+      bring: [{ id: "b1", text: "Skates, sharpened", done: true }, { id: "b2", text: "Music on two devices", done: false }, { id: "b3", text: "Costume", done: false }] };
+    const past = { id: "e0", name: "Spring Showcase", date: iso(150), place: "Lynnwood Ice Center", note: "", day: [], bring: [], result: { programId: "", placing: 2, of: 9, marks: {}, note: "", coach: "", recordedOn: iso(150) } };
+    const els = [
+      { id: "m1", label: "Opening pose", type: "pose", skillId: "", x: 0.1, y: 0.7, at: 0, dur: 6 },
+      { id: "m2", label: "Mohawk sequence", type: "steps", skillId: ids[3], x: 0.27, y: 0.3, at: 10, dur: 16 },
+      { id: "m3", label: "Waltz jump", type: "jump", skillId: ids[7], x: 0.44, y: 0.72, at: 28, dur: 8 },
+      { id: "m4", label: "Mazurka", type: "move", skillId: ids[4], x: 0.6, y: 0.3, at: 44, dur: 14 },
+      { id: "m5", label: "One-foot spin", type: "spin", skillId: ids[6], x: 0.78, y: 0.68, at: 62, dur: 14 },
+      { id: "m6", label: "Closing pose", type: "pose", skillId: "", x: 0.9, y: 0.3, at: 80, dur: 10 },
+    ];
+    st.events = [past, ev];
+    st.programs = [{ id: "p1", name: "Moonlight", music: { title: "Clair de Lune", artist: "Debussy" }, lengthSec: 90, kind: "free", eventId: "e1", note: "", elements: els, moments: [{ id: "n1", at: 30, text: "the music swells" }, { id: "n2", at: 65, text: "crescendo" }], created: iso(5) }];
+  }
   if (scene === "active") {
     const a = { id: "a1", startedAt: Date.now() - 12 * 60 * 1000, bookedMin: 60, order: ids.slice(3, 6), index: 0, entries: {}, running: true, runStart: Date.now() - 12 * 60 * 1000, accumMs: 0 };
     a.entries[ids[3]] = { skillId: ids[3], stars: 2, landed: 0, attempts: 0, note: "" };

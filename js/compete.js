@@ -198,6 +198,28 @@ export const upcomingEvents = (events, today = todayISO()) => events.filter((e) 
 export const pastEvents = (events, today = todayISO()) => events.filter((e) => e.date < today).sort((a, b) => b.date.localeCompare(a.date));
 export const nextEvent = (events, today = todayISO()) => upcomingEvents(events, today)[0] || null;
 
+/* The skating season runs July to June: any day from July 1 is in that year's season, so October 17, 2026 is "2026–27" and March 6, 2027 is too. */
+export function seasonLabel(date) {
+  const y = Number(String(date).slice(0, 4));
+  const m = Number(String(date).slice(5, 7));
+  if (!Number.isFinite(y) || !Number.isFinite(m)) return "";
+  const start = m >= 7 ? y : y - 1;
+  return `${start}–${String((start + 1) % 100).padStart(2, "0")}`;
+}
+
+/* 4 as "IV", 14 as "XIV". Programs are listed like a running order. */
+export function roman(n) {
+  let v = Math.max(0, Math.min(3999, Math.round(Number(n) || 0)));
+  let out = "";
+  for (const [value, glyph] of [[1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]]) {
+    while (v >= value) {
+      out += glyph;
+      v -= value;
+    }
+  }
+  return out;
+}
+
 /* 1 to "1st", 22 to "22nd", 13 to "13th". */
 export function ordinal(n) {
   const v = Math.abs(Math.round(n));
