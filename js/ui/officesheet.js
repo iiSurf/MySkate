@@ -49,6 +49,7 @@ export function openOffIceSheet(ctx) {
     sheet.close("saved");
     ctx.update();
     toast("Off-ice work logged.");
+    ctx.cheer({ scene: "check", title: "Off-ice work done!", line: "Strong off the ice, strong on it." });
     ctx.checkBadges();
   });
   return sheet.closed;

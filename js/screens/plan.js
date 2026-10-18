@@ -285,10 +285,12 @@ export function planActions(ctx) {
       ctx.update();
     },
     "add-hw": () => openHomeworkSheet(ctx),
-    "hw-toggle": (el) => {
+    "hw-toggle": async (el) => {
       ctx.state.homework = toggleHomework(ctx.state.homework, el.dataset.id, todayISO());
       ctx.save();
       ctx.update();
+      const h = ctx.state.homework.find((x) => x.id === el.dataset.id);
+      if (h && h.done) await ctx.cheer({ scene: "check", title: "Homework done!", line: "Your coach will be proud." });
       ctx.checkBadges();
     },
     "hw-plan": (el) => {

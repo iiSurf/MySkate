@@ -6,7 +6,7 @@ import { replayXp, levelFromXp, streakWeeks, weekBars } from "./xp.js";
 import { skillStats, activeAsSession, totals } from "./stats.js";
 import { todayISO, html, uid } from "./util.js";
 import { $, render, delegate, toast, download } from "./ui/dom.js";
-import { levelUp as celebrateLevelUp, badgeUnlock } from "./ui/celebrate.js";
+import { levelUp as celebrateLevelUp, badgeUnlock, cheer } from "./ui/celebrate.js";
 import { shareBadge } from "./ui/share.js";
 import { evaluateBadges, newlyEarned } from "./badges.js";
 import { goalStatus } from "./goals.js";
@@ -229,6 +229,8 @@ function buildContext(state, catalog, status) {
       toast("Spreadsheet saved. Look in your downloads.");
     },
     levelUp: (level) => (ctx.practice ? undefined : celebrateLevelUp(level)),
+    /* A quick skating cheer for finishing something (see ui/celebrate.js). Held back in practice, like the other celebrations. */
+    cheer: (opts) => (ctx.practice ? Promise.resolve() : cheer(opts)),
     /* What counts toward unlocking colors: your level and the badges you have earned. */
     lookHave: () => ({ level: derive().level.level, badgeIds: ctx.badges().filter((b) => b.earned).map((b) => b.id) }),
     /* The color to use for you: your choice if it is unlocked, otherwise the default. */

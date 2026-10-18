@@ -1,14 +1,16 @@
 /* Skate: the session at the rink. Big buttons, one skill at a time, a clock that cannot drift. */
 
-import { html, fmtClock, fmtMinutes } from "../util.js";
+import { html, fmtClock, fmtMinutes, todayISO } from "../util.js";
 import { icon, catDot, catName, ratingControl, miniSkates } from "../ui/parts.js";
 import { openSheet, confirmSheet, toast, $ } from "../ui/dom.js";
 import { openPicker } from "../ui/picker.js";
 import { elapsedMs, pauseActive, resumeActive, entryOf, setEntry, recordTry, undoTry, addSkill, finishActive } from "../timer.js";
-import { replayXp, levelFromXp } from "../xp.js";
+import { replayXp, levelFromXp, STREAK_MIN } from "../xp.js";
 import { twinkle } from "../ui/celebrate.js";
 import { levelLabel } from "../catalog.js";
 import { landedPct, skillStats } from "../stats.js";
+import { goalStatus } from "../goals.js";
+import { weekEight } from "../week.js";
 import { keepAwake } from "../wake.js";
 import { sanitizeCost } from "../cost.js";
 
@@ -169,7 +171,12 @@ async function finish(ctx) {
   if (choice !== "save") return;
   draft.note = (noteEl && noteEl.value ? noteEl.value : "").slice(0, 1000);
   draft.cost = sanitizeCost(costEl ? costEl.value : "");
+  const metBefore = new Set(ctx.state.goals.filter((g) => goalStatus(g, skillStats(ctx.state.sessions)).met).map((g) => g.id));
+  const weekBefore = weekEight(ctx.state.sessions, todayISO(), STREAK_MIN).complete;
   ctx.state.sessions.push(draft);
+  const newGoal = ctx.state.goals.find((g) => !metBefore.has(g.id) && goalStatus(g, skillStats(ctx.state.sessions)).met);
+  const weekClosed = !weekBefore && weekEight(ctx.state.sessions, todayISO(), STREAK_MIN).complete;
+  const earnedNow = gain.parts.some((p) => /new at [45] stars/.test(p.label));
   ctx.state.active = null;
   ctx.state.plan = { slotMin: ctx.state.profile.defaultSlotMin, skillIds: [] };
   keepAwake(false);
@@ -177,6 +184,11 @@ async function finish(ctx) {
   const levelAfter = levelFromXp(after.total).level;
   ctx.go("home");
   toast(`Session saved. +${gain.xp} XP`);
+  const skillName = (id) => (ctx.catalog.skills.get(id) || {}).name || "A skill";
+  if (newGoal) await ctx.cheer({ scene: "goal", title: "Goal reached!", line: `${skillName(newGoal.skillId)} is at ${newGoal.target} stars.` });
+  else if (earnedNow) await ctx.cheer({ scene: "skate", title: "Skill earned!", line: "You rated a skill 4 stars or more. It is yours." });
+  else if (weekClosed) await ctx.cheer({ scene: "eight", title: "Figure eight closed!", line: "This week counts toward your streak." });
+  else await ctx.cheer({ scene: "spin", title: "Clean skate!", line: `${fmtMinutes(draft.onIceSec / 60)} on the ice. +${gain.xp} XP` });
   if (levelAfter > levelBefore) await ctx.levelUp(levelAfter);
   await ctx.checkBadges();
 }

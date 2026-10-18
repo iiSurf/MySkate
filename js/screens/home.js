@@ -511,6 +511,7 @@ export function homeActions(ctx) {
       const art = $("#blade-tile .blade");
       if (art) twinkle(art, 14);
       toast("Sharpening logged. Blade life is back to full.");
+      await ctx.cheer({ scene: "blade", title: "Fresh edges!", line: "Blade life is back to full." });
       ctx.checkBadges();
     },
   };

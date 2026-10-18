@@ -585,6 +585,8 @@ export function competeActions(ctx) {
       ui.editResult = false;
       toast("Result saved.");
       go(competeHref({ view: "event", id: ev.id }));
+      const r = check.result;
+      ctx.cheer({ scene: "flowers", title: r.placing === 1 ? "Gold! Bravo!" : "Bravo!", line: r.placing ? `${placingText(r)}. Flowers on the ice for you.` : "You skated it. Flowers on the ice for you." });
     },
     "clear-result": async () => {
       const ev = eventOf(ctx, routeNow().id);

@@ -166,3 +166,57 @@ export function badgeUnlock(badges, { onShare } = {}) {
     document.addEventListener("keydown", onKey);
   });
 }
+
+/* Quick skating cheers for finishing something: a short scene, a title, and a line, then it goes by itself (or at a tap). They are
+   lighter than the level-up: no button to press, about two and a half seconds. Each moment has its own scene:
+     spin     a skater in a scratch spin over a traced circle (a session saved)
+     eight    the week's figure eight traced whole (the week counts toward the streak)
+     skate    the gold skate, popping (a skill earned)
+     goal     a gold medal on a ribbon (a goal reached)
+     flowers  flowers thrown onto the ice (a competition result)
+     blade    a blade with a gleam running along it (fresh edges)
+     check    a check drawn on the ice (homework or off-ice work done)
+   With reduced motion the scene is still, and it still goes by itself. Resolves when it has gone. */
+const SPARKS = [[30, 30, 7], [208, 26, 9], [22, 118, 6], [216, 112, 7], [120, 12, 5]];
+const sparkle = () => SPARKS.map(([x, y, s], i) => `<g transform="translate(${x} ${y})"><path class="ch-spark" style="--d:${(i * 0.18).toFixed(2)}s;--s:${s}" d="M0-1C.12-.28.28-.12 1 0C.28.12.12.28 0 1C-.12.28-.28.12-1 0C-.28-.12-.12-.28 0-1Z"/></g>`).join("");
+
+const SCENES = {
+  spin: () => `<ellipse class="ch-ice" cx="120" cy="132" rx="92" ry="16"/><ellipse class="ch-trace" cx="120" cy="132" rx="70" ry="11" pathLength="100"/>
+    <g class="ch-spinner"><circle cx="120" cy="38" r="10" class="ch-ink"/><path class="ch-body" d="M120 50 L120 96 M120 58 L104 30 M120 58 L136 30 M120 96 L112 128 M120 96 L128 128"/></g>
+    <path class="ch-swirl" d="M84 72 Q120 58 156 72" pathLength="100"/><path class="ch-swirl ch-swirl--2" d="M90 92 Q120 104 150 92" pathLength="100"/>`,
+  eight: () => `<path class="ch-eight-guide" d="M120 80A30 30 0 1 0 60 80A30 30 0 1 0 120 80A30 30 0 1 1 180 80A30 30 0 1 1 120 80"/>
+    <path class="ch-eight" d="M120 80A30 30 0 1 0 60 80A30 30 0 1 0 120 80A30 30 0 1 1 180 80A30 30 0 1 1 120 80" pathLength="100"/>`,
+  skate: () => `<g class="ch-pop"><use href="assets/skate.svg#skate" x="70" y="30" width="100" height="100"/></g>`,
+  goal: () => `<path class="ch-ribbon" d="M104 18 L120 62 L136 18"/><g class="ch-pop"><circle class="ch-medal" cx="120" cy="92" r="34"/><circle class="ch-medal-ring" cx="120" cy="92" r="25"/><path class="ch-star" d="m120 74 5.3 10.9 12 1.7-8.7 8.4 2 11.9L120 101.3l-10.7 5.6 2-11.9-8.6-8.4 12-1.7z"/></g>`,
+  flowers: () => `<line class="ch-ice-line" x1="20" y1="138" x2="220" y2="138"/>${[0, 1, 2, 3, 4].map((i) => `<g class="ch-flower" style="--i:${i};--x:${[-70, -34, 0, 36, 72][i]}px;--r:${[-30, 20, -10, 35, -20][i]}deg"><path class="ch-stem" d="M120 70 L120 100"/><circle class="ch-bloom" cx="120" cy="64" r="9"/><circle class="ch-bloom-in" cx="120" cy="64" r="4"/></g>`).join("")}`,
+  blade: () => `<g class="ch-pop"><use href="assets/skate.svg#blade" x="20" y="62" width="200" height="36"/></g><rect class="ch-gleam" x="-40" y="56" width="28" height="48" rx="6"/>`,
+  check: () => `<ellipse class="ch-ice" cx="120" cy="128" rx="86" ry="15"/><path class="ch-check" d="M76 82 L106 110 L166 46" pathLength="100"/>`,
+};
+
+export function cheer({ scene = "spin", title, line = "" } = {}) {
+  const overlay = el("div", "cheer");
+  overlay.setAttribute("role", "status");
+  overlay.setAttribute("aria-live", "polite");
+  const card = el("div", "cheer__card");
+  card.innerHTML = `<svg class="cheer__scene cheer__scene--${scene}" viewBox="0 0 240 160" aria-hidden="true" focusable="false">${(SCENES[scene] || SCENES.spin)()}${sparkle()}</svg>`;
+  card.append(el("p", "cheer__title", title), ...(line ? [el("p", "cheer__line", line)] : []));
+  overlay.append(card);
+  document.body.appendChild(overlay);
+  const tapped = !navigator.userActivation || navigator.userActivation.hasBeenActive;
+  if (navigator.vibrate && tapped && !reducedMotion()) navigator.vibrate(40);
+  return new Promise((resolve) => {
+    let gone = false;
+    const done = () => {
+      if (gone) return;
+      gone = true;
+      clearTimeout(timer);
+      overlay.classList.add("out");
+      setTimeout(() => {
+        overlay.remove();
+        resolve();
+      }, reducedMotion() ? 0 : 260);
+    };
+    const timer = setTimeout(done, 2600);
+    overlay.addEventListener("click", done);
+  });
+}
