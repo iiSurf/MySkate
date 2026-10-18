@@ -484,3 +484,27 @@ After the push and the live check, the skater said the look was not working: vis
 ### Not verified
 
 A real phone and Safari. Not pushed. The faded `Skate` bottom buttons sit behind the tab fade until scrolled, as before.
+
+## 2026-10-17 (Saturday, night): drafts, then the competition planner
+
+### Plan
+
+The skater turned down the Fresh Ice redesign ("this redesign does not fit well") and asked for rough drafts first, before anything else. Three rounds of Home drafts followed (ten, then a combination of drafts 3 to 9 plus ten more, then eight screens for a planner). The skater loved the rink diagram, choreography, marquee, kiss-and-cry, and Zamboni-day drafts, and suggested a section to create and plan a skate for the next competition. They chose to build that first, before changing the look of the rest of the app.
+
+### What was built
+
+- Logic (`js/compete.js`, with 26 tests): events (a competition, its day, a packing list, a result) and programs (music, length, kind, elements with a spot on the rink and a start and length in the music, notes on the music). Everything is cleaned on load, so a bad backup cannot break the screens. Countdowns, the skating season (July to June), ordinals (2nd of 9), running-order numerals (I., II., III.), overlaps, cues for a run-through, a smooth route through the marks, and the address of each view are all pure functions.
+- Saved data: `events` and `programs`, optional and cleaned, so `schemaVersion` stays 1. A backup merge keeps yours by id and adds the rest, and a program only points at an event that exists.
+- Screens (`js/screens/compete.js`): a hub (next competition as a marquee, programs with what is done, past competitions), a program editor with Setup, Layout, and Timing, a competition page (the day with the Zamboni in stripes, a packing list, attached programs), and a result form with a TV-style scoreboard. Each view has its own address (`#/compete/...`) so the back button works. The rink diagram (`js/ui/rink.js`) takes taps, drags, arrow keys, and nudge buttons. The run-through is a clock that calls out what is on now and what is next; it plays no music.
+- A poster picture of a program (a marquee with your name in lights), drawn on the device and shared like the badge and friend card pictures.
+- Home shows the next competition as a small marquee with days to go and how much of the program is planned; Plan has a card; the quick tour has a step. Competitions has no tab of its own (six tabs fit a small phone), and Plan stays lit while you are in it.
+- Its own look (`css/compete.css`, scoped to the route): a burgundy glow, paper cards, a marquee with bulbs, a blueprint rink, and the button with the red offset shadow. The style tile shows it. The rough drafts are kept as `design/drafts*.html`, and `tools/seed.html` can load a believable competition (`?compete=1`, with `result=1` for a result).
+- The planner never claims an event's rules. Length, elements, and times are only what the skater enters, with a reminder to check the event's rules and ask the coach. No scoring.
+
+### Verified
+
+213 tests pass in four time zones (the logic, the saved data and merge, and the tour). In a real browser (headless Chrome), I drove: dragging a mark, tapping a mark to select it, tapping empty ice to add an element where tapped, arrow keys keeping focus, reordering, nudging, editing starts and lengths (and bad ones being refused with a message), notes on the music, spread evenly, the run-through clock, the setup form, a bad length, creating a program and a competition, deleting both, a made-up address falling back to the hub, the day (add, edit, remove), the packing list, and recording, reading, editing and removing a result. Every planner screen at 320, 360, and 390 wide has no sideways scrolling and no console errors, and the desktop layout was looked at.
+
+### Not verified
+
+A real phone and Safari. Touch dragging on the rink uses `touch-action: none` on the marks; the nudge buttons and arrow keys are there if a browser ignores it on SVG. The poster's share sheet. Nothing is pushed: the Fresh Ice redesign (two local commits) is still in the history this builds on.

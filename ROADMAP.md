@@ -43,6 +43,7 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 - Skater customizer: done in a first form (colors for your avatar and card, some unlocked by level and badges; see Skater colors below). Drawing a skater figure, and clothes, wait for the 3D figure. Default look when that comes: leggings and a top. A dress is an option, not the default.
 - 3D reference viewer: Three.js mannequin with drag to rotate, pinch to zoom, camera presets (front, side, back, top), and play/pause keyframed poses stored as data. Poses are hand-built approximations and need the skater's review, labelled "reference illustration, not coaching". A slider-based pose editor could let a skater or coach author correct poses.
 - Accounts, cloud sync, and a live leaderboard through a hosted free tier (Supabase or Firebase). MongoDB Atlas would need a serverless function in between, because a browser cannot talk to it directly and Atlas's Data API shut down on 2025-09-30. Free-tier limits are not verified.
+- A competition planner (done in a first form; see Competition planner below).
 - Coach notes and homework (done), personal cue notes per skill (done), goals with target dates (done), off-ice training log (done). Left: notes from a coach on a whole session, and sharing homework with a coach.
 
 ## Feature notes
@@ -163,6 +164,21 @@ There is no server, so a plan made on a laptop does not appear on a phone. "Send
 - One QR code holds about 3 KB (binary, low error correction): enough for setup, today's plan, friends, and the last 10 sessions. Full history moves by backup file (AirDrop, Files, email).
 - Needs a QR encoder and a scanner (the BarcodeDetector API where available, a small library elsewhere) and camera permission. Both are downloads, so ask before adding them.
 - Later: live pairing over WebRTC, with a QR to exchange the handshake, still without a server.
+
+### Competition planner
+
+Asked for by the skater on 2026-10-17, after they liked the rink diagram, choreography, marquee, kiss-and-cry, and Zamboni-day drafts: a section to create and plan a skate for the next competition. Built in stages, with the logic in `js/compete.js` (tested) and the screens in `js/screens/compete.js`.
+
+- A Competitions route (`#/compete`, with `#/compete/p/ID/layout|timing|setup` and `#/compete/e/ID[/results]`, so the back button works). It has no tab of its own: it opens from Home and Plan, and Plan stays lit while you are in it.
+- A competition (event): a name, a day, a place, its day (check-in, warm-up, the Zamboni, your skate, awards, in time order, with your skate stood out and a part called Zamboni in yellow and black stripes), a packing list with ticks, programs attached to it, and a result.
+- A program: a name, the music (title, composer), a length (0:20 to 10:00), a kind (free skate, short, showcase, exhibition, other), and the competition it is for. Its steps are Setup, Layout, and Timing.
+- Layout: a rink diagram. Tap empty ice to add an element where you tapped (or use a "+ Jump / Spin / Steps / Move / Pose" chip), tap a mark to select it, drag it to move it, or use the arrow keys or the nudge buttons. The route between marks redraws, numbers match the running order (I., II., III.), and an element can be one of your own skills, which shows your latest rating and counts toward "N of M skills in it are earned".
+- Timing: the music as a track with each element as a block, a start and a length for each (m:ss and seconds), notes on the music ("the music swells"), spread evenly, overlaps called out, and a run-through clock that keeps time and calls out what is on now and what is next. It plays no music: the skater's music is theirs.
+- Result ("kiss and cry"): a placing (like 2nd of 9), how each element went (clean, shaky, fell, skipped), what the coach said, and a note, shown as a TV-style scoreboard. A program can also be shared as a poster picture, drawn on the device like the badge and friend card pictures.
+- Home shows the next competition as a small marquee with days to go and how much of its program is planned. The quick tour has a step for it.
+- It never claims an event's rules. Length, elements, and times are only what the skater enters, with a reminder on the program form to check the event's rules and ask the coach. No scoring (no base values or GOE), because that would need the real rulebook.
+- Saved data: `events` and `programs`, optional and cleaned on load, so `schemaVersion` stays 1. A backup merge keeps yours by id and adds the rest, and a program only points at an event that exists.
+- Not done, and worth a look: badges for planning and competing; sharing a program with a coach; the program's music player; a calendar mark for the competition day.
 
 ### Your week, as a figure eight
 

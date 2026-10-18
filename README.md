@@ -53,6 +53,8 @@ Plain HTML, CSS, and JavaScript modules. No framework, no server, no accounts, n
 - `data/catalog/`: the skill lists as JSON. Skill ids never change, because saved data refers to them.
 - `fonts/` and `css/fonts.css`: the two typefaces (Bodoni Moda and Jost), self-hosted, so the app makes no outside request for them and the type works offline.
 - `assets/`: the skate illustration. `design/` holds the style tile (built from the app's own CSS) and the skate lab. `tools/` has the local server and two helpers for checking screens.
+- `js/compete.js`, `js/screens/compete.js`, and `css/compete.css`: the competition planner (a program laid out on the rink, set to the music, a competition's day, and the result).
+- `design/` also holds `drafts*.html`: the rough drafts from the October 2026 redesign exploration. They are not part of the app.
 - `ROADMAP.md` is the plan, `LOG.md` records what changed, and `CLAUDE.md` guides AI-assisted work in this repo.
 
 Built with Claude Code for TCSS 490, Artifact 2.

@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MySkate: ten rough drafts</title>
+<link rel="stylesheet" href="../css/fonts.css">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #0c0f16; color: #e8eef6; font-family: "Jost", system-ui, sans-serif; padding: 28px 24px 70px; }
+  h1 { font-size: 26px; font-weight: 600; margin-bottom: 4px; }
+  .lead { color: #9fb0c4; font-size: 16px; margin-bottom: 26px; max-width: 920px; line-height: 1.4; }
+  .row { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; }
+  .opt { width: 390px; }
+  .opt > h2 { font-size: 19px; font-weight: 600; margin: 0 0 2px; }
+  .opt > p { color: #9fb0c4; font-size: 14.5px; line-height: 1.35; margin-bottom: 12px; min-height: 58px; }
+  .phone { position: relative; width: 390px; height: 844px; border-radius: 40px; overflow: hidden; box-shadow: 0 0 0 2px #232a38, 0 24px 60px rgba(0,0,0,.55); }
+  .num { font-family: "Bodoni Moda", serif; font-weight: 700; }
+  .ic { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .tabs { position: absolute; left: 0; right: 0; bottom: 0; height: 74px; display: flex; justify-content: space-around; align-items: center; padding-bottom: 8px; }
+  .tabs a { font-size: 15px; font-weight: 600; padding: 6px 2px; }
+  .grain { position: absolute; inset: 0; pointer-events: none; opacity: .5; mix-blend-mode: multiply; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .45  0 0 0 0 .32  0 0 0 0 .15  0 0 0 .38 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+  /* the offset-shadow button from draft B, used in several drafts */
+  .obtn { display: flex; justify-content: space-between; align-items: center; white-space: nowrap; padding: 18px 22px; font-family: "Bodoni Moda", serif; font-style: italic; font-weight: 600; font-size: 25px; }
+  .obtn svg { width: 28px; height: 28px; stroke-width: 2.2; }
+  /* the week row of stamps, shared */
+  .week { display: flex; justify-content: space-between; }
+  .week .d { display: grid; justify-items: center; gap: 5px; font-size: 12px; letter-spacing: .1em; font-weight: 600; }
+  .week .d i { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-style: normal; }
+  .cap { font-size: 12px; letter-spacing: .2em; font-weight: 700; text-transform: uppercase; }
+
+  /* ===== 1 · Program, brightened ===== */
+  .d1 { background: #efe5cf; color: #12213f; }
+  .d1 .mast { display: flex; align-items: center; gap: 12px; margin: 24px 22px 0; font-size: 13px; letter-spacing: .26em; font-weight: 600; }
+  .d1 .mast i { flex: 1; height: 1px; background: #12213f; }
+  .d1 .dbl { margin: 10px 22px 0; border-top: 3px solid #12213f; border-bottom: 1px solid #12213f; height: 7px; }
+  .d1 .dateline { margin: 8px 22px 0; display: flex; justify-content: space-between; font-size: 13.5px; letter-spacing: .12em; text-transform: uppercase; color: #4a5875; font-weight: 500; }
+  .d1 .block { position: relative; margin-top: 18px; background: #1c3b9c; color: #f7eed8; padding: 22px 22px 36px; }
+  .d1 .block .k { font-size: 13px; letter-spacing: .22em; font-weight: 700; color: #f2c14e; }
+  .d1 .block h1 { font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 44px; line-height: .98; margin: 8px 0 10px; max-width: 270px; }
+  .d1 .block p { font-size: 17px; line-height: 1.38; max-width: 330px; opacity: .93; }
+  .d1 .st { position: absolute; right: 18px; bottom: -40px; width: 90px; height: 90px; border-radius: 50%; background: #efe5cf; border: 3px solid #c4382a; color: #c4382a; display: grid; place-items: center; text-align: center; transform: rotate(-12deg); font-weight: 700; font-size: 14px; letter-spacing: .16em; line-height: 1.15; }
+  .d1 .obtn { width: 300px; margin: 52px auto 0; background: #12213f; color: #f5ecd7; box-shadow: 5px 5px 0 #c4382a; }
+  .d1 .stats { display: grid; grid-template-columns: repeat(3, 1fr); margin: 18px 22px 0; border-top: 1px solid #12213f; }
+  .d1 .stat { padding: 12px 0 0 12px; border-left: 1px solid #12213f; }
+  .d1 .stat:first-child { padding-left: 0; border-left: 0; }
+  .d1 .stat .num { font-size: 34px; line-height: 1; display: block; }
+  .d1 .stat small { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; font-weight: 600; color: #4a5875; }
+  .d1 .wk { margin: 14px 22px 0; }
+  .d1 .wk .cap { color: #4a5875; margin-bottom: 8px; display: block; }
+  .d1 .week .d { color: #4a5875; }
+  .d1 .week .d i { border: 1.5px dashed rgba(18,33,63,.4); }
+  .d1 .week .d.on i { border: 2.5px solid #c4382a; color: #c4382a; font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 16px; transform: rotate(-8deg); }
+  .d1 .week .d.today i { border: 2px solid #12213f; }
+  .d1 .tabs { height: 74px; border-top: 3px double #12213f; background: #efe5cf; }
+  .d1 .tabs a { color: #4a5875; } .d1 .tabs a.on { color: #c4382a; box-shadow: inset 0 -2px 0 #c4382a; }
+
+  /* ===== 2 · Program at night ===== */
+  .d2 { background: radial-gradient(90% 40% at 50% 28%, #1d2f6b 0%, #0b1634 60%, #070e24 100%); color: #f3ead4; text-align: center; }
+  .d2 .mast { display: flex; align-items: center; gap: 12px; margin: 24px 22px 0; font-size: 13px; letter-spacing: .26em; font-weight: 600; color: #d9b45c; }
+  .d2 .mast i { flex: 1; height: 1px; background: #d9b45c; }
+  .d2 .dbl { margin: 10px 22px 0; border-top: 3px solid #d9b45c; border-bottom: 1px solid #d9b45c; height: 7px; }
+  .d2 .dateline { margin: 8px 22px 0; display: flex; justify-content: space-between; font-size: 13.5px; letter-spacing: .12em; text-transform: uppercase; color: #b9c2de; font-weight: 500; }
+  .d2 .lv { margin-top: 26px; font-size: 13px; letter-spacing: .3em; color: #d9b45c; font-weight: 600; }
+  .d2 .big { font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 190px; line-height: .9; background: linear-gradient(#fff3c9, #e6b94d 60%, #b6812a); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 10px 30px rgba(230,185,77,.35)); }
+  .d2 .sub { font-size: 16px; letter-spacing: .14em; text-transform: uppercase; color: #b9c2de; margin-top: 4px; }
+  .d2 .feat { margin: 22px 30px 0; }
+  .d2 .feat small { font-size: 12px; letter-spacing: .22em; font-weight: 700; color: #ff8f7e; }
+  .d2 .feat h2 { font-family: "Bodoni Moda", serif; font-style: italic; font-weight: 600; font-size: 32px; line-height: 1.05; margin-top: 4px; }
+  .d2 .obtn { width: 300px; margin: 22px auto 0; background: #f3ead4; color: #0b1634; box-shadow: 5px 5px 0 #e0493a; }
+  .d2 .wk { margin: 24px 22px 0; }
+  .d2 .week .d { color: #b9c2de; }
+  .d2 .week .d i { border: 1.5px dashed rgba(243,234,212,.35); }
+  .d2 .week .d.on i { border: 2.5px solid #ff7a68; color: #ff9f90; font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 16px; transform: rotate(-8deg); box-shadow: 0 0 14px rgba(255,122,104,.35); }
+  .d2 .tabs { background: #070e24; border-top: 3px double #d9b45c; } .d2 .tabs a { color: #8d9bd0; } .d2 .tabs a.on { color: #ffd98a; box-shadow: inset 0 -2px 0 #ffd98a; }
+
+  /* ===== 3 · Gala poster ===== */
+  .d3 { background: radial-gradient(70% 40% at 50% 20%, #7a1d37 0%, #4a0f21 55%, #2b0813 100%); color: #f6e9cf; }
+  .d3 .cone { position: absolute; left: 50%; top: -30px; width: 460px; height: 520px; margin-left: -230px; background: conic-gradient(from 180deg at 50% 0%, transparent 156deg, rgba(255,226,170,.16) 172deg, rgba(255,226,170,.26) 180deg, rgba(255,226,170,.16) 188deg, transparent 204deg); filter: blur(8px); }
+  .d3 .top { position: relative; display: flex; justify-content: space-between; margin: 26px 24px 0; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: #e6c777; font-weight: 600; }
+  .d3 .rule { position: relative; margin: 10px 24px 0; height: 1px; background: #e6c777; box-shadow: 0 4px 0 -0px #e6c777; opacity: .8; }
+  .d3 .pre { position: relative; text-align: center; margin-top: 46px; font-family: "Bodoni Moda", serif; font-style: italic; font-size: 20px; color: #e6c777; }
+  .d3 h1 { position: relative; text-align: center; font-family: "Bodoni Moda", serif; font-style: italic; font-weight: 500; font-size: 138px; line-height: .9; letter-spacing: -.02em; text-shadow: 0 6px 40px rgba(0,0,0,.4); }
+  .d3 .sub { position: relative; text-align: center; font-size: 13px; letter-spacing: .26em; text-transform: uppercase; color: #e6c777; margin-top: 6px; }
+  .d3 .order { position: relative; margin: 30px 30px 0; display: grid; gap: 10px; }
+  .d3 .order div { display: flex; align-items: baseline; gap: 8px; font-family: "Bodoni Moda", serif; font-size: 21px; }
+  .d3 .order div b { color: #e6c777; font-weight: 600; width: 34px; }
+  .d3 .order div i { flex: 1; border-bottom: 1.5px dotted rgba(246,233,207,.5); transform: translateY(-5px); }
+  .d3 .order div span { font-family: "Jost", sans-serif; font-size: 15px; color: #e6c777; letter-spacing: .06em; }
+  .d3 .obtn { position: relative; width: 262px; margin: 26px auto 0; background: #f6e9cf; color: #4a0f21; box-shadow: 5px 5px 0 #e6c777; }
+  .d3 .wk { position: relative; margin: 22px 24px 0; }
+  .d3 .week .st { position: relative; width: 40px; height: 52px; background: #f6e9cf; color: #4a0f21; border-radius: 5px; display: grid; place-items: center; font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 16px; }
+  .d3 .week .st::before, .d3 .week .st::after { content: ""; position: absolute; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: #3d0c1b; }
+  .d3 .week .st::before { left: -5px; } .d3 .week .st::after { right: -5px; }
+  .d3 .week .st.off { background: transparent; border: 1.5px dashed rgba(246,233,207,.4); color: rgba(246,233,207,.5); font-family: "Jost"; font-size: 12px; font-weight: 600; }
+  .d3 .week .st.off::before, .d3 .week .st.off::after { display: none; }
+  .d3 .tabs { background: #2b0813; border-top: 1px solid #e6c777; } .d3 .tabs a { color: #c9a8a0; } .d3 .tabs a.on { color: #f6e9cf; box-shadow: inset 0 -2px 0 #e6c777; }
+
+  /* ===== 4 · Ice-white editorial ===== */
+  .d4 { background: linear-gradient(#f3f9fd, #e4f0f8); color: #0e2347; }
+  .d4 .ghost { position: absolute; right: -40px; top: 120px; font-family: "Bodoni Moda", serif; font-weight: 800; font-size: 520px; line-height: .8; color: rgba(60,130,190,.12); }
+  .d4 .mast { position: relative; display: flex; align-items: center; gap: 12px; margin: 24px 22px 0; font-size: 13px; letter-spacing: .26em; font-weight: 600; }
+  .d4 .mast i { flex: 1; height: 1px; background: #0e2347; }
+  .d4 .dbl { position: relative; margin: 10px 22px 0; border-top: 3px solid #0e2347; border-bottom: 1px solid #0e2347; height: 7px; }
+  .d4 .dateline { position: relative; margin: 8px 22px 0; display: flex; justify-content: space-between; font-size: 13.5px; letter-spacing: .12em; text-transform: uppercase; color: #4a6482; font-weight: 500; }
+  .d4 .feat { position: relative; margin: 36px 22px 0; }
+  .d4 .k { font-size: 13px; letter-spacing: .22em; font-weight: 700; color: #d9382c; }
+  .d4 h1 { font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 58px; line-height: .96; margin: 10px 0 12px; max-width: 300px; }
+  .d4 p { font-size: 18px; line-height: 1.38; color: #29456a; max-width: 300px; }
+  .d4 .obtn { position: relative; width: 300px; margin: 30px 22px 0; background: #0e2347; color: #eef6fb; box-shadow: 5px 5px 0 #d9382c; }
+  .d4 .stats { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); margin: 28px 22px 0; border-top: 1px solid #0e2347; }
+  .d4 .stat { padding: 12px 0 0 12px; border-left: 1px solid #0e2347; } .d4 .stat:first-child { padding-left: 0; border-left: 0; }
+  .d4 .stat .num { font-size: 38px; line-height: 1; display: block; }
+  .d4 .stat small { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; font-weight: 600; color: #4a6482; }
+  .d4 .wk { position: relative; margin: 22px 22px 0; }
+  .d4 .week .d { color: #4a6482; }
+  .d4 .week .d i { border: 1.5px dashed rgba(14,35,71,.4); }
+  .d4 .week .d.on i { border: 2.5px solid #d9382c; color: #d9382c; font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 16px; transform: rotate(-8deg); }
+  .d4 .tabs { background: #e4f0f8; border-top: 3px double #0e2347; } .d4 .tabs a { color: #4a6482; } .d4 .tabs a.on { color: #d9382c; box-shadow: inset 0 -2px 0 #d9382c; }
+
+  /* ===== 5 · Scorecard ===== */
+  .d5 { background: #ecebe4; color: #17181c; }
+  .d5 .hdr { display: flex; justify-content: space-between; align-items: baseline; margin: 24px 20px 0; padding-bottom: 8px; border-bottom: 3px solid #17181c; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; }
+  .d5 .hdr b { font-size: 14px; letter-spacing: .24em; }
+  .d5 .who { margin: 14px 20px 0; font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 44px; line-height: 1; display: flex; justify-content: space-between; align-items: baseline; }
+  .d5 .who small { font-family: "Jost"; font-weight: 500; font-size: 14px; letter-spacing: .1em; text-transform: uppercase; color: #5a5d66; }
+  .d5 table { width: calc(100% - 40px); margin: 16px 20px 0; border-collapse: collapse; font-size: 16px; }
+  .d5 th { text-align: left; font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; color: #5a5d66; padding: 6px 4px; border-bottom: 1.5px solid #17181c; font-weight: 700; }
+  .d5 td { padding: 11px 4px; border-bottom: 1px solid rgba(23,24,28,.3); position: relative; }
+  .d5 td:first-child { width: 28px; font-family: "Bodoni Moda", serif; font-weight: 700; }
+  .d5 td.n { font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 19px; text-align: right; width: 44px; }
+  .d5 tr.hot td { background: rgba(217,56,44,.08); }
+  .d5 .tot { display: flex; justify-content: space-between; margin: 12px 20px 0; padding: 10px 0; border-top: 3px solid #17181c; border-bottom: 1px solid #17181c; font-size: 14px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; }
+  .d5 .tot b { font-family: "Bodoni Moda", serif; font-size: 20px; letter-spacing: 0; }
+  .d5 .stamp { position: absolute; right: 96px; top: 192px; border: 3px solid #d9382c; color: #d9382c; padding: 3px 12px; font-weight: 700; letter-spacing: .2em; font-size: 13px; transform: rotate(-9deg); opacity: .9; }
+  .d5 .obtn { width: 262px; margin: 20px auto 0; background: #17181c; color: #ecebe4; box-shadow: 5px 5px 0 #d9382c; }
+  .d5 .wk { margin: 18px 20px 0; }
+  .d5 .week .d { color: #5a5d66; } .d5 .week .d i { border: 1.5px solid rgba(23,24,28,.35); border-radius: 4px; }
+  .d5 .week .d.on i { background: #17181c; color: #ecebe4; border-color: #17181c; font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 16px; }
+  .d5 .tabs { background: #ecebe4; border-top: 3px solid #17181c; } .d5 .tabs a { color: #5a5d66; } .d5 .tabs a.on { color: #17181c; box-shadow: inset 0 -3px 0 #d9382c; }
+
+  /* ===== 6 · Admit one ===== */
+  .d6 { background: radial-gradient(80% 40% at 50% 20%, #1a2d66, #0a1432 70%); color: #f3ead4; }
+  .d6 .top { margin: 26px 24px 0; text-align: center; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: #cdd5ee; font-weight: 600; }
+  .d6 .top b { display: block; font-family: "Bodoni Moda", serif; font-style: italic; font-size: 34px; letter-spacing: 0; text-transform: none; color: #f3ead4; font-weight: 500; margin-top: 4px; }
+  .d6 .ticket { position: relative; margin: 26px 22px 0; background: #f1e7cf; color: #14213f; border-radius: 16px; display: grid; }
+  .d6 .tmain { padding: 22px 22px 22px; }
+  .d6 .tmain small { font-size: 12px; letter-spacing: .24em; font-weight: 700; color: #c4382a; }
+  .d6 .tmain h2 { font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 58px; line-height: .95; margin: 8px 0 6px; }
+  .d6 .tmain p { font-size: 17px; color: #3b4a6b; line-height: 1.35; }
+  .d6 .perf { position: relative; height: 0; border-top: 2px dashed rgba(20,33,63,.4); margin: 0 14px; }
+  .d6 .perf::before, .d6 .perf::after { content: ""; position: absolute; top: -13px; width: 26px; height: 26px; border-radius: 50%; background: #0f1d47; }
+  .d6 .perf::before { left: -27px; } .d6 .perf::after { right: -27px; }
+  .d6 .tstub { display: flex; justify-content: space-between; align-items: center; padding: 16px 22px 20px; }
+  .d6 .tstub .n { font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 34px; line-height: 1; }
+  .d6 .tstub small { display: block; font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; color: #5a6786; font-weight: 600; }
+  .d6 .barcode { width: 150px; height: 44px; background: repeating-linear-gradient(90deg, #14213f 0 2px, transparent 2px 4px, #14213f 4px 5px, transparent 5px 9px, #14213f 9px 12px, transparent 12px 14px); }
+  .d6 .obtn { width: 262px; margin: 26px auto 0; background: #f3ead4; color: #0a1432; box-shadow: 5px 5px 0 #e0493a; }
+  .d6 .wk { margin: 24px 24px 0; }
+  .d6 .wk .cap { color: #cdd5ee; display: block; margin-bottom: 10px; }
+  .d6 .week .d { color: #cdd5ee; }
+  .d6 .week .d i { background: rgba(243,234,212,.1); border: 1.5px solid rgba(243,234,212,.25); width: 34px; height: 34px; }
+  .d6 .week .d.on i { background: #0a1432; border: 2px solid #f3ead4; color: transparent; position: relative; }
+  .d6 .week .d.on i::after { content: ""; width: 14px; height: 14px; border-radius: 50%; background: #0f1d47; box-shadow: inset 0 0 0 2px #f3ead4; }
+  .d6 .tabs { background: #070e24; border-top: 1px solid rgba(255,255,255,.12); } .d6 .tabs a { color: #8d9bd0; } .d6 .tabs a.on { color: #f3ead4; box-shadow: inset 0 -2px 0 #e0493a; }
+
+  /* ===== 7 · Fresh ice, calmer ===== */
+  .d7 { background: linear-gradient(168deg, #0f3560 0%, #0a2549 46%, #06172f 100%); color: #eaf6ff; }
+  .d7 .sun { position: absolute; inset: 0; background: radial-gradient(72% 34% at 90% 4%, rgba(255,206,134,.55), rgba(255,158,122,.18) 46%, transparent 74%); }
+  .d7 .sheen { position: absolute; inset: 0; background: linear-gradient(112deg, transparent 28%, rgba(255,255,255,.07) 41%, transparent 56%); }
+  .d7 .mast { position: relative; display: flex; align-items: center; gap: 12px; margin: 24px 22px 0; font-size: 13px; letter-spacing: .26em; font-weight: 600; color: #ffe3a0; }
+  .d7 .mast i { flex: 1; height: 1px; background: rgba(255,227,160,.7); }
+  .d7 .dateline { position: relative; margin: 10px 22px 0; display: flex; justify-content: space-between; font-size: 13.5px; letter-spacing: .12em; text-transform: uppercase; color: rgba(234,246,255,.8); font-weight: 500; padding-top: 8px; border-top: 1px solid rgba(255,227,160,.5); }
+  .d7 h1 { position: relative; margin: 20px 22px 0; font-family: "Bodoni Moda", serif; font-style: italic; font-weight: 500; font-size: 54px; line-height: 1; text-shadow: 0 2px 24px rgba(0,30,70,.6); }
+  .d7 .eight { position: relative; margin: 12px 0 0; }
+  .d7 .eight svg { display: block; width: 100%; height: 250px; overflow: visible; }
+  .d7 .tiny { font: 600 11px "Jost"; letter-spacing: .14em; text-transform: uppercase; fill: rgba(236,248,255,.88); }
+  .d7 .bg { font: 700 25px "Bodoni Moda"; fill: #fff; }
+  .d7 .obtn { position: absolute; left: 50%; top: 392px; transform: translateX(-50%); width: 236px; padding: 15px 20px; background: #f1e8d2; color: #0a2549; box-shadow: 5px 5px 0 #e0493a; font-size: 22px; }
+  .d7 .cap2 { position: relative; text-align: center; margin-top: 4px; font-size: 16px; color: rgba(234,246,255,.85); }
+  .d7 .rows { position: relative; margin: 18px 22px 0; }
+  .d7 .r { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0; border-top: 1px solid rgba(236,248,255,.22); }
+  .d7 .r small { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; color: rgba(234,246,255,.75); }
+  .d7 .wk { position: relative; margin: 10px 22px 0; }
+  .d7 .week .d { color: rgba(234,246,255,.75); }
+  .d7 .week .d i { border: 1.5px dashed rgba(236,248,255,.35); }
+  .d7 .week .d.on i { border: 2.5px solid #ffe3a0; color: #ffe3a0; font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 16px; box-shadow: 0 0 12px rgba(255,214,130,.4); }
+  .d7 .tabs { background: linear-gradient(transparent, rgba(4,13,30,.92) 40%); } .d7 .tabs a { color: rgba(234,246,255,.65); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; } .d7 .tabs a.on { color: #ffe3a0; }
+
+  /* ===== 8 · Your skate, on display ===== */
+  .d8 { background: radial-gradient(70% 46% at 50% 34%, #1a3d78 0%, #0c1f4a 55%, #050d24 100%); color: #f1f6ff; }
+  .d8 .mast { display: flex; align-items: center; gap: 12px; margin: 24px 22px 0; font-size: 13px; letter-spacing: .26em; font-weight: 600; color: #ffd98a; }
+  .d8 .mast i { flex: 1; height: 1px; background: rgba(255,217,138,.6); }
+  .d8 .dateline { margin: 8px 22px 0; display: flex; justify-content: space-between; font-size: 13.5px; letter-spacing: .12em; text-transform: uppercase; color: #b9c8ee; font-weight: 500; }
+  .d8 .beam { position: absolute; left: 50%; top: 60px; width: 420px; height: 520px; margin-left: -210px; background: conic-gradient(from 180deg at 50% 0%, transparent 154deg, rgba(255,226,170,.18) 172deg, rgba(255,226,170,.26) 180deg, rgba(255,226,170,.18) 188deg, transparent 206deg); filter: blur(10px); }
+  .d8 .skate { position: absolute; left: 35px; top: 138px; width: 320px; height: 232px; }
+  .d8 .skate svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .d8 .skate .ghost { filter: grayscale(1) brightness(.55); opacity: .55; }
+  .d8 .skate .lit { clip-path: inset(57% 0 0 0); filter: drop-shadow(0 0 14px rgba(255,205,120,.5)); }
+  .d8 .water { position: absolute; left: 35px; width: 320px; top: 270px; height: 2px; background: linear-gradient(90deg, transparent, #ffe3a0 18%, #ffe3a0 82%, transparent); box-shadow: 0 0 14px 2px rgba(255,214,130,.8); }
+  .d8 .floor { position: absolute; left: 50%; top: 340px; width: 320px; height: 50px; margin-left: -160px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,205,120,.45), transparent); }
+  .d8 .placard { position: absolute; left: 22px; right: 22px; top: 408px; background: #f2e8d0; color: #14213f; padding: 16px 18px; display: grid; grid-template-columns: 1fr auto; gap: 2px 14px; align-items: end; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+  .d8 .placard small { grid-column: 1 / -1; font-size: 11.5px; letter-spacing: .22em; color: #c4382a; font-weight: 700; }
+  .d8 .placard h2 { font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 26px; line-height: 1.05; }
+  .d8 .placard p { font-size: 14px; color: #3b4a6b; grid-column: 1; }
+  .d8 .placard .num { font-size: 44px; line-height: 1; grid-column: 2; grid-row: 2 / 4; }
+  .d8 .obtn { position: absolute; left: 50%; top: 550px; transform: translateX(-50%); width: 262px; background: #f2e8d0; color: #0c1f4a; box-shadow: 5px 5px 0 #e0493a; }
+  .d8 .wk { position: absolute; left: 22px; right: 22px; top: 650px; }
+  .d8 .wk .cap { color: #b9c8ee; display: block; margin-bottom: 8px; }
+  .d8 .week .d { color: #b9c8ee; } .d8 .week .d i { border: 1.5px dashed rgba(241,246,255,.35); }
+  .d8 .week .d.on i { border: 2.5px solid #ffd98a; color: #ffd98a; font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 16px; transform: rotate(-8deg); }
+  .d8 .tabs { background: rgba(5,13,36,.9); border-top: 1px solid rgba(255,255,255,.1); } .d8 .tabs a { color: #8fa2d0; } .d8 .tabs a.on { color: #ffd98a; box-shadow: inset 0 -2px 0 #ffd98a; }
+
+  /* ===== 9 · Split-flap board ===== */
+  .d9 { background: #14161b; color: #f1ead6; }
+  .d9 .mast { display: flex; justify-content: space-between; align-items: center; margin: 24px 20px 0; font-size: 13px; letter-spacing: .24em; font-weight: 700; color: #f0b43c; }
+  .d9 .dl { margin: 4px 20px 0; font-size: 13.5px; letter-spacing: .12em; text-transform: uppercase; color: #8e8a7c; font-weight: 500; }
+  .d9 .title { margin: 6px 20px 0; font-family: "Bodoni Moda", serif; font-style: italic; font-weight: 500; font-size: 40px; line-height: 1; }
+  .d9 .board { margin: 16px 20px 0; display: grid; gap: 14px; }
+  .d9 .line small { display: block; margin: 0 0 5px; font-size: 11.5px; letter-spacing: .22em; text-transform: uppercase; color: #8e8a7c; font-weight: 700; }
+  .d9 .flaps { display: flex; gap: 2px; flex-wrap: nowrap; }
+  .d9 .f { position: relative; width: 17px; height: 32px; border-radius: 3px; background: linear-gradient(#26282f 49%, #0e0f13 50%, #1d1f25 51%); color: #f1ead6; display: grid; place-items: center; font: 600 17px "Jost"; text-transform: uppercase; box-shadow: inset 0 0 0 1px rgba(255,255,255,.05); }
+  .d9 .f.sp { background: none; box-shadow: none; width: 9px; }
+  .d9 .f.hi { color: #f0b43c; }
+  .d9 .obtn { width: 300px; margin: 22px auto 0; background: #f0b43c; color: #14161b; box-shadow: 5px 5px 0 #e0493a; }
+  .d9 .wk { margin: 18px 20px 0; }
+  .d9 .wk .cap { color: #8e8a7c; display: block; margin-bottom: 8px; }
+  .d9 .week .d { color: #8e8a7c; }
+  .d9 .week .d i { border-radius: 4px; width: 38px; height: 46px; background: linear-gradient(#26282f 49%, #0e0f13 50%, #1d1f25 51%); color: #5a574d; font-family: "Jost"; font-weight: 600; }
+  .d9 .week .d.on i { color: #f0b43c; font-size: 20px; }
+  .d9 .tabs { background: #0e0f13; border-top: 1px solid rgba(255,255,255,.1); } .d9 .tabs a { color: #8e8a7c; } .d9 .tabs a.on { color: #f0b43c; box-shadow: inset 0 -2px 0 #f0b43c; }
+
+  /* ===== 10 · Season calendar ===== */
+  .d10 { background: #f0e6d0; color: #14213f; }
+  .d10 .mast { display: flex; align-items: center; gap: 12px; margin: 24px 22px 0; font-size: 13px; letter-spacing: .26em; font-weight: 600; }
+  .d10 .mast i { flex: 1; height: 1px; background: #14213f; }
+  .d10 .dbl { margin: 10px 22px 0; border-top: 3px solid #14213f; border-bottom: 1px solid #14213f; height: 7px; }
+  .d10 .month { display: flex; justify-content: space-between; align-items: flex-end; margin: 14px 22px 0; }
+  .d10 .month h1 { font-family: "Bodoni Moda", serif; font-weight: 700; font-style: italic; font-size: 64px; line-height: 1; letter-spacing: -.01em; }
+  .d10 .month small { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: #4a5875; font-weight: 600; text-align: right; line-height: 1.5; padding-bottom: 8px; }
+  .d10 .grid { margin: 14px 22px 0; display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 4px; text-align: center; }
+  .d10 .grid b { font-size: 12px; letter-spacing: .12em; color: #4a5875; padding-bottom: 6px; }
+  .d10 .grid i { position: relative; font-style: normal; font-family: "Bodoni Moda", serif; font-weight: 600; font-size: 19px; height: 44px; display: grid; place-items: center; }
+  .d10 .grid i.o { color: rgba(20,33,63,.35); }
+  .d10 .grid i.on::before { content: ""; position: absolute; inset: 2px 4px; border: 2.5px solid #c4382a; border-radius: 50%; transform: rotate(-9deg); }
+  .d10 .grid i.on { color: #c4382a; font-weight: 700; }
+  .d10 .grid i.today::after { content: ""; position: absolute; inset: 0 3px; border: 2px solid #14213f; border-radius: 50%; }
+  .d10 .grid i.plan::after { content: ""; position: absolute; bottom: 4px; left: 50%; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: #1c3b9c; }
+  .d10 .legend { margin: 6px 22px 0; display: flex; gap: 18px; font-size: 13px; color: #4a5875; }
+  .d10 .next { margin: 16px 22px 0; border-top: 1px solid #14213f; padding-top: 10px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .d10 .next small { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: #c4382a; font-weight: 700; display: block; }
+  .d10 .next h2 { font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 25px; line-height: 1.05; }
+  .d10 .obtn { width: 300px; margin: 22px auto 0; background: #14213f; color: #f0e6d0; box-shadow: 5px 5px 0 #c4382a; }
+  .d10 .tabs { background: #f0e6d0; border-top: 3px double #14213f; } .d10 .tabs a { color: #4a5875; } .d10 .tabs a.on { color: #c4382a; box-shadow: inset 0 -2px 0 #c4382a; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+</svg>
+
+<h1>MySkate: ten rough drafts of Home</h1>
+<p class="lead">Sample data throughout (Sam, level 8, a 5-week streak, skated Tuesday and Thursday, today is Saturday October 17). Most drafts keep what you liked in Option B: the Bodoni, the date and season across the top, the week row near the bottom, and the middle button with the red offset shadow. Rough on purpose: only Home, and only the look.</p>
+
+<div class="row">
+
+<section class="opt"><h2>1 · Program, brightened</h2><p>Option B with a bold cobalt block so it feels like a feature page, not a worksheet. The closest to what you liked.</p>
+<div class="phone d1">
+  <div class="mast"><span>MYSKATE</span><i></i><span>No. 15</span></div><div class="dbl"></div>
+  <div class="dateline"><span>Saturday, October 17</span><span>Season 2026–27</span></div>
+  <div class="block"><div class="k">TODAY'S FEATURE</div><h1>The Mohawk Sequence</h1><p>Two crossovers into a mohawk, step down, cross behind. One clean run earns it.</p><div class="st">NEXT<br>UP</div></div>
+  <div class="obtn"><span>Begin the session</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <div class="stats"><div class="stat"><span class="num">8</span><small>Level</small></div><div class="stat"><span class="num">5</span><small>Weeks</small></div><div class="stat"><span class="num">15</span><small>Sessions</small></div></div>
+  <div class="wk"><span class="cap">This week</span><div class="week"></div></div>
+  <nav class="tabs"></nav><div class="grain"></div>
+</div></section>
+
+<section class="opt"><h2>2 · Program at night</h2><p>The same printed feel on deep navy with gold rules, and one huge gold numeral for your level. Elegant and warm, not paper.</p>
+<div class="phone d2">
+  <div class="mast"><span>MYSKATE</span><i></i><span>No. 15</span></div><div class="dbl"></div>
+  <div class="dateline"><span>Saturday, October 17</span><span>Season 2026–27</span></div>
+  <div class="lv">LEVEL</div><div class="big">8</div><div class="sub">Pre-Free Skate</div>
+  <div class="feat"><small>TODAY'S FEATURE</small><h2>The Mohawk Sequence</h2></div>
+  <div class="obtn"><span>Begin the session</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <div class="wk"><div class="week"></div></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+<section class="opt"><h2>3 · Gala poster</h2><p>An ice-show poster: your name huge in Bodoni italic under a spotlight, a running order of what you will skate, and ticket stubs for the week. Theatrical and proud.</p>
+<div class="phone d3">
+  <div class="cone"></div>
+  <div class="top"><span>Saturday, October 17</span><span>Season 2026–27</span></div><div class="rule"></div>
+  <div class="pre">tonight, starring</div>
+  <h1>Sam</h1>
+  <div class="sub">Level 8 · Pre-Free Skate</div>
+  <div class="order"><div><b>I.</b>Mohawk sequence<i></i><span>2 → 4</span></div><div><b>II.</b>Mazurka<i></i><span>4</span></div><div><b>III.</b>Waltz jump<i></i><span>2 → 4</span></div></div>
+  <div class="obtn"><span>Take the ice</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <div class="wk"><div class="week"></div></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+<section class="opt"><h2>4 · Ice-white editorial</h2><p>Cool white paper, navy ink, one red accent, and a giant ghost numeral of your level behind the headline. Fresh and magazine-clean.</p>
+<div class="phone d4">
+  <div class="ghost">8</div>
+  <div class="mast"><span>MYSKATE</span><i></i><span>No. 15</span></div><div class="dbl"></div>
+  <div class="dateline"><span>Saturday, October 17</span><span>Season 2026–27</span></div>
+  <div class="feat"><div class="k">NEXT UP</div><h1>The Mohawk Sequence</h1><p>You rated it two skates last time. One clean run earns it.</p></div>
+  <div class="obtn"><span>Begin the session</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <div class="stats"><div class="stat"><span class="num">8</span><small>Level</small></div><div class="stat"><span class="num">5</span><small>Weeks</small></div><div class="stat"><span class="num">12.3</span><small>Blade h</small></div></div>
+  <div class="wk"><div class="week"></div></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+<section class="opt"><h2>5 · Scorecard</h2><p>A judges' protocol sheet: your elements in a ruled table with last rating and goal, totals at the foot, a red NEXT stamp. Precise and very skating.</p>
+<div class="phone d5">
+  <div class="hdr"><b>PROTOCOL</b><span>Sat Oct 17 · Season 2026–27</span></div>
+  <div class="who">Sam<small>Pre-Free Skate · Lvl 8</small></div>
+  <table>
+    <tr><th>#</th><th>Element</th><th style="text-align:right">Last</th><th style="text-align:right">Goal</th></tr>
+    <tr class="hot"><td>1</td><td>Mohawk sequence</td><td class="n">2</td><td class="n">4</td></tr>
+    <tr><td>2</td><td>Waltz jump</td><td class="n">2</td><td class="n">4</td></tr>
+    <tr><td>3</td><td>Mazurka</td><td class="n">4</td><td class="n">5</td></tr>
+    <tr><td>4</td><td>Backward pivots</td><td class="n">3</td><td class="n">4</td></tr>
+    <tr><td>5</td><td>One-foot spin</td><td class="n">5</td><td class="n">5</td></tr>
+  </table>
+  <div class="stamp">NEXT</div>
+  <div class="tot"><span>XP</span><b>197 / 450</b><span>Streak</span><b>5 wk</b></div>
+  <div class="obtn"><span>Start session</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <div class="wk"><div class="week"></div></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+<section class="opt"><h2>6 · Admit one</h2><p>Your next ice time as a ticket with a tear-off stub. The week is a punch card. Tactile, and the first thing you see is when you skate next.</p>
+<div class="phone d6">
+  <div class="top">Saturday, October 17 · Season 2026–27<b>Sam's ice</b></div>
+  <div class="ticket">
+    <div class="tmain"><small>ADMIT ONE · FREESTYLE</small><h2>Tuesday<br>6:00 pm</h2><p>Highland Ice Arena. Bring the mohawk sequence.</p></div>
+    <div class="perf"></div>
+    <div class="tstub"><div><small>Level</small><span class="n">8</span></div><span class="barcode"></span></div>
+  </div>
+  <div class="obtn"><span>Plan this session</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <div class="wk"><span class="cap">Punch card · this week</span><div class="week"></div></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+<section class="opt"><h2>7 · Fresh ice, calmer</h2><p>The liked ice idea with Option B's masthead, Bodoni, week row and offset button. A thin gold figure eight, no cards, no squiggles.</p>
+<div class="phone d7">
+  <div class="sun"></div><div class="sheen"></div>
+  <div class="mast"><span>MYSKATE</span><i></i><span>No. 15</span></div>
+  <div class="dateline"><span>Saturday, October 17</span><span>Season 2026–27</span></div>
+  <h1>Sam</h1>
+  <div class="eight"><svg viewBox="-188 -112 376 224"><g transform="rotate(-9)">
+    <path d="M0 0A72 72 0 1 0-144 0A72 72 0 1 0 0 0A72 72 0 1 1 144 0A72 72 0 1 1 0 0" pathLength="1000" fill="none" stroke="rgba(236,248,255,.4)" stroke-width="1.6" stroke-dasharray="1.5 7" stroke-linecap="round"/>
+    <path d="M0 0A72 72 0 1 0-144 0A72 72 0 1 0 0 0A72 72 0 1 1 144 0A72 72 0 1 1 0 0" pathLength="1000" fill="none" stroke="rgba(160,225,255,.22)" stroke-width="7" stroke-dasharray="500 1000" stroke-linecap="round"/>
+    <path d="M0 0A72 72 0 1 0-144 0A72 72 0 1 0 0 0A72 72 0 1 1 144 0A72 72 0 1 1 0 0" pathLength="1000" fill="none" stroke="#ffe9b8" stroke-width="2.8" stroke-dasharray="500 1000" stroke-linecap="round" style="filter:drop-shadow(0 0 5px rgba(255,214,130,.9))"/>
+    <path d="M0-12 3-3 12 0 3 3 0 12-3 3-12 0-3-3z" fill="#fff" style="filter:drop-shadow(0 0 7px #ffd98a)"/>
+    <text class="tiny" x="-72" y="-8" text-anchor="middle">Tuesday</text><text class="bg" x="-72" y="22" text-anchor="middle">40 min</text>
+    <text class="tiny" x="72" y="-8" text-anchor="middle">Thursday</text><text class="bg" x="72" y="22" text-anchor="middle" opacity=".35">next</text>
+  </g></svg></div>
+  <div class="obtn"><span>Step on</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <p class="cap2" style="margin-top:42px">One more session closes your eight.</p>
+  <div class="rows"><div class="r"><small>Level 8</small><b class="num" style="font-size:20px">197 <span style="font:400 15px Jost;opacity:.8">/ 450 XP</span></b></div><div class="r"><small>Next up</small><b style="font-weight:500">Mohawk sequence</b></div></div>
+  <div class="wk"><div class="week"></div></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+<section class="opt"><h2>8 · Your skate, on display</h2><p>The skate idea again, with what felt missing: a museum placard that tells its story, the offset button, the date and season, and the week row. It fills with gold as skills are earned.</p>
+<div class="phone d8">
+  <div class="beam"></div>
+  <div class="mast"><span>MYSKATE</span><i></i><span>No. 15</span></div>
+  <div class="dateline"><span>Saturday, October 17</span><span>Season 2026–27</span></div>
+  <div class="floor"></div>
+  <div class="skate"><svg class="ghost"><use href="../assets/skate.svg#skate"/></svg><svg class="lit"><use href="../assets/skate.svg#skate"/></svg></div>
+  <div class="water"></div>
+  <div class="placard"><small>ON DISPLAY · PRE-FREE SKATE</small><h2>Sam's skates</h2><p>3 of 7 skills earned. Next to gild: the mohawk sequence.</p><span class="num">3/7</span></div>
+  <div class="obtn"><span>Lace up</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <div class="wk"><span class="cap">This week</span><div class="week"></div></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+<section class="opt"><h2>9 · Split-flap board</h2><p>Like a rink or station departures board: flap tiles for your next ice, next skill, level and blades, and the week as seven flaps. Playful and mechanical.</p>
+<div class="phone d9">
+  <div class="mast"><span>MYSKATE</span><span>SEASON 2026–27</span></div>
+  <div class="dl">Saturday, October 17</div>
+  <div class="title">Sam's board</div>
+  <div class="board" id="board"></div>
+  <div class="obtn"><span>Begin the session</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <div class="wk"><span class="cap">This week</span><div class="week"></div></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+<section class="opt"><h2>10 · Season calendar</h2><p>The whole month as a wall calendar: red stamps on the days you skated, a ring on today, dots for ice you planned. The week and the season at a glance.</p>
+<div class="phone d10">
+  <div class="mast"><span>MYSKATE</span><i></i><span>Season 2026–27</span></div><div class="dbl"></div>
+  <div class="month"><h1>October</h1><small>Saturday 17<br>15 sessions</small></div>
+  <div class="grid" id="cal"></div>
+  <div class="legend"><span><b style="color:#c4382a">○</b> skated</span><span><b style="color:#1c3b9c">●</b> ice planned</span></div>
+  <div class="next"><div><small>Next up</small><h2>The Mohawk Sequence</h2></div></div>
+  <div class="obtn"><span>Begin the session</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <nav class="tabs"></nav><div class="grain"></div>
+</div></section>
+
+</div>
+
+<script>
+  const tabs = ["Home", "Ice", "Plan", "Skate", "Progress", "Me"].map((t, i) => `<a class="${i === 0 ? "on" : ""}">${t}</a>`).join("");
+  document.querySelectorAll("nav.tabs").forEach((n) => (n.innerHTML = tabs));
+  const days = ["M", "T", "W", "T", "F", "S", "S"], done = { 1: 13, 3: 15 };
+  document.querySelectorAll(".week").forEach((w) => {
+    const ticket = w.closest(".d3");
+    w.innerHTML = days.map((d, i) => ticket
+      ? `<div class="st ${done[i] ? "" : "off"}">${done[i] || d}</div>`
+      : `<div class="d ${done[i] ? "on" : ""}"><i>${done[i] || ""}</i>${d}</div>`).join("");
+  });
+  /* split-flap lines */
+  const flaps = (text, hi) => `<div class="flaps">${[...text].map((c) => `<span class="f ${c === " " ? "sp" : ""} ${hi ? "hi" : ""}">${c === " " ? "" : c}</span>`).join("")}</div>`;
+  document.getElementById("board").innerHTML = [["Next ice", "TUE 18:00 HIGHLAND", true], ["Next skill", "MOHAWK SEQ.", false], ["Level  ·  XP", "08  197/450", false], ["Blades", "12.3 OF 25 H", false]].map(([l, t, h]) => `<div class="line"><small>${l}</small>${flaps(t, h)}</div>`).join("");
+  /* the calendar: October 2026 starts on a Thursday */
+  const skated = [2, 4, 9, 11, 13, 15], planned = [20, 22, 27], cells = ["M", "T", "W", "T", "F", "S", "S"].map((d) => `<b>${d}</b>`);
+  [28, 29, 30].forEach((n) => cells.push(`<i class="o">${n}</i>`));
+  for (let n = 1; n <= 31; n++) cells.push(`<i class="${skated.includes(n) ? "on" : ""} ${n === 17 ? "today" : ""} ${planned.includes(n) ? "plan" : ""}">${n}</i>`);
+  document.getElementById("cal").innerHTML = cells.join("");
+</script>
+</body>
+</html>

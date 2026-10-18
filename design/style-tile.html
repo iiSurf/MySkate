@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="../css/base.css">
 <link rel="stylesheet" href="../css/components.css">
 <link rel="stylesheet" href="../css/app.css">
+<link rel="stylesheet" href="../css/compete.css">
 <style>
   .tile-page { display: grid; gap: 56px; max-width: 980px; margin: 0 auto; padding: 32px 16px 80px; }
   .tile-page > section { display: grid; gap: var(--sp-4); }
@@ -136,6 +137,16 @@
     <div class="glass panel-demo"><p class="eyebrow">A panel (sheets, toasts)</p><h3>Dark and nearly solid</h3><p class="dim">Sheets and toasts are the only surfaces. They sit on a dark panel so text is always readable.</p><button class="btn btn--small" type="button">Got it</button></div>
   </section>
 
+  <section class="cp" style="padding: 22px; border-radius: 22px; background: radial-gradient(90% 300px at 50% -50px, #7a1d37, rgba(74,15,33,0)), linear-gradient(#101a42, #0a1432 600px, #070e26)">
+    <h2 style="color: var(--cream)">The competition planner: the stage</h2>
+    <p class="tile-note">The Competitions screens have their own look: a burgundy glow, a marquee for the event, paper for the things you can hold, a blueprint rink, a TV scoreboard for the result, and a button with a red offset shadow.</p>
+    <div class="cp-sign cp-bulbs" style="max-width: 360px"><small>Next up</small><h2>Fall Classic</h2><span class="cp-when">Sat, Nov 14 · Highland Ice Arena</span><span class="cp-cd">28<span>days to go</span></span></div>
+    <div class="cp-pcard cp-paper" style="max-width: 360px; cursor: default"><span class="cp-stamp">Layout</span><h3>Moonlight</h3><p>Free skate · 1:30 · Clair de Lune</p><div class="cp-steps"><span class="cp-step">6 elements</span><span class="cp-step is-no">Layout</span><span class="cp-step is-no">Timing</span></div></div>
+    <div class="cp-bp" style="max-width: 360px"><svg class="cp-rink" id="tile-rink" viewBox="0 0 346 206" aria-label="A rink diagram"></svg></div>
+    <div class="cp-actions"><button class="cp-obtn" type="button"><span>Take the ice</span><svg class="ic"><use href="#i-right"/></svg></button><button class="cp-ghost" type="button">Share a poster</button></div>
+    <div class="cp-tv" style="max-width: 360px"><div class="cp-tv__bar"><b>Kiss &amp; cry</b><span>Fall Classic</span></div><div class="cp-tv__lower"><i></i><div><small>Sam · Free skate</small><b>Moonlight</b></div></div><div class="cp-tv__score"><small>Placing</small><span class="num">2nd of 9</span></div></div>
+  </section>
+
   <section>
     <h2>Skates, medals and the level medallion</h2>
     <div class="skates-row">
@@ -149,6 +160,12 @@
 
 <script type="module">
   import { eightSvg } from "../js/ui/eight.js";
+  import { rinkInner } from "../js/ui/rink.js";
+  import { sanitizeProgram } from "../js/compete.js";
+  const demo = sanitizeProgram({ id: "p", name: "Moonlight", elements: [
+    { id: "a", label: "Opening pose", x: 0.1, y: 0.7 }, { id: "b", label: "Mohawk sequence", x: 0.27, y: 0.3 }, { id: "c", label: "Waltz jump", x: 0.44, y: 0.72 },
+    { id: "d", label: "Mazurka", x: 0.6, y: 0.3 }, { id: "e", label: "One-foot spin", x: 0.78, y: 0.68 } ] });
+  document.getElementById("tile-rink").innerHTML = rinkInner(demo, "c").text;
   const sess = (date, sec) => ({ date, onIceSec: sec });
   const states = [
     ["Nothing yet this week", { fraction: 0, complete: false, count: 0, needed: 2, loops: [null, null] }, { tiny: "Your turn", go: "PLAN IT" }],

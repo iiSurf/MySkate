@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MySkate: competition planner drafts</title>
+<link rel="stylesheet" href="../css/fonts.css">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #0c0f16; color: #e8eef6; font-family: "Jost", system-ui, sans-serif; padding: 28px 24px 70px; }
+  h1.page { font-size: 26px; font-weight: 600; margin-bottom: 4px; }
+  .lead { color: #9fb0c4; font-size: 16px; margin-bottom: 26px; max-width: 940px; line-height: 1.4; }
+  .row { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; }
+  .opt { width: 390px; }
+  .opt > h2 { font-size: 19px; font-weight: 600; margin: 0 0 2px; }
+  .opt > p { color: #9fb0c4; font-size: 14.5px; line-height: 1.35; margin-bottom: 12px; min-height: 58px; }
+  .phone { position: relative; width: 390px; height: 844px; border-radius: 40px; overflow: hidden; box-shadow: 0 0 0 2px #232a38, 0 24px 60px rgba(0,0,0,.55); background: radial-gradient(90% 360px at 50% -40px, #6b1a33 0%, rgba(74,15,33,0) 100%), linear-gradient(#101a42, #0a1432 640px, #070e26); color: #f6e9cf; }
+  .num { font-family: "Bodoni Moda", serif; font-weight: 700; }
+  .ic { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .tabs { position: absolute; left: 0; right: 0; bottom: 0; height: 74px; display: flex; justify-content: space-around; align-items: center; padding-bottom: 8px; background: #070e26; border-top: 1px solid #e6c777; }
+  .tabs a { font-size: 15px; font-weight: 600; padding: 6px 2px; color: #9aa6d0; } .tabs a.on { color: #f6e9cf; box-shadow: inset 0 -2px 0 #e6c777; }
+  .obtn { display: flex; justify-content: space-between; align-items: center; white-space: nowrap; width: 300px; margin: 0 auto; padding: 15px 22px; font-family: "Bodoni Moda", serif; font-style: italic; font-weight: 600; font-size: 24px; background: #f6e9cf; color: #3d0c1b; box-shadow: 5px 5px 0 #e0493a; }
+  .obtn svg { width: 28px; height: 28px; stroke-width: 2.2; }
+  .top { display: flex; justify-content: space-between; margin: 24px 24px 0; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: #e6c777; font-weight: 600; }
+  .rule { margin: 8px 24px 0; height: 1px; background: #e6c777; opacity: .8; }
+  .back { display: flex; justify-content: space-between; align-items: center; margin: 24px 22px 0; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; color: #e6c777; }
+  .ttl { margin: 14px 22px 0; font-family: "Bodoni Moda", serif; font-style: italic; font-weight: 500; font-size: 44px; line-height: 1; }
+  .sub { margin: 6px 22px 0; font-size: 16px; color: rgba(246,233,207,.85); }
+  .label { margin: 22px 24px 10px; display: flex; align-items: center; gap: 12px; font-size: 12px; letter-spacing: .26em; font-weight: 700; color: #e6c777; text-transform: uppercase; }
+  .label i { flex: 1; height: 1px; background: rgba(230,199,119,.5); }
+  .paper { background: #f1e7cf; color: #14213f; border-radius: 14px; }
+  .week { display: flex; justify-content: space-between; }
+  .stubs { display: flex; justify-content: space-between; margin: 0 24px; }
+  .stubs .st { position: relative; width: 40px; height: 48px; background: #f6e9cf; color: #4a0f21; border-radius: 5px; display: grid; place-items: center; font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 16px; }
+  .stubs .st::before, .stubs .st::after { content: ""; position: absolute; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: #0a1432; }
+  .stubs .st::before { left: -5px; } .stubs .st::after { right: -5px; }
+  .stubs .st.off { background: transparent; border: 1.5px dashed rgba(246,233,207,.4); color: rgba(246,233,207,.5); font-family: "Jost"; font-size: 12px; font-weight: 600; }
+  .stubs .st.off::before, .stubs .st.off::after { display: none; }
+  .bulbs { border: 8px dotted #ffdf9a; border-radius: 24px; box-shadow: 0 0 30px rgba(255,200,100,.5), inset 0 0 36px rgba(255,200,100,.12); background: linear-gradient(#5a1230, #36091d); }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; border: 1.5px solid currentColor; font-size: 15px; font-weight: 600; }
+  .barcode { width: 150px; height: 40px; background: repeating-linear-gradient(90deg, #14213f 0 2px, transparent 2px 4px, #14213f 4px 5px, transparent 5px 9px, #14213f 9px 12px, transparent 12px 14px); }
+
+  /* A · Home with a countdown */
+  .pa .hero { position: relative; height: 168px; overflow: hidden; }
+  .pa .ghost { position: absolute; right: -30px; top: -14px; font-family: "Bodoni Moda", serif; font-weight: 800; font-size: 340px; line-height: .8; color: rgba(150,200,245,.11); }
+  .pa .pre { position: relative; text-align: center; padding-top: 14px; font-family: "Bodoni Moda", serif; font-style: italic; font-size: 18px; color: #e6c777; }
+  .pa h1 { position: relative; text-align: center; font-family: "Bodoni Moda", serif; font-style: italic; font-weight: 500; font-size: 96px; line-height: .9; letter-spacing: -.02em; }
+  .pa .hsub { position: relative; text-align: center; font-size: 12px; letter-spacing: .26em; text-transform: uppercase; color: #e6c777; margin-top: 4px; }
+  .pa .marq { margin: 10px 22px 0; padding: 14px 16px 12px; display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: center; }
+  .pa .marq small { grid-column: 1; font-size: 11.5px; letter-spacing: .26em; color: #ffd98a; font-weight: 700; }
+  .pa .marq h2 { grid-column: 1; font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 28px; line-height: 1.05; }
+  .pa .marq p { grid-column: 1; font-size: 14px; color: #f2e1bd; }
+  .pa .marq .days { grid-column: 2; grid-row: 1 / 4; text-align: center; font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 62px; line-height: .85; color: #ffd98a; text-shadow: 0 0 18px rgba(255,200,100,.7); }
+  .pa .marq .days span { display: block; font-family: "Jost"; font-size: 12px; letter-spacing: .24em; text-transform: uppercase; }
+  .pa .marq .prog { grid-column: 1 / -1; margin-top: 8px; font-size: 13.5px; color: #f2e1bd; }
+  .pa .bar { margin-top: 6px; height: 4px; border-radius: 3px; background: rgba(255,255,255,.2); }
+  .pa .bar i { display: block; height: 100%; width: 67%; border-radius: 3px; background: #ffd98a; box-shadow: 0 0 8px #ffd98a; }
+  .pa .ticket { margin: 14px 22px 0; display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; }
+  .pa .ticket small { display: block; font-size: 11.5px; letter-spacing: .2em; font-weight: 700; color: #c4382a; }
+  .pa .ticket b { font-family: "Bodoni Moda", serif; font-size: 27px; line-height: 1.05; }
+  .pa .ticket span { font-size: 13.5px; color: #3b4a6b; text-align: right; line-height: 1.3; }
+  .pa .obtn { margin-top: 16px; }
+  .pa .stubs { margin-top: 14px; }
+
+  /* B · Competitions hub */
+  .pb .sign { margin: 12px 22px 0; padding: 14px 14px 12px; text-align: center; }
+  .pb .sign small { font-size: 12px; letter-spacing: .3em; color: #ffd98a; font-weight: 700; }
+  .pb .sign h2 { font-family: "Bodoni Moda", serif; font-style: italic; font-weight: 600; font-size: 44px; line-height: 1; margin-top: 0; text-shadow: 0 0 22px rgba(255,200,100,.65); }
+  .pb .sign .when { margin-top: 6px; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: #ffd98a; }
+  .pb .sign .cd { margin-top: 6px; font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 32px; color: #ffd98a; }
+  .pb .sign .cd span { font-family: "Jost"; font-weight: 600; font-size: 13px; letter-spacing: .22em; text-transform: uppercase; margin-left: 6px; }
+  .pb .pcard { position: relative; margin: 0 22px; padding: 14px 18px 14px; }
+  .pb .pcard h3 { font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 30px; line-height: 1; }
+  .pb .pcard p { font-size: 14.5px; color: #3b4a6b; margin-top: 4px; }
+  .pb .steps { display: flex; gap: 8px; margin-top: 10px; font-size: 13px; font-weight: 600; }
+  .pb .steps span { padding: 4px 10px; border-radius: 999px; border: 1.5px solid #2a8f4a; color: #2a8f4a; }
+  .pb .steps span.no { border-color: #c4382a; color: #c4382a; border-style: dashed; }
+  .pb .stamp { position: absolute; right: 16px; top: 16px; border: 3px solid #d9382c; color: #d9382c; padding: 3px 10px; font-weight: 700; letter-spacing: .18em; font-size: 12px; transform: rotate(-8deg); }
+  .pb .newp { margin: 8px 22px 0; padding: 10px 18px; border: 2px dashed rgba(246,233,207,.45); border-radius: 14px; display: flex; align-items: center; gap: 12px; color: #e6c777; font-weight: 600; font-size: 17px; }
+  .pb .past { margin: 0 24px; display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; border-top: 1px solid rgba(246,233,207,.2); font-size: 17px; }
+  .pb .past span { font-family: "Bodoni Moda", serif; font-weight: 700; color: #ffd98a; }
+  .pb .obtn { position: absolute; left: 45px; bottom: 86px; padding: 13px 22px; }
+  .pb .label { margin-top: 14px; margin-bottom: 8px; }
+
+  /* C · New program */
+  .pc .form { margin: 16px 22px 0; padding: 6px 18px 18px; }
+  .pc .fld { padding: 14px 0 10px; border-bottom: 1px solid rgba(20,33,63,.25); }
+  .pc .fld small { display: block; font-size: 11.5px; letter-spacing: .2em; font-weight: 700; color: #7a6a40; text-transform: uppercase; }
+  .pc .fld b { font-family: "Bodoni Moda", serif; font-style: italic; font-weight: 600; font-size: 28px; line-height: 1.15; }
+  .pc .len { display: flex; align-items: center; justify-content: space-between; }
+  .pc .len .stepper { display: flex; align-items: center; gap: 12px; }
+  .pc .len .stepper i { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #14213f; display: grid; place-items: center; font-style: normal; font-size: 22px; font-weight: 600; }
+  .pc .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .pc .chips span { padding: 8px 14px; border-radius: 999px; border: 1.5px solid rgba(20,33,63,.45); font-size: 15px; font-weight: 600; color: #3b4a6b; }
+  .pc .chips span.on { background: #14213f; color: #f1e7cf; border-color: #14213f; }
+  .pc .note { margin-top: 12px; font-size: 14px; color: #5a6786; line-height: 1.35; }
+  .pc .obtn { position: absolute; left: 45px; bottom: 90px; font-size: 21px; }
+
+  /* D · Layout */
+  .pd .bp { position: relative; margin: 14px 22px 0; padding: 10px; background-color: #eaf3fa; background-image: linear-gradient(rgba(42,93,168,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(42,93,168,.1) 1px, transparent 1px); background-size: 22px 22px; border-radius: 14px; color: #0e2347; }
+  .pd .bp svg { display: block; width: 100%; height: auto; }
+  .pd .bp text { font: 600 11px "Jost"; fill: #0e2347; letter-spacing: .06em; }
+  .pd .bp .hint { margin: 6px 4px 0; font-size: 13.5px; color: #4a6482; }
+  .pd .pal { display: flex; gap: 8px; margin: 12px 22px 0; flex-wrap: wrap; color: #ffd98a; }
+  .pd .list { margin: 10px 22px 0; }
+  .pd .list div { display: flex; align-items: baseline; gap: 10px; padding: 8px 0; border-top: 1px solid rgba(246,233,207,.18); font-size: 17px; }
+  .pd .list div b { width: 28px; font-family: "Bodoni Moda", serif; color: #ffd98a; }
+  .pd .list div span { margin-left: auto; font-size: 14px; color: #b9c2de; }
+  .pd .list div em { font-style: normal; color: #b9c2de; width: 20px; text-align: center; }
+  .pd .obtn { position: absolute; left: 45px; bottom: 90px; }
+
+  /* E · Timing */
+  .pe .music { position: relative; margin: 26px 22px 0; height: 150px; }
+  .pe .bars { position: absolute; left: 0; right: 0; bottom: 0; height: 70px; display: flex; align-items: flex-end; gap: 2px; }
+  .pe .bars i { flex: 1; background: rgba(246,233,207,.3); border-radius: 2px; }
+  .pe .blk { position: absolute; top: 18px; height: 52px; border-radius: 6px; padding: 5px 3px 5px 5px; font-size: 10.5px; font-weight: 700; color: #08122e; line-height: 1.1; overflow: hidden; }
+  .pe .blk b { font-family: "Bodoni Moda", serif; display: block; font-size: 13px; }
+  .pe .play { position: absolute; top: 4px; bottom: -4px; width: 3px; background: #ff8f7e; border-radius: 2px; box-shadow: 0 0 10px #ff8f7e; }
+  .pe .play::before { content: "0:44"; position: absolute; top: -16px; left: -12px; font-size: 11px; font-weight: 700; letter-spacing: .08em; color: #ff8f7e; }
+  .pe .ruler { margin: 8px 22px 0; display: flex; justify-content: space-between; font-size: 12px; color: #b9c2de; }
+  .pe .moments { margin: 14px 22px 0; display: flex; gap: 8px; flex-wrap: wrap; font-size: 13.5px; }
+  .pe .moments span { padding: 5px 11px; border-radius: 999px; background: rgba(255,217,138,.14); color: #ffd98a; font-weight: 600; }
+  .pe .set { margin: 12px 22px 0; }
+  .pe .set div { display: flex; align-items: baseline; gap: 10px; padding: 6px 0; border-top: 1px solid rgba(246,233,207,.18); font-size: 17px; }
+  .pe .set div b { width: 46px; font-family: "Bodoni Moda", serif; color: #ffd98a; font-size: 16px; }
+  .pe .set div span { margin-left: auto; font-size: 14px; color: #b9c2de; }
+  .pe .tot { margin: 10px 22px 0; display: flex; justify-content: space-between; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: #e6c777; font-weight: 700; }
+  .pe .obtn { position: absolute; left: 45px; bottom: 90px; }
+
+  /* F · Event day */
+  .pf .day { position: relative; height: 340px; margin: 14px 22px 0; padding: 0; }
+  .pf .hr { position: absolute; left: 14px; right: 14px; border-top: 1px solid rgba(20,33,63,.18); }
+  .pf .hr span { position: absolute; left: 0; top: -9px; width: 44px; font-size: 12px; font-weight: 600; color: #5a6786; background: #f1e7cf; }
+  .pf .b { position: absolute; left: 68px; right: 14px; border-radius: 10px; padding: 7px 12px; font-size: 14.5px; }
+  .pf .b b { display: block; font-size: 16px; }
+  .pf .chk { background: #d9e2ee; color: #35506e; } .pf .wu { background: #d9e2ee; color: #35506e; }
+  .pf .zam { background: repeating-linear-gradient(45deg, #ffcf4a 0 12px, #1b1b1b 12px 24px); padding: 0; }
+  .pf .zam span { display: inline-block; margin: 3px 0 0 10px; padding: 2px 8px; background: #ffcf4a; font-weight: 700; font-size: 12.5px; letter-spacing: .06em; color: #1b1b1b; }
+  .pf .you { background: #14213f; color: #fff; box-shadow: 5px 5px 0 #d9382c; }
+  .pf .you b { font-family: "Bodoni Moda", serif; font-size: 22px; }
+  .pf .bring { margin: 14px 22px 0; display: flex; gap: 8px; flex-wrap: wrap; color: #ffd98a; font-size: 14px; }
+  .pf .bring .chip { padding: 6px 12px; font-size: 14px; }
+  .pf .obtn { position: absolute; left: 45px; bottom: 90px; }
+
+  /* G · Kiss and cry */
+  .pg { background: linear-gradient(160deg, #0b1a52 0%, #081238 60%, #050a22); }
+  .pg::before { content: ""; position: absolute; left: -60px; top: -40px; width: 520px; height: 190px; background: repeating-linear-gradient(115deg, rgba(217,56,44,.9) 0 26px, transparent 26px 52px); opacity: .2; transform: skewY(-6deg); }
+  .pg .tvbar { position: relative; display: flex; justify-content: space-between; align-items: center; margin: 26px 20px 0; }
+  .pg .tvbar b { background: #d9382c; padding: 5px 12px; font-size: 14px; letter-spacing: .2em; font-weight: 700; color: #fff; }
+  .pg .tvbar span { font-size: 11.5px; letter-spacing: .14em; font-weight: 600; color: #cdd6f5; }
+  .pg .lower { position: relative; display: flex; align-items: stretch; margin: 18px 20px 0; }
+  .pg .lower .flag { width: 12px; background: #ffc95e; }
+  .pg .lower div { flex: 1; background: #fff; color: #0b1a52; padding: 8px 14px; }
+  .pg .lower small { display: block; font-size: 12px; letter-spacing: .2em; font-weight: 700; color: #5a6786; }
+  .pg .lower b { font-family: "Bodoni Moda", serif; font-size: 30px; line-height: 1.05; }
+  .pg .score { position: relative; display: flex; justify-content: space-between; align-items: flex-end; margin: 12px 20px 0; padding: 10px 16px; background: linear-gradient(135deg, #14298a, #0c1a60); border: 2px solid #ffc95e; }
+  .pg .score small { font-size: 12px; letter-spacing: .24em; font-weight: 700; color: #ffd98a; }
+  .pg .score .num { font-size: 72px; line-height: .95; color: #ffd98a; }
+  .pg .score .num em { font-size: 26px; font-style: normal; color: #fff; margin-left: 4px; font-family: "Jost"; font-weight: 600; }
+  .pg .score i { font-style: normal; font-size: 12px; letter-spacing: .14em; font-weight: 700; background: #d9382c; padding: 4px 8px; align-self: flex-start; color: #fff; }
+  .pg table { position: relative; width: calc(100% - 40px); margin: 12px 20px 0; border-collapse: collapse; font-size: 16px; }
+  .pg td { padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,.2); color: #fff; }
+  .pg td:first-child { width: 28px; font-family: "Bodoni Moda", serif; color: #ffd98a; font-weight: 700; }
+  .pg td.s { text-align: right; font-size: 14px; letter-spacing: .04em; color: #ffd98a; }
+  .pg td.s.bad { color: #ff9f90; }
+  .pg .coach { position: relative; margin: 12px 20px 0; padding: 10px 14px; background: rgba(255,255,255,.1); font-size: 15px; line-height: 1.35; color: #e6ecff; }
+  .pg .coach b { color: #ffd98a; }
+  .pg .next { position: relative; margin: 10px 20px 0; padding: 10px 14px; background: rgba(255,255,255,.1); font-size: 13.5px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; color: #fff; }
+  .pg .next b { color: #ffd98a; }
+  .pg .obtn { position: absolute; left: 45px; bottom: 90px; background: #fff; color: #0b1a52; box-shadow: 5px 5px 0 #d9382c; }
+  .pg .tabs { border-top: 3px solid #d9382c; background: #050a22; }
+
+  /* H · Poster */
+  .ph .poster { position: relative; margin: 24px 36px 0; height: 520px; text-align: center; padding: 34px 14px 0; }
+  .ph .poster small { font-size: 12px; letter-spacing: .3em; color: #ffd98a; font-weight: 700; }
+  .ph .poster h1 { font-family: "Bodoni Moda", serif; font-style: italic; font-weight: 600; font-size: 118px; line-height: .95; margin-top: 8px; text-shadow: 0 0 24px rgba(255,200,100,.7); }
+  .ph .poster .in { font-family: "Bodoni Moda", serif; font-style: italic; color: #ffd98a; font-size: 22px; margin-top: -2px; }
+  .ph .poster h2 { font-family: "Bodoni Moda", serif; font-weight: 700; font-size: 44px; line-height: 1.02; margin-top: 6px; }
+  .ph .poster .meta { margin-top: 16px; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #ffd98a; line-height: 1.7; }
+  .ph .poster .brand { position: absolute; left: 0; right: 0; bottom: 18px; font-size: 11.5px; letter-spacing: .3em; color: rgba(255,217,138,.8); font-weight: 600; }
+  .ph .btns { display: grid; gap: 14px; margin-top: 30px; }
+  .ph .btns .ghost { width: 300px; margin: 0 auto; padding: 13px; text-align: center; border: 1.5px solid #e6c777; color: #e6c777; font-weight: 600; font-size: 17px; border-radius: 999px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+</svg>
+
+<h1 class="page">A competition planner: eight drafts</h1>
+<p class="lead">Your five favorites (11 to 15), turned into a section for planning a skate for the next competition. Layout (11) places the elements on the rink, Timing (13) sets them to the music, the marquee (12) announces the event, Event day (15) plans the day, and Kiss and cry (14) is the result afterwards. All sample data. The event name, scores and times are made up, and the planner never claims what an event requires: your event's rules and your coach decide that.</p>
+
+<div class="row">
+
+<section class="opt"><h2>1 · Home, with a countdown</h2><p>Home keeps the combined look and gains a marquee strip for the next competition: days to go and how much of the program is planned.</p>
+<div class="phone pa">
+  <div class="top"><span>Saturday, October 17</span><span>Season 2026–27</span></div><div class="rule"></div>
+  <div class="hero"><div class="ghost">8</div><div class="pre">tonight, starring</div><h1>Sam</h1><div class="hsub">Level 8 · Pre-Free Skate</div></div>
+  <div class="marq bulbs"><small>NEXT COMPETITION</small><h2>Fall Classic</h2><p>Sat Nov 14 · Highland Ice Arena</p><div class="days">28<span>days</span></div><div class="prog">Moonlight · 4 of 6 elements planned<div class="bar"><i></i></div></div></div>
+  <div class="ticket paper"><div><small>ADMIT ONE · FREESTYLE</small><b>Tuesday 6:00 pm</b></div><span>Highland<br>Ice Arena</span></div>
+  <div class="obtn"><span>Take the ice</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <div class="stubs"></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+<section class="opt"><h2>2 · Competitions</h2><p>The marquee as the hub: your next event and a countdown, your programs with what is done and what is not, and past events.</p>
+<div class="phone pb">
+  <div class="top"><span>Saturday, October 17</span><span>Season 2026–27</span></div><div class="rule"></div>
+  <div class="ttl">Competitions</div><div class="sub">Plan the skate. Then skate the plan.</div>
+  <div class="sign bulbs"><small>NEXT UP</small><h2>Fall Classic</h2><div class="when">Sat Nov 14 · Highland Ice Arena</div><div class="cd">28<span>days to go</span></div></div>
+  <div class="label">Your programs<i></i></div>
+  <div class="pcard paper"><div class="stamp">LAYOUT</div><h3>Moonlight</h3><p>Free skate · 1:30 · Clair de Lune</p><div class="steps"><span>Elements ✓</span><span class="no">Layout</span><span class="no">Timing</span></div></div>
+  <div class="newp"><svg class="ic"><use href="#i-plus"/></svg>New program</div>
+  <div class="label">Past events<i></i></div>
+  <div class="past"><div>Spring Showcase</div><span>2nd of 9</span></div>
+  <div class="obtn"><span>New competition</span><svg class="ic"><use href="#i-plus"/></svg></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+<section class="opt"><h2>3 · New program</h2><p>A short form: name, music, length, kind, and which event. The length is yours to set, with a reminder to check the event's rules.</p>
+<div class="phone pc">
+  <div class="back"><span>‹ Competitions</span><span>Step 1 of 3</span></div>
+  <div class="ttl">New program</div>
+  <div class="form paper">
+    <div class="fld"><small>Name</small><b>Moonlight</b></div>
+    <div class="fld"><small>Music</small><b>Clair de Lune</b><div style="font-size:14px;color:#5a6786">Debussy</div></div>
+    <div class="fld len"><div><small>Length</small><b>1:30</b></div><div class="stepper"><i>−</i><i>+</i></div></div>
+    <div class="fld"><small>Kind</small><div class="chips"><span class="on">Free skate</span><span>Short</span><span>Showcase</span><span>Exhibition</span></div></div>
+    <div class="fld" style="border:0"><small>Event</small><b style="font-size:22px">Fall Classic · Sat Nov 14</b></div>
+    <p class="note">Your event decides the length and what is required. Check its rules and ask your coach. MySkate only keeps your plan.</p>
+  </div>
+  <div class="obtn"><span>Start choreographing</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+<section class="opt"><h2>4 · Layout</h2><p>Draft 11 as an editor: tap the rink to place an element, drag to move it, and the route redraws. The list below keeps the order.</p>
+<div class="phone pd">
+  <div class="back"><span>‹ Moonlight</span><span>Step 2 of 3 · Layout</span></div>
+  <div class="bp">
+    <svg viewBox="0 0 346 220">
+      <rect x="2" y="2" width="342" height="216" rx="64" fill="rgba(255,255,255,.7)" stroke="#2a5da8" stroke-width="2"/>
+      <line x1="173" y1="2" x2="173" y2="218" stroke="#2a5da8" opacity=".45"/><circle cx="173" cy="110" r="30" fill="none" stroke="#2a5da8" opacity=".45"/>
+      <path d="M40 168 Q 50 66 96 70 T 150 150 T 214 62 T 270 150 T 306 80" fill="none" stroke="#0e2347" stroke-width="2" stroke-dasharray="7 6" stroke-linecap="round"/>
+      <g font-family="Bodoni Moda" font-weight="700" font-size="14" text-anchor="middle">
+        <circle cx="96" cy="70" r="13" fill="#d9382c"/><text x="96" y="75" style="font:700 14px 'Bodoni Moda';fill:#fff">1</text>
+        <circle cx="150" cy="150" r="13" fill="#d9382c"/><text x="150" y="155" style="font:700 14px 'Bodoni Moda';fill:#fff">2</text>
+        <circle cx="214" cy="62" r="19" fill="#ffd98a" stroke="#0e2347" stroke-width="2.5"/><text x="214" y="68" style="font:700 17px 'Bodoni Moda';fill:#0e2347">3</text>
+        <circle cx="270" cy="150" r="13" fill="#d9382c"/><text x="270" y="155" style="font:700 14px 'Bodoni Moda';fill:#fff">4</text>
+        <circle cx="306" cy="80" r="13" fill="#d9382c"/><text x="306" y="85" style="font:700 14px 'Bodoni Moda';fill:#fff">5</text></g>
+      <text x="26" y="196">START</text>
+      <rect x="104" y="12" width="220" height="26" rx="8" fill="#0e2347"/><text x="214" y="29" text-anchor="middle" style="fill:#fff;font-size:11.5px">Waltz jump · 0:28 · you: 2 skates</text>
+    </svg>
+    <div class="hint">Tap the ice to place the next element.</div>
+  </div>
+  <div class="pal"><span class="chip">+ Jump</span><span class="chip">+ Spin</span><span class="chip">+ Steps</span><span class="chip">+ Pose</span></div>
+  <div class="list"><div><em>≡</em><b>I.</b>Mohawk sequence<span>2 skates</span></div><div><em>≡</em><b>II.</b>Waltz jump<span>2 skates</span></div><div><em>≡</em><b>III.</b>Mazurka<span>4 skates</span></div><div><em>≡</em><b>IV.</b>Backward pivots<span>3 skates</span></div><div><em>≡</em><b>V.</b>One-foot spin<span>5 skates</span></div><div><em>≡</em><b>VI.</b>Closing pose<span>pose</span></div></div>
+  <div class="obtn"><span>Save layout</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+<section class="opt"><h2>5 · Timing</h2><p>Draft 13 as an editor: the music is a row of bars, each element is a block you place on it, with a playhead and notes on the music's big moments.</p>
+<div class="phone pe">
+  <div class="back"><span>‹ Moonlight</span><span>Step 3 of 3 · Timing</span></div>
+  <div class="ttl" style="font-size:36px">Moonlight, 1:30</div>
+  <div class="music" id="music">
+    <div class="blk" style="left:0;width:32px;background:#9fb8d8">Pose</div>
+    <div class="blk" style="left:38px;width:61px;background:#5fd8e6">Mohawk<b>0:10</b></div>
+    <div class="blk" style="left:107px;width:36px;background:#ffd98a">Waltz<b>0:28</b></div>
+    <div class="blk" style="left:169px;width:54px;background:#5fd8e6">Mazurka<b>0:44</b></div>
+    <div class="blk" style="left:238px;width:54px;background:#b9a6ff">Spin<b>1:02</b></div>
+    <div class="blk" style="left:307px;width:39px;background:#9fb8d8">Pose</div>
+    <div class="play" style="left:169px"></div>
+    <div class="bars" id="bars"></div>
+  </div>
+  <div class="ruler"><span>0:00</span><span>0:30</span><span>1:00</span><span>1:30</span></div>
+  <div class="moments"><span>0:30 the music swells</span><span>1:05 crescendo</span><span>1:24 last chord</span></div>
+  <div class="set"><div><b>0:10</b>Mohawk sequence<span>2 skates</span></div><div><b>0:28</b>Waltz jump<span>2 skates</span></div><div><b>0:44</b>Mazurka<span>4 skates</span></div><div><b>1:02</b>One-foot spin<span>5 skates</span></div><div><b>1:20</b>Closing pose<span>pose</span></div></div>
+  <div class="tot"><span>6 elements</span><span>1:28 of 1:30</span></div>
+  <div class="obtn"><span>Run it through</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+<section class="opt"><h2>6 · Event day</h2><p>Draft 15 as the competition day: your own times for check-in, warm-up, the Zamboni, your skate, and awards, plus what to bring.</p>
+<div class="phone pf">
+  <div class="top"><span>Saturday, November 14</span><span>28 days to go</span></div><div class="rule"></div>
+  <div class="ttl">Fall Classic</div><div class="sub">Highland Ice Arena. Mind the Zamboni.</div>
+  <div class="day paper">
+    <div class="hr" style="top:18px"><span>7:30</span></div><div class="hr" style="top:84px"><span>9:00</span></div><div class="hr" style="top:150px"><span>9:30</span></div><div class="hr" style="top:216px"><span>10:00</span></div><div class="hr" style="top:300px"><span>11:30</span></div>
+    <div class="b chk" style="top:6px;height:46px"><b>Arrive and check in</b>7:30</div>
+    <div class="b wu" style="top:76px;height:54px"><b>Warm-up · group 2</b>9:10 – 9:25</div>
+    <div class="b zam" style="top:138px;height:22px"><span>ZAMBONI · everyone off</span></div>
+    <div class="b you" style="top:168px;height:66px"><b>Moonlight · you</b>9:48 am</div>
+    <div class="b chk" style="top:286px;height:46px"><b>Awards</b>11:30</div>
+  </div>
+  <div class="bring"><span class="chip">Blades sharpened</span><span class="chip">Music backup</span><span class="chip">Costume</span></div>
+  <div class="obtn"><span>Packing list</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+<section class="opt"><h2>7 · Kiss and cry</h2><p>Draft 14 as the result: placing, how each element went, what your coach said, and next skater: you. An example of what you would see after the event.</p>
+<div class="phone pg">
+  <div class="tvbar"><b>KISS &amp; CRY</b><span>FALL CLASSIC · SAT NOV 14</span></div>
+  <div class="lower"><span class="flag"></span><div><small>SAM · FREE SKATE</small><b>Moonlight</b></div></div>
+  <div class="score"><div><small>PLACING</small><br><span class="num">2<em>nd of 9</em></span></div><i>PERSONAL BEST</i></div>
+  <table>
+    <tr><td>1</td><td>Mohawk sequence</td><td class="s">clean</td></tr>
+    <tr><td>2</td><td>Waltz jump</td><td class="s">landed</td></tr>
+    <tr><td>3</td><td>Mazurka</td><td class="s">clean</td></tr>
+    <tr><td>4</td><td>One-foot spin</td><td class="s bad">travelled</td></tr>
+    <tr><td>5</td><td>Backward pivots</td><td class="s">clean</td></tr>
+  </table>
+  <div class="coach"><b>Coach:</b> keep the free leg quiet in the spin. Everything else, lovely.</div>
+  <div class="next">Next skater: <b>you</b> · Spring Showcase · Mar 6</div>
+  <div class="obtn"><span>Plan the next one</span><svg class="ic"><use href="#i-arrow"/></svg></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+<section class="opt"><h2>8 · Poster to share</h2><p>Draft 12 as a picture you can send: your name in lights, the program, the event. Like the badge and friend card pictures already in the app.</p>
+<div class="phone ph">
+  <div class="poster bulbs"><small>ONE NIGHT ONLY</small><h1>Sam</h1><div class="in">in</div><h2>Moonlight</h2>
+    <div class="meta">Free skate · Clair de Lune<br>Fall Classic · Sat Nov 14<br>Highland Ice Arena</div><div class="brand">MYSKATE</div></div>
+  <div class="btns"><div class="obtn"><span>Share poster</span><svg class="ic"><use href="#i-arrow"/></svg></div><div class="ghost">Save the picture</div></div>
+  <nav class="tabs"></nav>
+</div></section>
+
+</div>
+
+<script>
+  const tabs = ["Home", "Ice", "Plan", "Skate", "Progress", "Me"].map((t, i) => `<a class="${i === 0 ? "on" : ""}">${t}</a>`).join("");
+  document.querySelectorAll("nav.tabs").forEach((n) => (n.innerHTML = tabs));
+  const days = ["M", "T", "W", "T", "F", "S", "S"], done = { 1: 13, 3: 15 };
+  document.querySelectorAll(".stubs").forEach((w) => (w.innerHTML = days.map((d, i) => `<div class="st ${done[i] ? "" : "off"}">${done[i] || d}</div>`).join("")));
+  /* a made-up music shape for the timing draft */
+  const bars = document.getElementById("bars");
+  bars.innerHTML = Array.from({ length: 58 }, (_, i) => `<i style="height:${Math.round(14 + 38 * Math.abs(Math.sin(i / 4.2)) * (0.55 + 0.45 * Math.sin(i / 11 + 1)) + (i > 40 && i < 46 ? 12 : 0))}px"></i>`).join("");
+</script>
+</body>
+</html>
