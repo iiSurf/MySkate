@@ -2,15 +2,25 @@
 
 let lock = null;
 let wanted = false;
+let pending = false;
 
 async function acquire() {
   try {
-    if (!("wakeLock" in navigator) || lock) return;
-    lock = await navigator.wakeLock.request("screen");
-    lock.addEventListener("release", () => {
-      lock = null;
+    if (!("wakeLock" in navigator) || lock || pending) return;
+    pending = true;
+    const got = await navigator.wakeLock.request("screen");
+    pending = false;
+    /* The session may have ended while the browser was deciding: let go at once rather than keep the screen on. */
+    if (!wanted) {
+      got.release().catch(() => {});
+      return;
+    }
+    lock = got;
+    got.addEventListener("release", () => {
+      if (lock === got) lock = null;
     });
   } catch (err) {
+    pending = false;
     lock = null;
   }
 }

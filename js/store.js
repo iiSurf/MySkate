@@ -312,7 +312,10 @@ export function mergeStates(current, incoming) {
     merged.plan = incoming.plan;
     merged.settings = incoming.settings;
   }
-  return { state: merged, addedSessions: added.length };
+  /* Everything else that came in from the file, counted, so the message can say honestly whether anything changed. */
+  const grew = (key) => Math.max(0, (Array.isArray(merged[key]) ? merged[key].length : Object.keys(merged[key]).length) - (Array.isArray(current[key]) ? current[key].length : Object.keys(current[key]).length));
+  const addedOther = ["sharpenings", "cues", "testChecks", "goals", "homework", "offIce", "events", "programs", "rinks", "iceSessions", "friends"].reduce((n, key) => n + grew(key), 0);
+  return { state: merged, addedSessions: added.length, addedOther };
 }
 
 export function replaceState(incoming, current) {

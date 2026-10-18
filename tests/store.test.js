@@ -128,14 +128,17 @@ test("merging adds missing sessions, never duplicates, and keeps newer progress"
   incoming.cues = { a: "old cue", b: "extra cue" };
   incoming.sharpenings = [{ date: "2026-09-01", hours: 24 }];
 
-  const { state, addedSessions } = mergeStates(current, incoming);
+  const { state, addedSessions, addedOther } = mergeStates(current, incoming);
   assert.equal(addedSessions, 1);
+  assert.equal(addedOther, 2, "the extra cue and the sharpening came in too, and the merge says so");
   assert.deepEqual(state.sessions.map((s) => s.date), ["2026-09-30", "2026-10-05", "2026-10-20"]);
   assert.equal(state.profile.name, "Me");
   assert.deepEqual(state.cues, { a: "my cue", b: "extra cue" });
   assert.equal(state.sharpenings.length, 1);
   // Merging twice changes nothing more.
-  assert.equal(mergeStates(state, incoming).addedSessions, 0);
+  const again = mergeStates(state, incoming);
+  assert.equal(again.addedSessions, 0);
+  assert.equal(again.addedOther, 0);
 });
 
 test("merging into a fresh app takes the backup's setup", () => {

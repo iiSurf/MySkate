@@ -3,6 +3,7 @@
 
 import { fmtDate, html } from "../util.js";
 import { cardLink } from "../friends.js";
+import { fitLines } from "../textfit.js";
 import { lookById } from "../looks.js";
 import { toast, openSheet, $ } from "./dom.js";
 
@@ -186,45 +187,59 @@ export async function posterImage(program, event, name = "") {
   }
   c.shadowBlur = 0;
 
+  /* Whatever was typed has to fit inside the marquee: each piece gets the biggest size that fits in its lines, and is cut with an
+     ellipsis only if even the smallest does not. */
+  const inner = w - 140;
+  const fit = (text, font, sizes, maxLines) => fitLines(text, { maxWidth: inner, maxLines, sizes, measure: (t, size) => ((c.font = font(size)), c.measureText(t).width) });
+  const bodoni = (weight, italic = false) => (size) => `${italic ? "italic " : ""}${weight} ${size}px "Bodoni Moda", Georgia, serif`;
   c.textAlign = "center";
   c.fillStyle = "#ffd98a";
   c.font = '700 40px "Jost", system-ui, sans-serif';
   c.fillText("O N E   N I G H T   O N L Y", W / 2, 270);
+
+  const who = fit((name || "Skater").trim(), bodoni(600, true), [270, 230, 190, 160, 130, 110, 90, 70, 56], 2);
+  const whoStep = who.size * 0.95;
+  const whoTop = who.lines.length > 1 ? 470 : 560;
   c.shadowColor = "rgba(255, 200, 100, 0.8)";
   c.shadowBlur = 34;
   c.fillStyle = "#fbeed0";
-  let who = (name || "Skater").trim();
-  let size = 270;
-  do {
-    c.font = `italic 600 ${size}px "Bodoni Moda", Georgia, serif`;
-    size -= 10;
-  } while (c.measureText(who).width > w - 120 && size > 90);
-  c.fillText(who, W / 2, 560);
+  c.font = bodoni(600, true)(who.size);
+  who.lines.forEach((line, i) => c.fillText(line, W / 2, whoTop + i * whoStep));
   c.shadowBlur = 0;
+  const whoBottom = whoTop + (who.lines.length - 1) * whoStep;
+
   c.fillStyle = "#ffd98a";
   c.font = 'italic 500 58px "Bodoni Moda", Georgia, serif';
-  c.fillText("in", W / 2, 660);
+  c.fillText("in", W / 2, whoBottom + 100);
+  /* a program name stays on one line if a not-too-small size lets it, so there is room below for the music and the competition */
+  const oneLine = fit(program.name, bodoni(700), [110, 92, 76], 1);
+  const prog = oneLine.cut ? fit(program.name, bodoni(700), [92, 76, 64, 54], 2) : oneLine;
   c.fillStyle = "#fbeed0";
-  c.font = '700 110px "Bodoni Moda", Georgia, serif';
-  const nameBottom = wrap(c, program.name, W / 2, 790, w - 140, 120);
+  c.font = bodoni(700)(prog.size);
+  const progTop = whoBottom + 230;
+  prog.lines.forEach((line, i) => c.fillText(line, W / 2, progTop + i * prog.size * 1.1));
+  const nameBottom = progTop + (prog.lines.length - 1) * prog.size * 1.1 + 110;
+
+  const kind = { free: "Free skate", short: "Short program", showcase: "Showcase", exhibition: "Exhibition" }[program.kind] || "";
+  const music = program.music.title ? (program.music.artist ? `${program.music.title}, ${program.music.artist}` : program.music.title) : "";
+  /* what is on it, with how much each line matters if there is not room for all of them */
+  const items = [[kind, 1], [music, 2]];
+  if (event) items.push([event.name, 5], [fmtDate(event.date, { weekday: "long", month: "long", day: "numeric", year: "numeric" }), 4], [event.place, 3]);
+  const footer = y + h - 40;
+  const step = 54;
+  const room = Math.max(1, Math.floor((footer - 70 - nameBottom) / step) + 1);
+  const shown = items.filter(([text]) => text);
+  while (shown.length > room) shown.splice(shown.indexOf(shown.reduce((lo, it) => (it[1] < lo[1] ? it : lo))), 1);
+  /* every line at one size, the biggest that suits the longest of them */
+  const jost = (size) => `600 ${size}px "Jost", system-ui, sans-serif`;
+  const fitted = shown.map(([line]) => fitLines(line.toUpperCase(), { maxWidth: inner, maxLines: 1, sizes: [42, 38, 34, 30, 26], measure: (t, size) => ((c.font = jost(size)), c.measureText(t).width) }));
+  const infoSize = Math.min(42, ...fitted.map((f) => f.size));
   c.fillStyle = "#ffd98a";
-  c.font = '600 42px "Jost", system-ui, sans-serif';
-  const lines = [[program.kind === "free" ? "Free skate" : program.kind === "short" ? "Short program" : program.kind === "showcase" ? "Showcase" : program.kind === "exhibition" ? "Exhibition" : ""].filter(Boolean).join(""), program.music.title ? (program.music.artist ? `${program.music.title}, ${program.music.artist}` : program.music.title) : ""].filter(Boolean);
-  if (event) {
-    lines.push(event.name);
-    lines.push(fmtDate(event.date, { weekday: "long", month: "long", day: "numeric", year: "numeric" }));
-    if (event.place) lines.push(event.place);
-  }
-  let ly = Math.max(nameBottom + 20, 900);
-  for (const line of lines) {
-    let text = line.toUpperCase();
-    while (c.measureText(text).width > w - 120 && text.length > 6) text = text.slice(0, -2).trimEnd() + "…";
-    c.fillText(text, W / 2, ly);
-    ly += 54;
-  }
+  c.font = jost(infoSize);
+  fitted.forEach((f, i) => c.fillText(f.lines[0], W / 2, nameBottom + i * step));
   c.fillStyle = "rgba(255, 217, 138, 0.8)";
   c.font = '600 32px "Jost", system-ui, sans-serif';
-  c.fillText("M Y S K A T E", W / 2, y + h - 40);
+  c.fillText("M Y S K A T E", W / 2, footer);
   return toBlob(canvas);
 }
 

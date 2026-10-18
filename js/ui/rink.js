@@ -37,7 +37,7 @@ function spot(svg, event) {
   return { x: Math.round(clamp(x, 0.06, 0.94) * 1000) / 1000, y: Math.round(clamp(y, 0.1, 0.9) * 1000) / 1000 };
 }
 
-/* Wire up the rink. api: getProgram(), selected(), onSelect(id), onMove(id, x, y) (when a drag or key press finishes), onPlace(x, y).
+/* Wire up the rink. api: getProgram(), selected(), onSelect(id, { keep }), onMove(id, x, y) (when a drag or key press finishes), onPlace(x, y).
    While a mark is dragged only the drawing changes; the move is saved when the finger lifts. Returns a cleanup. */
 export function mountRink(svg, api) {
   let drag = null;
@@ -50,7 +50,7 @@ export function mountRink(svg, api) {
 
   const down = (event) => {
     const mark = event.target.closest(".cp-mark");
-    if (!mark) return;
+    if (!mark || event.button > 0) return;
     drag = { id: mark.dataset.el, x0: event.clientX, y0: event.clientY, moved: false };
     work = api.getProgram();
     try {
@@ -68,7 +68,7 @@ export function mountRink(svg, api) {
     work = moveElement(work, drag.id, s.x, s.y);
     paint(work);
   };
-  const up = (event) => {
+  const finish = (event, cancelled) => {
     if (!drag) return;
     const d = drag;
     drag = null;
@@ -76,6 +76,11 @@ export function mountRink(svg, api) {
       svg.releasePointerCapture(event.pointerId);
     } catch (err) {
       /* nothing to release */
+    }
+    if (cancelled) {
+      /* the system took the touch (a call, a gesture): put the drawing back as it was saved, and change nothing */
+      if (d.moved) paint(api.getProgram());
+      return;
     }
     if (d.moved) {
       suppress = true;
@@ -86,6 +91,12 @@ export function mountRink(svg, api) {
       api.onSelect(d.id);
     }
   };
+  const up = (event) => finish(event, false);
+  const cancel = (event) => finish(event, true);
+  /* A finger that starts on a mark must not scroll the page while it drags. */
+  const touch = (event) => {
+    if (event.target.closest(".cp-mark")) event.preventDefault();
+  };
   const click = (event) => {
     if (suppress || event.target.closest(".cp-mark")) return;
     const s = spot(svg, event);
@@ -93,11 +104,11 @@ export function mountRink(svg, api) {
   };
   const key = (event) => {
     const mark = event.target.closest(".cp-mark");
-    if (!mark) return;
+    if (!mark || event.ctrlKey || event.metaKey || event.altKey) return;
     const id = mark.dataset.el;
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      api.onSelect(id);
+      api.onSelect(id, { keep: true });
       return;
     }
     const step = { ArrowLeft: [-0.02, 0], ArrowRight: [0.02, 0], ArrowUp: [0, -0.03], ArrowDown: [0, 0.03] }[event.key];
@@ -110,14 +121,16 @@ export function mountRink(svg, api) {
   svg.addEventListener("pointerdown", down);
   svg.addEventListener("pointermove", move);
   svg.addEventListener("pointerup", up);
-  svg.addEventListener("pointercancel", up);
+  svg.addEventListener("pointercancel", cancel);
+  svg.addEventListener("touchstart", touch, { passive: false });
   svg.addEventListener("click", click);
   svg.addEventListener("keydown", key);
   return () => {
     svg.removeEventListener("pointerdown", down);
     svg.removeEventListener("pointermove", move);
     svg.removeEventListener("pointerup", up);
-    svg.removeEventListener("pointercancel", up);
+    svg.removeEventListener("pointercancel", cancel);
+    svg.removeEventListener("touchstart", touch);
     svg.removeEventListener("click", click);
     svg.removeEventListener("keydown", key);
   };

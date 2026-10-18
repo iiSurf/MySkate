@@ -40,7 +40,16 @@ export const DEFAULT_BRING = ["Skates, sharpened", "Music on two devices", "Cost
 /* ---- cleaning ---- */
 
 const clean = (v, max) => (typeof v === "string" ? v.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, max) : "");
-const id = (v) => (typeof v === "string" ? v.trim().slice(0, 80) : "");
+/* A note keeps its line breaks (never more than one blank line in a row) and tidies the spaces. */
+const cleanNote = (v, max) =>
+  typeof v === "string"
+    ? v.replace(/\r\n?/g, "\n").replace(/[\u0000-\u0009\u000b\u000c\u000e-\u001f\u007f]/g, " ").replace(/[ \t]+/g, " ").replace(/ ?\n ?/g, "\n").replace(/\n{3,}/g, "\n\n").trim().slice(0, max)
+    : "";
+/* An id for an event, program, element, and so on, kept to letters, digits, "_" and "-" so it can sit in a web address (anything else
+   becomes "_"). The ids MySkate makes already fit; this is for a backup from somewhere else. */
+const id = (v) => (typeof v === "string" ? v.trim().replace(/[^\w-]/g, "_").slice(0, 80) : "");
+/* A skill's id comes from the catalog and has dots in it, so it is only trimmed. */
+const skillKey = (v) => (typeof v === "string" ? v.trim().slice(0, 120) : "");
 const int = (v, lo, hi, fallback) => (typeof v === "number" && Number.isFinite(v) ? Math.min(hi, Math.max(lo, Math.round(v))) : fallback);
 const unit = (v) => (typeof v === "number" && Number.isFinite(v) ? Math.min(1, Math.max(0, Math.round(v * 1000) / 1000)) : null);
 const once = (list, cleaner, limit) => {
@@ -61,7 +70,7 @@ export function sanitizeElement(e) {
     id: eid,
     label,
     type: TYPE_IDS.includes(e.type) ? e.type : "move",
-    skillId: id(e.skillId).slice(0, 120),
+    skillId: skillKey(e.skillId),
     x: placed ? x : null,
     y: placed ? y : null,
     at,
@@ -99,7 +108,7 @@ export function sanitizeProgram(p) {
     lengthSec,
     kind: KIND_IDS.includes(p.kind) ? p.kind : "free",
     eventId: id(p.eventId),
-    note: clean(p.note, LIMITS.note),
+    note: cleanNote(p.note, LIMITS.note),
     elements,
     moments,
     created: isDay(p.created) ? p.created : "",
@@ -132,7 +141,7 @@ export function sanitizeResult(r) {
   if (r.marks && typeof r.marks === "object") {
     for (const [k, v] of Object.entries(r.marks).slice(0, LIMITS.marks)) if (MARK_IDS.includes(v) && id(k)) marks[id(k)] = v;
   }
-  return { programId: id(r.programId), placing, of, marks, note: clean(r.note, LIMITS.note), coach: clean(r.coach, LIMITS.note), recordedOn: isDay(r.recordedOn) ? r.recordedOn : "" };
+  return { programId: id(r.programId), placing, of, marks, note: cleanNote(r.note, LIMITS.note), coach: cleanNote(r.coach, LIMITS.note), recordedOn: isDay(r.recordedOn) ? r.recordedOn : "" };
 }
 
 export function sanitizeEvent(e) {
@@ -144,7 +153,7 @@ export function sanitizeEvent(e) {
     name: clean(e.name, LIMITS.name) || "Competition",
     date: e.date,
     place: clean(e.place, LIMITS.name),
-    note: clean(e.note, LIMITS.note),
+    note: cleanNote(e.note, LIMITS.note),
     day: once(e.day, sanitizeDayItem, LIMITS.day),
     bring: once(e.bring, sanitizeBringItem, LIMITS.bring),
     result: sanitizeResult(e.result),
@@ -228,6 +237,29 @@ export function ordinal(n) {
   return `${v}${{ 1: "st", 2: "nd", 3: "rd" }[v % 10] || "th"}`;
 }
 
+/* "2" or "2nd" as 2; anything else is nothing. */
+export function parseWhole(text) {
+  const m = /^\s*(\d{1,3})\s*(?:st|nd|rd|th)?\s*$/i.exec(String(text ?? ""));
+  return m ? Number(m[1]) : null;
+}
+
+/* The form for a result, checked before it is saved: a placing that is a number from 1, a field size that is at least the placing,
+   and something worth keeping. Returns { ok: true, result } or { ok: false, error }. */
+export function checkResultDraft(draft, today = todayISO()) {
+  const placingText = String(draft.placing ?? "").trim();
+  const ofText = String(draft.of ?? "").trim();
+  const placing = placingText ? parseWhole(placingText) : null;
+  const of = ofText ? parseWhole(ofText) : null;
+  if (placingText && (placing === null || placing < 1)) return { ok: false, error: "Enter your placing as a number, like 2." };
+  if (ofText && (of === null || of < 1)) return { ok: false, error: "Enter how many skaters as a number, like 9." };
+  if (ofText && !placingText) return { ok: false, error: "Add your placing too, or clear how many skaters." };
+  if (placing !== null && of !== null && placing > of) return { ok: false, error: "Your placing cannot be bigger than the number of skaters." };
+  const marks = draft.marks || {};
+  const empty = placing === null && !Object.keys(marks).length && !String(draft.coach ?? "").trim() && !String(draft.note ?? "").trim();
+  if (empty) return { ok: false, error: "Add a placing, a mark for an element, or a note first." };
+  return { ok: true, result: sanitizeResult({ programId: draft.programId, placing, of, marks, coach: draft.coach, note: draft.note, recordedOn: today }) };
+}
+
 export function placingText(result) {
   if (!result || result.placing === null) return "";
   return result.of ? `${ordinal(result.placing)} of ${result.of}` : ordinal(result.placing);
@@ -260,10 +292,31 @@ export function readiness(p, stats, earnedAt = 4) {
   return { linked: linked.length, confident };
 }
 
-/* A spot for a new element when the skater did not tap one: spread along the rink so they do not stack. */
+/* A spot for a new element when the skater did not tap one: along the rink in a zigzag, taking the first spot that is not on top of an
+   element already there (so removing one and adding another never stacks them). When the rink is crowded, the roomiest spot on a
+   fine grid. */
 export function nextSpot(elements) {
-  const k = elements.filter((e) => e.x !== null).length;
-  return { x: Math.round((0.12 + 0.76 * (((k % 7) + 0.5) / 7)) * 1000) / 1000, y: k % 2 ? 0.68 : 0.32 };
+  const taken = elements.filter((e) => e.x !== null);
+  const zig = (i) => ({
+    x: Math.round((0.12 + 0.76 * (((i % 7) + 0.5) / 7)) * 1000) / 1000,
+    y: i % 2 ? 0.68 : 0.32,
+  });
+  /* The rink drawing is 346 by 206 units and a mark is 26 across, so 34 units apart keeps marks from touching. */
+  const gap = (c) => (taken.length ? Math.min(...taken.map((t) => Math.hypot((t.x - c.x) * 346, (t.y - c.y) * 206))) : Infinity);
+  for (let i = 0; i < 14; i++) if (gap(zig(i)) > 34) return zig(i);
+  let best = zig(0);
+  let room = -1;
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 12; col++) {
+      const c = { x: Math.round((0.08 + (0.84 * col) / 11) * 1000) / 1000, y: Math.round((0.14 + (0.72 * row) / 5) * 1000) / 1000 };
+      const g = gap(c);
+      if (g > room) {
+        room = g;
+        best = c;
+      }
+    }
+  }
+  return best;
 }
 
 export function addElement(p, { label, type = "move", skillId = "", x = null, y = null }, makeId) {
@@ -306,6 +359,9 @@ export function spreadEvenly(p) {
 
 /* Changing the length keeps every time inside the music. */
 export const setLength = (p, lengthSec) => sanitizeProgram({ ...p, lengthSec });
+
+/* The elements whose start or length a piece of music this long would cut short. */
+export const clipsAt = (p, lengthSec) => p.elements.filter((e) => e.at !== null && (e.at > lengthSec || e.at + e.dur > lengthSec)).map((e) => e.id);
 
 export function addMoment(p, { at, text }, makeId) {
   if (p.moments.length >= LIMITS.moments) return { status: "full", program: p };

@@ -28,7 +28,7 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 ### Stretch, in this order
 
 0. Ice times: your rinks' weekly sessions on one page, with filters, My picks, and calendar import (done)
-1. Your ice: the background draws each skill's marks as you skate (done)
+1. Your ice: the background draws each skill's marks as you skate (built, then retired in October 2026 because it read as random squiggles; the background is now clean, see Round four and Round five under Design direction)
 2. Blade life tile: editable sharpening limit (20, 25, 30, 35, or custom), hours since sharpening from logged on-ice time, a reset button (done)
 3. Time-budget planner: split the booked slot across the chosen skills (done, shared evenly)
 4. Friend cards and a local friends board (done)
@@ -231,7 +231,7 @@ Round two feedback (after the first style tile): skates need to be beautiful so 
 - Type: Bodoni Moda (italic for titles, numerals for XP and levels) and Jost (UI and body), served from `fonts/` (self-hosted, so no outside request) with system fallbacks. Both are free open fonts. Satoshi would also work. Neue Machina and Söhne need paid licenses, so they are out for now.
 - Liquid glass (retired in round four): translucent cards with a blurred backdrop, a bright top edge, and a soft highlight.
 - Rewards: the XP bar fills with a spring and a moving sheen, "+20 XP" floats up, and a level-up takes over the screen with rays, a gold medallion that pops in, confetti stars, and a vibration on phones. Reduced motion shows the same screen without movement.
-- Background layers (round four): the ice, the low sun, a long diagonal sheen, twinkling sparkles, and a darker foot so type stays readable.
+- Background layers (round four, replaced in round five by the stage glow): the ice, the low sun, a long diagonal sheen, twinkling sparkles, and a darker foot so type stays readable.
 - One glow per screen: gold when it is about reward, ice when it is about the action in front of you.
 - Motion: everything animated has a reduced-motion off state.
 - Placeholders: dashed "3D reference coming soon" panels on the Skate and Skill detail screens.

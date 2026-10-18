@@ -5,7 +5,7 @@ import {
   fmtMmSs, parseMmSs, daysUntil, countdownText, upcomingEvents, pastEvents, nextEvent, ordinal, placingText,
   newProgram, newEvent, programStatus, readiness, nextSpot, addElement, updateElement, moveElement, removeElement, shiftElement,
   spreadEvenly, setLength, addMoment, removeMoment, timelineBlocks, overlaps, programSpan, cueAt, routePoints, smoothPath,
-  seasonLabel, roman, sortDay, dayRange, parseCompeteHash, competeHref, DEFAULT_BRING,
+  seasonLabel, roman, clipsAt, parseWhole, checkResultDraft, sortDay, dayRange, parseCompeteHash, competeHref, DEFAULT_BRING,
 } from "../js/compete.js";
 
 let n = 0;
@@ -319,4 +319,84 @@ test("elements are numbered like a running order", () => {
   assert.deepEqual([1, 2, 3, 4, 5, 6, 9, 14, 19, 40].map(roman), ["I", "II", "III", "IV", "V", "VI", "IX", "XIV", "XIX", "XL"]);
   assert.equal(roman(0), "");
   assert.equal(roman("x"), "");
+});
+
+test("an id from another app is made safe for a web address, but a skill's id keeps its dots", () => {
+  const e = sanitizeEvent({ id: "ev long/1", date: "2026-11-14" });
+  assert.equal(e.id, "ev_long_1");
+  assert.deepEqual(parseCompeteHash(competeHref({ view: "event", id: e.id })), { view: "event", id: "ev_long_1", results: false }, "the address of every event can be opened");
+  const p = sanitizeProgram({ id: "p c", eventId: "ev long/1", elements: [{ id: "x.y", label: "Jump", skillId: "pre-free-skate.waltz-jump" }] });
+  assert.equal(p.id, "p_c");
+  assert.equal(p.eventId, "ev_long_1", "a program still points at the event it pointed at");
+  assert.equal(p.elements[0].id, "x_y");
+  assert.equal(p.elements[0].skillId, "pre-free-skate.waltz-jump");
+  const r = sanitizeResult({ programId: "p c", marks: { "x.y": "clean" } });
+  assert.equal(r.programId, "p_c");
+  assert.deepEqual(r.marks, { x_y: "clean" }, "marks still match their elements");
+  const clean = cleanCompete([{ id: "ev long/1", date: "2026-11-14" }], [{ id: "p c", eventId: "ev long/1" }]);
+  assert.equal(clean.programs[0].eventId, "ev_long_1");
+  assert.equal(sanitizeProgram({ id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890" }).id, "a1b2c3d4-e5f6-7890-abcd-ef1234567890", "ids MySkate makes are left alone");
+});
+
+test("notes keep their line breaks, with at most one blank line", () => {
+  const p = sanitizeProgram({ id: "p", note: "line one\r\nline  two\n\n\n\nline three \u0007" });
+  assert.equal(p.note, "line one\nline two\n\nline three");
+  assert.equal(sanitizeEvent({ id: "e", date: "2026-11-14", note: "a\nb" }).note, "a\nb");
+  const r = sanitizeResult({ coach: "Keep the free leg quiet.\nLovely otherwise.", note: "x\ty" });
+  assert.equal(r.coach, "Keep the free leg quiet.\nLovely otherwise.");
+  assert.equal(r.note, "x y");
+  assert.equal(sanitizeProgram({ id: "p", name: "two\nlines" }).name, "two lines", "a name is still one line");
+});
+
+test("a new element never lands on one that is already there", () => {
+  let p = program();
+  for (const label of ["a", "b", "c"]) p = addElement(p, { label }, mk).program;
+  p = removeElement(p, p.elements[0].id);
+  p = addElement(p, { label: "d" }, mk).program;
+  const spots = p.elements.map((e) => `${e.x},${e.y}`);
+  assert.equal(new Set(spots).size, spots.length, "the new one took a free spot");
+  const dist = (a, b) => Math.hypot((a.x - b.x) * 346, (a.y - b.y) * 206);
+  let few = program();
+  for (let i = 0; i < 14; i++) few = addElement(few, { label: "E" + i }, mk).program;
+  for (let i = 0; i < few.elements.length; i++) for (let j = i + 1; j < few.elements.length; j++) assert.ok(dist(few.elements[i], few.elements[j]) > 34, `the first fourteen do not touch: ${i} and ${j}`);
+  let many = program();
+  for (let i = 0; i < LIMITS.elements; i++) many = addElement(many, { label: "E" + i }, mk).program;
+  for (let i = 0; i < many.elements.length; i++) for (let j = i + 1; j < many.elements.length; j++) assert.ok(dist(many.elements[i], many.elements[j]) > 8, `even forty are never stacked: ${i} and ${j}`);
+});
+
+test("which elements a shorter piece of music would cut short", () => {
+  const p = spreadEvenly(withThree());
+  assert.deepEqual(clipsAt(p, 90), [], "the same length cuts nothing");
+  assert.deepEqual(clipsAt(p, 120), [], "a longer piece cuts nothing");
+  assert.equal(clipsAt(p, 70).length, 1, "only the last element runs past 70 seconds");
+  assert.equal(clipsAt(p, 20).length, 3 - 1, "the first fits inside 20 seconds, the others do not");
+  assert.deepEqual(clipsAt(program(), 30), []);
+});
+
+test("a placing can be typed as 2 or as 2nd", () => {
+  assert.equal(parseWhole("2"), 2);
+  assert.equal(parseWhole(" 2nd "), 2);
+  assert.equal(parseWhole("1ST"), 1);
+  assert.equal(parseWhole("23rd"), 23);
+  assert.equal(parseWhole("two"), null);
+  assert.equal(parseWhole("2.5"), null);
+  assert.equal(parseWhole(""), null);
+  assert.equal(parseWhole("1000"), null);
+  assert.equal(parseWhole(undefined), null);
+});
+
+test("a result is checked before it is saved, and the person is told what is wrong", () => {
+  const ok = checkResultDraft({ placing: "2nd", of: "9", marks: { a: "clean" }, coach: "Lovely", note: "", programId: "p1" }, "2026-11-14");
+  assert.equal(ok.ok, true);
+  assert.equal(ok.result.placing, 2);
+  assert.equal(ok.result.of, 9);
+  assert.equal(ok.result.recordedOn, "2026-11-14");
+  assert.equal(checkResultDraft({ placing: "", of: "", marks: { a: "fell" } }).ok, true, "marks alone are worth keeping");
+  assert.equal(checkResultDraft({ placing: "", of: "", marks: {}, coach: "", note: "Felt calm" }).ok, true, "a note alone is worth keeping");
+  assert.match(checkResultDraft({ placing: "second", of: "" , marks: {} }).error, /placing as a number/);
+  assert.match(checkResultDraft({ placing: "0", of: "9", marks: {} }).error, /placing as a number/, "a placing starts at first");
+  assert.match(checkResultDraft({ placing: "2", of: "many", marks: {} }).error, /how many skaters/);
+  assert.match(checkResultDraft({ placing: "", of: "9", marks: {}, note: "x" }).error, /placing too/);
+  assert.match(checkResultDraft({ placing: "5", of: "3", marks: {} }).error, /bigger than/);
+  assert.match(checkResultDraft({ placing: "", of: "", marks: {}, coach: "  ", note: "" }).error, /Add a placing/, "a blank form is not a result");
 });

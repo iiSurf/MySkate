@@ -7,7 +7,7 @@ import { icon } from "../ui/parts.js";
 import { toast, confirmSheet, $ } from "../ui/dom.js";
 import {
   competeHref, parseCompeteHash, seasonLabel, nextEvent, upcomingEvents, pastEvents, daysUntil, countdownText, programStatus, readiness,
-  kindName, fmtMmSs, parseMmSs, placingText, roman, typeName, markName, KINDS, ELEMENT_TYPES, MARKS, LIMITS, sanitizeProgram, sanitizeResult,
+  kindName, fmtMmSs, parseMmSs, placingText, roman, typeName, markName, KINDS, ELEMENT_TYPES, MARKS, LIMITS, sanitizeProgram, checkResultDraft, clipsAt,
   moveElement, shiftElement, removeElement, spreadEvenly, setLength, removeMoment, timelineBlocks, overlaps, programSpan, sortDay,
 } from "../compete.js";
 import { uid, todayISO } from "../util.js";
@@ -105,13 +105,14 @@ function elementDetail(e, stats) {
   return [typeName(e.type), r !== null ? `you: ${skatesText(r)}` : "", e.at !== null ? `starts ${fmtMmSs(e.at)}` : "", e.x === null ? "not on the rink" : ""].filter(Boolean).join(" · ");
 }
 
+const programMeta = (p) => [kindName(p.kind), fmtMmSs(p.lengthSec), p.music.title && (p.music.artist ? `${p.music.title}, ${p.music.artist}` : p.music.title)].filter(Boolean).join(" · ");
+
 function programHeader(ctx, p) {
   const ev = ctx.state.events.find((e) => e.id === p.eventId);
-  const meta = [kindName(p.kind), fmtMmSs(p.lengthSec), p.music.title && (p.music.artist ? `${p.music.title}, ${p.music.artist}` : p.music.title)].filter(Boolean).join(" · ");
   return html`<button class="cp-back" type="button" data-action="back-hub">‹ Competitions</button>
     <header>
-      <h1 class="cp-ttl">${p.name}</h1>
-      <p class="cp-sub">${meta}</p>
+      <h1 class="cp-ttl" id="cp-ttl">${p.name}</h1>
+      <p class="cp-sub" id="cp-meta">${programMeta(p)}</p>
       ${ev ? html`<p class="cp-sub"><button class="cp-link" type="button" data-action="open-event" data-id="${ev.id}">For ${ev.name}, ${fmtDate(ev.date, { month: "short", day: "numeric" })} ›</button></p>` : ""}
     </header>`;
 }
@@ -162,31 +163,44 @@ function layoutTab(ctx, p, d) {
 }
 
 /* Timing: the music as a track, each element as a block on it, and the start and length of each. */
-function timingTab(ctx, p) {
+const elNum = (p, id) => roman(p.elements.findIndex((e) => e.id === id) + 1);
+const elLabel = (p, id) => `${elNum(p, id)}. ${p.elements.find((e) => e.id === id).label}`;
+
+/* The music as a track, with each timed element as a block on it, and the times along its foot. */
+function musicBlock(p) {
   const blocks = timelineBlocks(p);
-  const span = programSpan(p);
-  const clash = overlaps(p);
-  const st = programStatus(p);
   const step = p.lengthSec <= 60 ? 15 : 30;
   const marks = [];
   for (let t = 0; t < p.lengthSec; t += step) marks.push(t);
   marks.push(p.lengthSec);
-  const num = (id) => roman(p.elements.findIndex((e) => e.id === id) + 1);
-  const label = (id) => `${num(id)}. ${p.elements.find((e) => e.id === id).label}`;
   return html`<section class="cp-music" aria-label="The music, ${fmtMmSs(p.lengthSec)}">
       <div class="cp-track" role="group" aria-label="Elements on the music">
         ${p.moments.map((m) => html`<i class="cp-flag" style="left:${(m.at / p.lengthSec) * 100}%" title="${fmtMmSs(m.at)} ${m.text}"></i>`)}
-        ${blocks.map((b) => html`<button class="cp-blk cp-t-${b.type}${b.id === ui.sel ? " is-sel" : ""}" type="button" style="left:${b.left}%;width:${b.width}%" data-action="select-el" data-id="${b.id}" aria-label="${label(b.id)}, starts ${fmtMmSs(b.at)}"><span>${num(b.id)}</span></button>`)}
+        ${blocks.map((b) => html`<button class="cp-blk cp-t-${b.type}${b.id === ui.sel ? " is-sel" : ""}" type="button" style="left:${b.left}%;width:${b.width}%" data-action="select-el" data-id="${b.id}" aria-label="${elLabel(p, b.id)}, starts ${fmtMmSs(b.at)}"><span>${elNum(p, b.id)}</span></button>`)}
       </div>
       <div class="cp-ruler" aria-hidden="true">${marks.map((t) => html`<span style="left:${(t / p.lengthSec) * 100}%">${fmtMmSs(t)}</span>`)}</div>
-    </section>
+    </section>`;
+}
+
+/* How many are timed, where the last one ends, and any that overlap. */
+function timingSummary(p) {
+  const span = programSpan(p);
+  const clash = overlaps(p);
+  const st = programStatus(p);
+  return html`<p class="note cp-sum">${st.timed} of ${st.total} timed${st.timed ? ` · the last one ends at ${fmtMmSs(span.lastEnd)} · ${fmtMmSs(span.room)} of music left` : ""}</p>
+    ${clash.length ? html`<p class="cp-warn" role="status">These overlap: ${clash.map(([a, b]) => `${elLabel(p, a)} and ${elLabel(p, b)}`).join("; ")}.</p>` : ""}`;
+}
+
+/* Timing: the music as a track, each element as a block on it, and the start and length of each. The track and the totals sit in slots
+   so a change to a start or a length can redraw just them: rebuilding the whole screen would swallow the tap or the Tab that caused it. */
+function timingTab(ctx, p) {
+  return html`<div id="cp-music-slot">${musicBlock(p)}</div>
     <div class="cp-moments"><p class="cp-label">Notes on the music</p><div class="cp-chips">${p.moments.map((m) => html`<button class="cp-chip cp-chip--gold" type="button" data-action="rm-moment" data-id="${m.id}" aria-label="Remove note: ${fmtMmSs(m.at)} ${m.text}">${fmtMmSs(m.at)} ${m.text} ×</button>`)}<button class="cp-chip" type="button" data-action="add-moment">+ Add a note</button></div></div>
     ${p.elements.length
-      ? html`<div class="cp-times" role="group" aria-label="Start and length of each element">${p.elements.map((e, i) => html`<div class="cp-trow${e.id === ui.sel ? " is-sel" : ""}"><button class="cp-trow__name" type="button" data-action="select-el" data-id="${e.id}"><span>${roman(i + 1)}.</span> ${e.label}</button>
+      ? html`<div class="cp-times" role="group" aria-label="Start and length of each element">${p.elements.map((e, i) => html`<div class="cp-trow${e.id === ui.sel ? " is-sel" : ""}"><button class="cp-trow__name" type="button" data-action="select-row" data-id="${e.id}"><span>${roman(i + 1)}.</span> ${e.label}</button>
           <label class="cp-trow__f"><span>Start</span><input class="input input--num cp-time" data-input="el-at" data-id="${e.id}" type="text" inputmode="numeric" value="${e.at === null ? "" : fmtMmSs(e.at)}" placeholder="0:00" aria-label="Start of ${e.label}, like 0:44" autocomplete="off"></label>
           <label class="cp-trow__f"><span>Seconds</span><input class="input input--num cp-time" data-input="el-dur" data-id="${e.id}" type="text" inputmode="numeric" value="${e.dur || ""}" placeholder="0" aria-label="Length of ${e.label} in seconds" autocomplete="off"></label></div>`)}</div>
-        <p class="note cp-sum">${st.timed} of ${st.total} timed${st.timed ? ` · the last one ends at ${fmtMmSs(span.lastEnd)} · ${fmtMmSs(span.room)} of music left` : ""}</p>
-        ${clash.length ? html`<p class="cp-warn" role="status">These overlap: ${clash.map(([a, b]) => `${label(a)} and ${label(b)}`).join("; ")}.</p>` : ""}`
+        <div class="cp-sumslot" id="cp-sum-slot">${timingSummary(p)}</div>`
       : html`<p class="note">Add your elements on the Layout step first, then set them to the music here.</p>`}
     <div class="cp-actions"><button class="cp-obtn" type="button" data-action="run" ${p.elements.length ? "" : "disabled"}><span>Run it through</span>${icon("right")}</button>${p.elements.length ? html`<button class="cp-ghost" type="button" data-action="spread">Spread evenly</button>` : ""}</div>`;
 }
@@ -283,6 +297,8 @@ function resultsView(ctx, ev, d) {
     ui.editResult = !r;
   }
   const dr = ui.draft;
+  /* The program for the marks is one that still exists: if the one in the draft is gone (or there was none and one has since been attached), take the first attached. */
+  if (!dr.programId || !ctx.state.programs.some((p) => p.id === dr.programId)) dr.programId = (here[0] && here[0].id) || "";
   const program = ctx.state.programs.find((p) => p.id === dr.programId) || null;
   const back = html`<button class="cp-back" type="button" data-action="back-event" data-id="${ev.id}">‹ ${ev.name}</button>`;
   if (ev.result && !ui.editResult) {
@@ -321,9 +337,10 @@ export function mountCompete(ctx) {
   return mountRink(svg, {
     getProgram: current,
     selected: () => ui.sel,
-    onSelect: (id) => {
+    onSelect: (id, opts = {}) => {
       ui.sel = ui.sel === id ? null : id;
       ctx.update();
+      if (opts.keep) document.querySelector(`.cp-mark[data-el="${CSS.escape(id)}"]`)?.focus({ preventScroll: true });
     },
     onMove: (id, x, y, opts = {}) => {
       replaceProgram(ctx, moveElement(current(), id, x, y));
@@ -341,11 +358,63 @@ export function mountCompete(ctx) {
 
 const routeNow = () => parseCompeteHash(location.hash);
 
-/* "2" as 2, and anything that is not a plain whole number (up to three digits) as nothing. */
-const wholeNumber = (v) => (/^\d{1,3}$/.test(String(v).trim()) ? Number(String(v).trim()) : null);
+const $q = (selector) => document.querySelector(selector);
+
+/* Put focus on the first of these that can take it (a button that has just become disabled cannot). */
+const refocus = (...selectors) => {
+  for (const sel of selectors) {
+    const el = $q(sel);
+    if (el && !el.disabled) {
+      el.focus({ preventScroll: true });
+      return;
+    }
+  }
+};
+const byId = (action, id) => `[data-action="${action}"][data-id="${CSS.escape(id)}"]`;
+
+/* Redraw the music track and the totals, and bring every start and length box in line with what is saved, all without rebuilding the
+   screen (a rebuilt screen swallows the tap or the Tab that caused the change). A box being typed in is left alone. */
+function repaintTiming(p) {
+  const music = $q("#cp-music-slot");
+  if (music) music.innerHTML = musicBlock(p).text;
+  const sum = $q("#cp-sum-slot");
+  if (sum) sum.innerHTML = timingSummary(p).text;
+  for (const e of p.elements) {
+    const at = $q(`[data-input="el-at"][data-id="${CSS.escape(e.id)}"]`);
+    if (at && at !== document.activeElement) at.value = e.at === null ? "" : fmtMmSs(e.at);
+    const dur = $q(`[data-input="el-dur"][data-id="${CSS.escape(e.id)}"]`);
+    if (dur && dur !== document.activeElement) dur.value = e.dur || "";
+  }
+}
+
+/* The name and the line under it at the top of a program, kept in step with the form below without a rebuild. */
+function repaintHeader(p) {
+  const title = $q("#cp-ttl");
+  if (title) title.textContent = p.name;
+  const meta = $q("#cp-meta");
+  if (meta) meta.textContent = programMeta(p);
+}
+
+/* Set the length, asking first if a shorter piece of music would cut an element short (the cut times are not kept). True if it changed. */
+async function applyLength(ctx, p, seconds) {
+  const sec = Math.min(LIMITS.lengthMax, Math.max(LIMITS.lengthMin, seconds));
+  if (sec === p.lengthSec) return false;
+  const clipped = clipsAt(p, sec);
+  if (clipped.length && !(await confirmSheet({ title: "Make it shorter?", message: `${clipped.length === 1 ? "One element runs" : `${clipped.length} elements run`} past ${fmtMmSs(sec)}. ${clipped.length === 1 ? "It is" : "They are"} cut short to fit, and the times you set are not kept.`, confirmLabel: "Shorten", tone: "gold" }))) return false;
+  replaceProgram(ctx, setLength(p, sec));
+  return true;
+}
 
 export function competeActions(ctx) {
   const prog = () => programOf(ctx, routeNow().id);
+  /* Redraw the screen, keeping whatever has been typed in the "what to bring" box. */
+  const refresh = () => {
+    const box = $q('[data-input="bring-new"]');
+    const typed = box ? box.value : "";
+    ctx.update();
+    const again = $q('[data-input="bring-new"]');
+    if (again && typed) again.value = typed;
+  };
   const patch = (fields) => {
     const p = prog();
     if (!p) return;
@@ -371,6 +440,10 @@ export function competeActions(ctx) {
       ui.sel = ui.sel === el.dataset.id ? null : el.dataset.id;
       ctx.update();
     },
+    "select-row": (el) => {
+      ui.sel = ui.sel === el.dataset.id ? null : el.dataset.id;
+      ctx.update();
+    },
     "add-el": async (el) => {
       ui.lastType = el.dataset.type;
       const id = await openElementSheet(ctx, { programId: routeNow().id, type: el.dataset.type });
@@ -392,10 +465,12 @@ export function competeActions(ctx) {
     "up-el": (el) => {
       replaceProgram(ctx, shiftElement(prog(), el.dataset.id, -1));
       ctx.update();
+      refocus(byId("up-el", el.dataset.id), byId("down-el", el.dataset.id), byId("select-el", el.dataset.id));
     },
     "down-el": (el) => {
       replaceProgram(ctx, shiftElement(prog(), el.dataset.id, 1));
       ctx.update();
+      refocus(byId("down-el", el.dataset.id), byId("up-el", el.dataset.id), byId("select-el", el.dataset.id));
     },
     nudge: (el) => {
       const p = prog();
@@ -406,10 +481,13 @@ export function competeActions(ctx) {
       replaceProgram(ctx, moveElement(p, e.id, x, y));
       ctx.update();
     },
-    len: (el) => {
+    len: async (el) => {
       const p = prog();
-      replaceProgram(ctx, setLength(p, p.lengthSec + Number(el.dataset.d)));
-      ctx.update();
+      await applyLength(ctx, p, p.lengthSec + Number(el.dataset.d));
+      const q = prog();
+      const box = $q('[data-input="pg-length"]');
+      if (box) box.value = fmtMmSs(q.lengthSec);
+      repaintHeader(q);
     },
     "set-kind": (el) => {
       patch({ kind: el.dataset.kind });
@@ -419,6 +497,8 @@ export function competeActions(ctx) {
       const p = prog();
       if (!(await confirmSheet({ title: "Delete this program?", message: `${p.name} and its layout and timing are removed. This cannot be undone, so save a backup first if you are unsure.`, confirmLabel: "Delete" }))) return;
       ctx.state.programs = ctx.state.programs.filter((x) => x.id !== p.id);
+      /* A result that was marked against this program no longer points at it. */
+      ctx.state.events = ctx.state.events.map((e) => (e.result && e.result.programId === p.id ? { ...e, result: { ...e.result, programId: "" } } : e));
       ctx.save();
       toast("Program deleted.");
       go(competeHref());
@@ -443,29 +523,29 @@ export function competeActions(ctx) {
     attach: (el) => {
       const ev = routeNow().id;
       replaceProgram(ctx, { ...programOf(ctx, el.dataset.id), eventId: ev });
-      ctx.update();
+      refresh();
     },
     "new-program-here": async () => {
       const id = await openProgramSheet(ctx, { eventId: routeNow().id });
       if (id) go(competeHref({ view: "program", id, tab: "layout" }));
     },
     "add-day": async () => {
-      if (await openDayItemSheet(ctx, routeNow().id)) ctx.update();
+      if (await openDayItemSheet(ctx, routeNow().id)) refresh();
     },
     "edit-day": async (el) => {
-      if (await openDayItemSheet(ctx, routeNow().id, el.dataset.id)) ctx.update();
+      if (await openDayItemSheet(ctx, routeNow().id, el.dataset.id)) refresh();
     },
     "bring-toggle": (el) => {
       const ev = eventOf(ctx, routeNow().id);
       ctx.state.events = ctx.state.events.map((e) => (e.id === ev.id ? { ...e, bring: e.bring.map((b) => (b.id === el.dataset.id ? { ...b, done: !b.done } : b)) } : e));
       ctx.save();
-      ctx.update();
+      refresh();
     },
     "bring-remove": (el) => {
       const ev = eventOf(ctx, routeNow().id);
       ctx.state.events = ctx.state.events.map((e) => (e.id === ev.id ? { ...e, bring: e.bring.filter((b) => b.id !== el.dataset.id) } : e));
       ctx.save();
-      ctx.update();
+      refresh();
     },
     "bring-add": () => {
       const input = $('[data-input="bring-new"]');
@@ -498,9 +578,9 @@ export function competeActions(ctx) {
     },
     "save-result": () => {
       const ev = eventOf(ctx, routeNow().id);
-      const dr = ui.draft;
-      const result = sanitizeResult({ programId: dr.programId, placing: wholeNumber(dr.placing), of: wholeNumber(dr.of), marks: dr.marks, coach: dr.coach, note: dr.note, recordedOn: todayISO() });
-      ctx.state.events = ctx.state.events.map((e) => (e.id === ev.id ? { ...e, result } : e));
+      const check = checkResultDraft(ui.draft, todayISO());
+      if (!check.ok) return toast(check.error, 4500);
+      ctx.state.events = ctx.state.events.map((e) => (e.id === ev.id ? { ...e, result: check.result } : e));
       ctx.save();
       ui.editResult = false;
       toast("Result saved.");
@@ -535,22 +615,40 @@ export function competeInputs(ctx) {
     if (!p) return;
     replaceProgram(ctx, sanitizeProgram({ ...p, elements: p.elements.map((e) => (e.id === el.dataset.id ? { ...e, ...fields } : e)) }));
   };
+  /* After a start or a length changed: redraw the track and totals, and show in this box what was actually saved (a bad entry
+     comes back as it was, a length that had to be trimmed comes back trimmed). */
+  const syncTimingBox = (el, which) => {
+    const p = prog();
+    repaintTiming(p);
+    const e = p.elements.find((x) => x.id === el.dataset.id);
+    if (e) el.value = which === "at" ? (e.at === null ? "" : fmtMmSs(e.at)) : e.dur || "";
+  };
   return {
-    "pg-name": (el) => patch({ name: el.value }),
-    "pg-title": (el) => patch({ music: { ...prog().music, title: el.value } }),
-    "pg-artist": (el) => patch({ music: { ...prog().music, artist: el.value } }),
+    "pg-name": (el) => {
+      patch({ name: el.value });
+      repaintHeader(prog());
+    },
+    "pg-title": (el) => {
+      patch({ music: { ...prog().music, title: el.value } });
+      repaintHeader(prog());
+    },
+    "pg-artist": (el) => {
+      patch({ music: { ...prog().music, artist: el.value } });
+      repaintHeader(prog());
+    },
     "pg-note": (el) => patch({ note: el.value }),
     "pg-event": (el, event) => {
       if (event.type !== "change") return;
       patch({ eventId: el.value });
       ctx.update();
     },
-    "pg-length": (el, event) => {
+    "pg-length": async (el, event) => {
       if (event.type !== "change") return;
       const sec = parseMmSs(el.value);
       if (sec === null || sec < LIMITS.lengthMin || sec > LIMITS.lengthMax) toast(`Enter a length like 1:30, between ${fmtMmSs(LIMITS.lengthMin)} and ${fmtMmSs(LIMITS.lengthMax)}.`, 4000);
-      else replaceProgram(ctx, setLength(prog(), sec));
-      ctx.update();
+      else await applyLength(ctx, prog(), sec);
+      el.value = fmtMmSs(prog().lengthSec);
+      repaintHeader(prog());
     },
     "el-at": (el, event) => {
       if (event.type !== "change") return;
@@ -560,7 +658,7 @@ export function competeInputs(ctx) {
         if (sec === null || sec > prog().lengthSec) toast(`Enter a time like 0:44, inside the music (up to ${fmtMmSs(prog().lengthSec)}).`, 4000);
         else editElement(el, { at: sec });
       }
-      ctx.update();
+      syncTimingBox(el, "at");
     },
     "rs-placing": (el) => (ui.draft.placing = el.value),
     "rs-of": (el) => (ui.draft.of = el.value),
@@ -579,7 +677,7 @@ export function competeInputs(ctx) {
       const sec = el.value.trim() === "" ? 0 : parseMmSs(el.value);
       if (sec === null) toast("Enter the length in seconds, like 14.", 4000);
       else editElement(el, { dur: sec });
-      ctx.update();
+      syncTimingBox(el, "dur");
     },
   };
 }

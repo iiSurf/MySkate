@@ -530,3 +530,30 @@ The skater asked to restyle the rest of the app in the stage look (the look of t
 ### Not verified
 
 A real phone and Safari. The Light of day settings other than golden hour were not looked at one by one.
+
+## 2026-10-17 (Saturday, late night): final polish pass
+
+### Plan
+
+The skater asked for a last pass before the deadline: review the planner code, look at the Light of day settings, high contrast and reduced motion on the new look, and fix the stale ROADMAP lines. Push only if something needed fixing.
+
+### Found and changed
+
+- Midday's glow was too pale for the gold labels on it (contrast 4.0 against the 4.5 the rest of the app keeps); it is now a deeper blue (`--glow` in `css/tokens.css`). The other Light of day settings, high contrast and reduced motion held up.
+- Two ROADMAP lines were out of date and now say what the app does.
+- The planner's logic (`js/compete.js`): new marks are spread out instead of stacking when the rink is crowded (`nextSpot`); ids and skill ids from a backup are trimmed and limited; notes are cleaned the same way everywhere (`cleanNote`); a shorter piece of music can say which elements it would cut (`clipsAt`); a result is checked as a whole before it is saved (`checkResultDraft`, with `parseWhole` for the numbers: a placing bigger than the field is refused with a message instead of being quietly dropped).
+- Editing a start, a length, the name or the music no longer rebuilds the whole screen. A rebuild swallowed the tap or the Tab that caused the change; now only the track, the totals, the header and the boxes are redrawn, and a box shows what was actually saved (a bad entry comes back as it was).
+- Making the music shorter asks first if it would cut an element short.
+- Deleting a program also clears it from any result that was marked against it; the results form follows the programs that still exist. Reordering with the buttons keeps focus on the button. Selecting a mark with Enter or Space keeps focus on it. What is typed into "what to bring" survives ticking an item.
+- The rink: Cmd, Ctrl and Alt with an arrow key are left to the browser; a touch the system cancels (a call, a gesture) puts the mark back instead of saving a half drag; a finger that starts on a mark no longer scrolls the page.
+- The poster no longer runs off the marquee: the skater's name, the program name and every line of information are fitted to the space (`js/textfit.js`, tested). A name stays whole words, shrinking before it is broken, and the information lines drop the least important first if there is no room.
+- The screen lock (`js/wake.js`) is let go at once if the session ends while the browser is still deciding to grant it; it used to stay on.
+- Merging a backup now says what it added besides sessions (goals, competitions, rinks, friends and so on), and says "You already had everything" only when that is true (`addedOther` in `mergeStates`).
+
+### Verified
+
+228 tests pass in four time zones. In a real browser (headless Chrome): the planner scripts for the rink (drag, tap, add, arrow keys, a cancelled drag, Cmd with an arrow), timing (a start keeps the same box in the page, a bad start comes back as saved, the totals and the track follow), the length (confirm and cancel, shorten, a bad length, the header following the name as it is typed), results (a placing bigger than the field refused, then saved), the packing list keeping typed text, deleting a program clearing the result's link, and the hub and the event page. Posters drawn for a short name, a very long name and program, and a single very long word: all fit inside the marquee. Every screen at 320, 360, and 390 wide has no sideways scrolling and no console errors. The timing tab was looked at at 390 and 1280.
+
+### Not verified
+
+A real phone and Safari: touch dragging on the rink, the share sheet, the wake lock. The merge message was covered by tests but not clicked through with a real backup file in the browser.

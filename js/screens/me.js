@@ -119,12 +119,15 @@ async function restoreFile(ctx, file) {
   );
   const choice = await sheet.closed;
   if (choice === "merge") {
-    const { state, addedSessions } = mergeStates(ctx.state, result.state);
+    const { state, addedSessions, addedOther } = mergeStates(ctx.state, result.state);
     state.active = ctx.state.active;
     state.backup = ctx.state.backup;
     ctx.setState(state);
     ctx.save();
-    toast(addedSessions ? `Merged. ${addedSessions} ${addedSessions === 1 ? "session" : "sessions"} added.` : "Merged. You already had everything in that file.");
+    const parts = [];
+    if (addedSessions) parts.push(`${addedSessions} ${addedSessions === 1 ? "session" : "sessions"}`);
+    if (addedOther) parts.push(`${addedOther} other ${addedOther === 1 ? "item" : "items"}`);
+    toast(parts.length ? `Merged. ${parts.join(" and ")} added.` : "Merged. You already had everything in that file.");
   } else if (choice === "replace") {
     const ok = await confirmSheet({ title: "Replace everything?", message: "What is on this device now will be swapped for the backup. Save a backup first if you want to keep it.", confirmLabel: "Replace" });
     if (!ok) return;

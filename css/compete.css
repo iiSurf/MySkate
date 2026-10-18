@@ -864,7 +864,9 @@ select.cp-in {
   padding: 0 8px;
 }
 
-.cp-sum {
+.cp-sumslot {
+  display: grid;
+  gap: var(--sp-2);
   margin-top: -6px;
 }
 
@@ -1230,6 +1232,7 @@ select.cp-in {
 }
 
 .cp-tv__q {
+  white-space: pre-line;
   padding: 10px 14px;
   background: rgba(255, 255, 255, 0.1);
   color: #e6ecff;
