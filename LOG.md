@@ -508,3 +508,25 @@ The skater turned down the Fresh Ice redesign ("this redesign does not fit well"
 ### Not verified
 
 A real phone and Safari. Touch dragging on the rink uses `touch-action: none` on the marks; the nudge buttons and arrow keys are there if a browser ignores it on SVG. The poster's share sheet. Nothing is pushed: the Fresh Ice redesign (two local commits) is still in the history this builds on.
+
+## 2026-10-17 (Saturday, late night): the stage look for the whole app
+
+### Plan
+
+The skater asked to restyle the rest of the app in the stage look (the look of the competition planner), so everything matches, and to push once it was checked. Tagged work stays local until the check passes.
+
+### Changes
+
+- Tokens and background: the colors are now the stage (a dark house, cream, gold, a red for the button's shadow). The background is a burgundy glow high in the middle, tinted by the Light of day setting. The sun, the sheen, the sparkles and the flecks are gone.
+- Shared pieces: the main button is cream with a red offset shadow, in Bodoni italic, and you press into it; gold, coral, and outline (now a pill) buttons follow. Labels are small gold capitals; sections have a gold hairline; the glow lines are gold or cream; links are gold. Navigation is a dark bar with a gold line on top and a gold line under the current tab (a list down the side on a desktop). Each screen's heading is a gold line of small capitals over a Bodoni italic title.
+- Home is rebuilt as a program: the date and season, "tonight, starring" over your name and a ghost of your level (the name steps down in size for longer names), a ticket for your next starred ice, a program sheet (your plan, or the skills MySkate suggests, with your last rating and goal), the button, then the week as the figure eight with a stub for each day (`weekStubs` in `js/week.js`, tested), a flap board for blades and level (`js/ui/flaps.js`), and the rest in quiet sections.
+- Plan's panel is a paper program sheet. Plan, Skate, Progress, Ice, Me, the sheets, the tour, the first-run screen, and the celebrations pick the look up through the shared pieces.
+- The style tile and the docs describe the stage.
+
+### Verified
+
+214 tests pass in four time zones. Looked at Home, Plan, Skate, Progress, Ice and Me at 390 wide, Home and Plan at 1280, and the tour, the first-run sheet, the level-up celebration, and the element sheet. Every screen at 320, 360, and 390 wide has no sideways scrolling and no console errors. Names from 3 letters to 30 fit at 320 wide.
+
+### Not verified
+
+A real phone and Safari. The Light of day settings other than golden hour were not looked at one by one.

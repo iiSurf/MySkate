@@ -253,7 +253,15 @@ Round four (2026-10-17, after the app was live): "I am not loving it. Visual UI 
 - Tabs inside a screen are plain words with a gold line under the current one. The main tabs are words only along the foot of the ice on a phone (a gold dot over the current one) and a list down the side on a desktop. There are no tab icons.
 - Bars are a hairline with a glowing fill and a bright bead at the end, like a blade catching the light.
 - Still true: Bodoni Moda italic for titles and numerals for big numbers, Jost for everything else; earned skates are the white-and-gold illustration; the level-up and badge celebrations keep their rays, medallion and confetti; every animation has a reduced-motion off state; a high contrast mode exists.
+- Replaced in round five (below): Fresh Ice was dropped once the competition planner's look was chosen for the whole app.
 - Not done, and worth a look later: the gold-skate-as-progress idea from the second round (a skate that fills with gold as skills are earned), which the skater liked but felt was missing something.
+
+Round five (2026-10-17, later that night): after ten rough drafts, then a combination of seven and ten more, then eight screens for a competition planner, the skater chose the stage look for the whole app ("restyle the rest of the app so everything matches").
+
+- The look: the stage (see CLAUDE.md). A dark house with a burgundy glow (golden hour), paper for what you can hold, a marquee for the big moments, a TV scoreboard for results, gold hairlines, Bodoni italic for the big words, and a cream button with a red offset shadow. The Light of day setting (sunrise, golden hour, midday, dusk) now tints the glow. Nothing is drawn on the background.
+- Home, top to bottom: the date and season; "tonight, starring" over your name and a ghost of your level; a ticket for your next starred ice (when you have one); a program sheet of tonight's plan or the skills MySkate suggests, with your last rating and goal; the button (Take the ice, Plan the session, or Back on the ice); then this week as the figure eight with a stub for each day; a flap board for blades and level; and the rest in quiet sections. On a desktop the first part sits beside the rest.
+- Retired: the figure eight as the main button (the cream button is; the eight is still tappable), the ice-cyan glow lines, the sparkles, and the sun and the sheen behind everything.
+- Plan's panel is a paper program sheet; the Competitions screens, the tour, the sheets, and the celebrations all share the same pieces.
 
 ## Open questions
 
