@@ -660,3 +660,17 @@ The skater found the stage look stressful to read at the rink (the thin Bodoni h
 ### Verified
 
 Rendered in headless Chrome at 390-wide phone frames.
+
+## 2026-10-18 (Sunday): round seven drafts, A improved
+
+### Plan
+
+The skater liked draft A best but did not love it, asked whether features had been dropped (they had not: the drafts only showed the top of Home), and did not want the Zamboni stripe. Two improved versions of A, each with Home shown scrolled all the way down so every feature is visible, plus Plan and Skate.
+
+### Changes
+
+- `design/drafts-5.html`: A2 · Soft rink (white cards with a soft shadow, a colored strip only where it means something, a level ring, the next move as the one navy card, the ticket and the competition countdown kept) and A3 · Clean rink (a navy top with the next move lifted onto it, then Home in two groups, Tonight and Your progress, with a small colored icon for each line). No Zamboni stripe in either.
+
+### Verified
+
+Rendered in headless Chrome at 390-wide phone frames, with the whole of Home shown.
