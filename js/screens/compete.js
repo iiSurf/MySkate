@@ -93,8 +93,6 @@ function hubView(ctx, d) {
 
 const programOf = (ctx, id) => ctx.state.programs.find((p) => p.id === id) || null;
 
-const TYPE_HINT = { jump: "jump", spin: "spin", steps: "steps", move: "move", pose: "pose" };
-
 /* "you: 4 skates" for an element that is one of your skills. */
 function ratingOf(e, stats) {
   const st = e.skillId && stats.get(e.skillId);
