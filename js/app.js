@@ -294,7 +294,10 @@ function buildContext(state, catalog, status) {
     },
     /* The guided tour. The first time (firstTime) it is offered once, and turning it down counts as seen. Any other time it just starts. */
     async showTour({ firstTime = false } = {}) {
-      if (ctx.practice) return;
+      if (ctx.practice) {
+        if (!firstTime) toast("You are already in the tour. Follow the sparkles.");
+        return;
+      }
       if (firstTime && ctx.state.profile.tourSeen) return;
       const go = firstTime ? await offerTour() : true;
       if (!ctx.state.profile.tourSeen) {
