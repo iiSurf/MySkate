@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="../css/components.css">
 <link rel="stylesheet" href="../css/app.css">
 <link rel="stylesheet" href="../css/compete.css">
+<link rel="stylesheet" href="../css/coach.css">
 <style>
   .tile-page { display: grid; gap: 56px; max-width: 980px; margin: 0 auto; padding: 32px 16px 80px; }
   .tile-page > section { display: grid; gap: var(--sp-4); }
@@ -30,6 +31,8 @@
   .skates-row { display: flex; gap: var(--sp-5); align-items: center; flex-wrap: wrap; }
   .tabbar-demo { max-width: 520px; }
   .tabbar-demo .tab { pointer-events: none; }
+  .coach-demo { position: relative; max-width: 380px; height: 376px; overflow: hidden; border-radius: var(--r-md); border: 1px solid var(--rule); }
+  .coach-demo__row { position: absolute; left: 28px; top: 34px; display: flex; gap: 8px; }
 </style>
 </head>
 <body>
@@ -146,6 +149,23 @@
     <div class="cp-bp" style="max-width: 360px"><svg class="cp-rink" id="tile-rink" viewBox="0 0 346 206" aria-label="A rink diagram"></svg></div>
     <div class="cp-actions"><button class="cp-obtn" type="button"><span>Take the ice</span><svg class="ic"><use href="#i-right"/></svg></button><button class="cp-ghost" type="button">Share a poster</button></div>
     <div class="cp-tv" style="max-width: 360px"><div class="cp-tv__bar"><b>Kiss &amp; cry</b><span>Fall Classic</span></div><div class="cp-tv__lower"><i></i><div><small>Sam · Free skate</small><b>Moonlight</b></div></div><div class="cp-tv__score"><small>Placing</small><span class="num">2nd of 9</span></div></div>
+  </section>
+
+  <section>
+    <h2>The guided tour</h2>
+    <p class="tile-note">A spotlight ring on the thing to tap, a dotted path of sparkles from the card to it, and a dark card that says where to tap and what it does. The tour runs on practice data, with a gold strip across the top, and "Skip tour" is always on the card. This is a still of one step.</p>
+    <div class="coach-demo">
+      <div class="coach-demo__row"><span class="chip">45</span><span class="chip chip--on">60</span><span class="chip">75</span><span class="chip">90</span></div>
+      <div class="coach__spot" style="left: 12px; top: 22px; width: 264px; height: 54px; border-radius: 27px"></div>
+      <svg class="coach__trail" viewBox="0 0 380 376" aria-hidden="true" focusable="false"><path class="coach__glow" d="M150 150C186 128 96 112 128 88"/><path class="coach__line" d="M150 150C186 128 96 112 128 88"/><g transform="translate(128 86) rotate(-100)"><path class="coach__arrow" d="M-10-8L1 0L-10 8"/></g><g transform="translate(276 22)"><path class="coach__star" style="--s: 7" d="M0-1C.12-.28.28-.12 1 0C.28.12.12.28 0 1C-.12.28-.28.12-1 0C-.28-.12-.12-.28 0-1Z"/></g><g transform="translate(12 76)"><path class="coach__star" style="--s: 6; --d: .5s" d="M0-1C.12-.28.28-.12 1 0C.28.12.12.28 0 1C-.12.28-.28.12-1 0C-.28-.12-.12-.28 0-1Z"/></g><g transform="translate(112 118)"><path class="coach__star" style="--s: 5; --d: .3s" d="M0-1C.12-.28.28-.12 1 0C.28.12.12.28 0 1C-.12.28-.28.12-1 0C-.28-.12-.12-.28 0-1Z"/></g><g transform="translate(168 124)"><path class="coach__star" style="--s: 4; --d: .7s" d="M0-1C.12-.28.28-.12 1 0C.28.12.12.28 0 1C-.12.28-.28.12-1 0C-.28-.12-.12-.28 0-1Z"/></g></svg>
+      <div class="coach__bubble" style="left: 12px; top: 164px; width: 340px">
+        <div class="coach__bar"><i style="width: 18%"></i></div>
+        <p class="coach__kicker">Your turn</p>
+        <h3 class="coach__title">How long is your ice?</h3>
+        <p class="coach__text">Tap your ice slot in minutes. Booked something else? Type your own.</p>
+        <div class="coach__row"><button class="coach__skip" type="button">Skip tour</button></div>
+      </div>
+    </div>
   </section>
 
   <section>

@@ -1,0 +1,326 @@
+/* The guided tour (ui/coach.js): a spotlight on the thing to tap, a sparkling path from the card to it, and the card itself.
+   Nothing here takes a tap away from the app: the layer lets every tap through except on the card. Every animation has an off state
+   (base.css turns them all off for prefers-reduced-motion, and the shapes still show). */
+
+.coach {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+}
+
+.coach[hidden] {
+  display: none;
+}
+
+/* With nothing to point at, the whole stage dims instead. */
+.coach__dim {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 8, 24, 0.66);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.coach.is-plain .coach__dim {
+  opacity: 1;
+}
+
+/* The spotlight: a ring around the target, and the dimming is the shadow outside it. */
+.coach__spot {
+  position: absolute;
+  box-sizing: border-box;
+  border: 2px solid var(--gold-hi);
+  box-shadow: 0 0 18px 2px rgba(255, 217, 138, 0.55), 0 0 0 100vmax rgba(4, 8, 24, 0.58);
+}
+
+.coach__spot[hidden] {
+  display: none;
+}
+
+.coach__spot.is-moving {
+  transition: left 0.45s var(--spring-soft), top 0.45s var(--spring-soft), width 0.45s var(--spring-soft), height 0.45s var(--spring-soft), border-radius 0.45s ease;
+}
+
+/* A ring that keeps expanding and fading, so the target looks alive without anything heavy animating. */
+.coach__spot::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border: 2px solid var(--gold-hi);
+  border-radius: inherit;
+  animation: coach-ping 1.9s ease-out infinite;
+}
+
+@keyframes coach-ping {
+  from {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.14, 1.3);
+  }
+}
+
+.coach__trail {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.coach__glow {
+  fill: none;
+  stroke: var(--gold-hi);
+  stroke-width: 9;
+  stroke-linecap: round;
+  opacity: 0.16;
+}
+
+/* Dots marching along the path, from the card to the target. */
+.coach__line {
+  fill: none;
+  stroke: var(--gold-hi);
+  stroke-width: 3.4;
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 11;
+  animation: coach-march 1.1s linear infinite;
+}
+
+@keyframes coach-march {
+  to {
+    stroke-dashoffset: -22.2;
+  }
+}
+
+.coach__arrow {
+  fill: none;
+  stroke: var(--gold-hi);
+  stroke-width: 3.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.coach__star {
+  fill: var(--gold-hi);
+  transform: scale(var(--s, 5));
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: coach-twinkle 1.7s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes coach-twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(calc(var(--s, 5) * 0.35)) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(var(--s, 5)) rotate(35deg);
+  }
+}
+
+/* A strip across the top, so no one forgets nothing is being saved. The page makes room for it (html[data-practice]). */
+.coach__flag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  height: calc(26px + env(safe-area-inset-top));
+  margin: 0;
+  padding-top: env(safe-area-inset-top);
+  background: var(--gold-hi);
+  color: var(--ink-gold);
+  font: 600 0.7rem/1 var(--font-ui);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+html[data-practice] body {
+  padding-top: calc(26px + env(safe-area-inset-top));
+}
+
+@media (min-width: 960px) {
+  html[data-practice] .nav-wrap {
+    top: 42px;
+  }
+}
+
+/* The card. */
+.coach__bubble {
+  position: absolute;
+  box-sizing: border-box;
+  display: grid;
+  gap: var(--sp-2);
+  padding: var(--sp-4) var(--sp-4) var(--sp-3);
+  border: 1px solid var(--gold);
+  border-radius: var(--r-md);
+  background: var(--panel);
+  box-shadow: var(--glass-shadow);
+  color: var(--text);
+  pointer-events: auto;
+}
+
+.coach__bubble.is-new {
+  animation: coach-pop 0.4s var(--spring) both;
+}
+
+@keyframes coach-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+}
+
+.coach__bar {
+  height: 3px;
+  border-radius: 99px;
+  background: rgba(246, 233, 207, 0.16);
+  overflow: hidden;
+}
+
+.coach__bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--gold-hi);
+}
+
+.coach__kicker {
+  margin: 0;
+  color: var(--gold-hi);
+  font: 600 0.74rem/1 var(--font-ui);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.coach__title {
+  margin: 0;
+  font: italic 600 1.55rem/1.1 var(--font-display);
+}
+
+.coach__text {
+  margin: 0;
+  font-size: 1.0625rem;
+  line-height: 1.4;
+  color: var(--text-dim);
+}
+
+.coach__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-top: var(--sp-1);
+}
+
+.coach__skip,
+.coach__alt {
+  padding: 8px 2px;
+  white-space: nowrap;
+  border: 0;
+  background: none;
+  color: var(--gold-hi);
+  font: 500 0.95rem/1 var(--font-ui);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.coach__alt {
+  margin-left: auto;
+}
+
+/* A step inside a sheet: the words sit at the top of the sheet and the button to tap is ringed. */
+.coach-inline {
+  display: grid;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--gold);
+  border-radius: var(--r-sm);
+  background: rgba(255, 217, 138, 0.1);
+}
+
+.coach-inline__text {
+  margin: 0;
+  font-size: 1.0625rem;
+  line-height: 1.4;
+}
+
+.coach-inline__sparks {
+  width: 60px;
+  height: 16px;
+  overflow: visible;
+}
+
+.coach-target {
+  outline: 3px solid var(--gold-hi);
+  outline-offset: 4px;
+  animation: coach-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes coach-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 217, 138, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 9px rgba(255, 217, 138, 0);
+  }
+}
+
+@media (max-width: 380px) {
+  .coach__title {
+    font-size: 1.35rem;
+  }
+
+  .coach__text {
+    font-size: 1rem;
+  }
+}
+
+/* Short screens (a phone held sideways): a smaller card, so it fits under the thing to tap. */
+@media (max-height: 520px) {
+  .coach__bubble {
+    gap: var(--sp-1);
+    padding: var(--sp-3) var(--sp-4) var(--sp-2);
+  }
+
+  .coach__bar {
+    display: none;
+  }
+
+  .coach__title {
+    font-size: 1.25rem;
+  }
+
+  .coach__text {
+    font-size: 0.95rem;
+    line-height: 1.32;
+  }
+
+  .coach__skip,
+  .coach__alt {
+    padding: 4px 2px;
+  }
+}
+
+/* While practising, messages ("Session saved") appear at the top, under the strip, so they do not cover the card. */
+html[data-practice] .toast {
+  top: calc(36px + env(safe-area-inset-top));
+  bottom: auto;
+}
+
+/* The expanding ring is only motion, so with reduced motion it goes (the ring around the target and the dotted path stay). */
+@media (prefers-reduced-motion: reduce) {
+  .coach__spot::after {
+    display: none;
+  }
+}

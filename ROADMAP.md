@@ -23,7 +23,7 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 - [x] Backup: export JSON (full), export CSV (read-only), restore with Merge or Replace, reminder after 7 days without a backup
 - [x] Deployed on GitHub Pages, Portfolio card filled in, `CLAUDE.md` and `LOG.md` current
 - [x] Placeholder panels where the 3D reference will go (Skate screen, Skill detail)
-- [x] Quick tour: six short steps with pictures, shown once after setup, and any time from Home or Me ("Show me how MySkate works")
+- [x] Guided tour: a hands-on practice run (plan, skate, save a session) with a spotlight, a sparkling path, and a card saying where to tap and what it does; offered once after setup, and any time from Home or Me ("Show me how MySkate works"). It replaced the earlier sheet of reading steps.
 
 ### Stretch, in this order
 
@@ -156,7 +156,10 @@ There is no server, so a plan made on a laptop does not appear on a phone. "Send
 - A setup sheet on the very first open: Set up my skates (names, sharpening limit, hours so far; skating-skills level and jumps-and-spins level from the catalog; usual slot), Restore a backup, or Connect from another device.
 - Restore reads the file on the device, checks `schemaVersion` and a `sessions` array, shows the session count and date range, then offers Merge or Replace.
 - The same settings stay editable afterward from the tiles and the profile.
-- After setup (or after "I'll set up later"), the quick tour opens once: plan, skate, rate, XP and streaks, blade life, backups. "Skip the tour" closes it and counts as seen. It is always one tap away: the Help card on Me, and a "How MySkate works" button on Home until the first session is saved. Restoring a backup skips it.
+- After setup (or after "I'll set up later"), the guided tour is offered once ("Learn it by doing": Show me around, or Skip for now; either counts as seen). It is always one tap away: the Help card on Me, and a "How MySkate works" button on Home until the first session is saved. Restoring a backup skips the offer.
+- The guided tour is interactive. It runs in practice mode: the app shows a made-up copy of your data (your name, levels, usual slot, blades, and look, but none of your sessions), keeps none of what happens (saving, backups, badges, and level-up celebrations are held back), and puts your own data back when it ends or is skipped. A strip across the top says "Practice · nothing is saved".
+- The steps (`js/tour.js`): Home (your week), Plan (the slot, a skill, a jump), Start session, the clock, rating, counting a jump's tries, Next skill, End session, Save session, the first loop of the eight; then, if you want more, Progress, Ice, Competitions, blade life, and backups, and a last card. Each step either asks you to tap something real (it notices by looking at the real state, so it works however you did it) or is a card to read with a Next button. A step that does not apply is skipped (no jump in the plan, no next skill); if you wander (discard the session, empty the plan) it slips back to the step that makes sense, and if you do a later step another way it moves on.
+- On screen (`js/ui/coach.js`): a spotlight ring around the thing to tap, a dotted path of sparkles from the card to it, and a card with the title, what to do and what it does, and "Skip tour" (always there). A step inside a sheet (Save session) puts its words at the top of the sheet and rings the button. Nothing blocks a tap. With reduced motion the ring and the path stay and everything stops moving.
 
 ### Connect devices
 
@@ -175,7 +178,7 @@ Asked for by the skater on 2026-10-17, after they liked the rink diagram, choreo
 - Layout: a rink diagram. Tap empty ice to add an element where you tapped (or use a "+ Jump / Spin / Steps / Move / Pose" chip), tap a mark to select it, drag it to move it, or use the arrow keys or the nudge buttons. The route between marks redraws, numbers match the running order (I., II., III.), and an element can be one of your own skills, which shows your latest rating and counts toward "N of M skills in it are earned".
 - Timing: the music as a track with each element as a block, a start and a length for each (m:ss and seconds), notes on the music ("the music swells"), spread evenly, overlaps called out, and a run-through clock that keeps time and calls out what is on now and what is next. It plays no music: the skater's music is theirs.
 - Result ("kiss and cry"): a placing (like 2nd of 9), how each element went (clean, shaky, fell, skipped), what the coach said, and a note, shown as a TV-style scoreboard. A program can also be shared as a poster picture, drawn on the device like the badge and friend card pictures.
-- Home shows the next competition as a small marquee with days to go and how much of its program is planned. The quick tour has a step for it.
+- Home shows the next competition as a small marquee with days to go and how much of its program is planned. The guided tour has a step for it.
 - It never claims an event's rules. Length, elements, and times are only what the skater enters, with a reminder on the program form to check the event's rules and ask the coach. No scoring (no base values or GOE), because that would need the real rulebook.
 - Saved data: `events` and `programs`, optional and cleaned on load, so `schemaVersion` stays 1. A backup merge keeps yours by id and adds the rest, and a program only points at an event that exists.
 - Not done, and worth a look: badges for planning and competing; sharing a program with a coach; the program's music player; a calendar mark for the competition day.
@@ -261,7 +264,7 @@ Round five (2026-10-17, later that night): after ten rough drafts, then a combin
 - The look: the stage (see CLAUDE.md). A dark house with a burgundy glow (golden hour), paper for what you can hold, a marquee for the big moments, a TV scoreboard for results, gold hairlines, Bodoni italic for the big words, and a cream button with a red offset shadow. The Light of day setting (sunrise, golden hour, midday, dusk) now tints the glow. Nothing is drawn on the background.
 - Home, top to bottom: the date and season; "tonight, starring" over your name and a ghost of your level; a ticket for your next starred ice (when you have one); a program sheet of tonight's plan or the skills MySkate suggests, with your last rating and goal; the button (Take the ice, Plan the session, or Back on the ice); then this week as the figure eight with a stub for each day; a flap board for blades and level; and the rest in quiet sections. On a desktop the first part sits beside the rest.
 - Retired: the figure eight as the main button (the cream button is; the eight is still tappable), the ice-cyan glow lines, the sparkles, and the sun and the sheen behind everything.
-- Plan's panel is a paper program sheet; the Competitions screens, the tour, the sheets, and the celebrations all share the same pieces.
+- Plan's panel is a paper program sheet; the Competitions screens, the guided tour, the sheets, and the celebrations all share the same pieces.
 
 ## Open questions
 

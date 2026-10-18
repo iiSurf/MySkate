@@ -16,7 +16,8 @@ import { encryptBackup } from "./crypto.js";
 import { resolveLook } from "./looks.js";
 import { openAddFriend } from "./ui/friends.js";
 import { runOnboarding } from "./ui/onboard.js";
-import { openTour } from "./ui/tour.js";
+import { offerTour, runGuide } from "./ui/coach.js";
+import { practiceState } from "./tour.js";
 import { newActive } from "./timer.js";
 import { keepAwake } from "./wake.js";
 import { renderHome, homeActions, homeInputs } from "./screens/home.js";
@@ -157,6 +158,8 @@ function onRouteChange() {
 }
 
 function save() {
+  /* Practice mode (the guided tour) works on a made-up copy of your data, and none of it is kept. */
+  if (ctx.practice) return;
   const ok = saveState(ctx.state);
   if (!ok && !warnedSave) {
     warnedSave = true;
@@ -198,6 +201,7 @@ function buildContext(state, catalog, status) {
       go("skate");
     },
     exportBackup() {
+      if (ctx.practice) return toast("That works for real after the tour. Nothing is saved in practice.");
       const now = new Date();
       download(`myskate-backup-${todayISO(now)}.json`, exportJSON(ctx.state, now), "application/json");
       ctx.state.backup.lastExportAt = now.toISOString();
@@ -208,6 +212,7 @@ function buildContext(state, catalog, status) {
     },
     /* A backup locked with a passphrase. The lock takes a moment, so this is async; it throws if it could not lock. */
     async exportBackupLocked(passphrase) {
+      if (ctx.practice) return toast("That works for real after the tour. Nothing is saved in practice.");
       const now = new Date();
       const file = await encryptBackup(exportJSON(ctx.state, now), passphrase, { now });
       download(`myskate-backup-${todayISO(now)}-locked.json`, file, "application/json");
@@ -218,11 +223,12 @@ function buildContext(state, catalog, status) {
       ctx.checkBadges();
     },
     exportCSV() {
+      if (ctx.practice) return toast("That works for real after the tour. Nothing is saved in practice.");
       /* The byte-order mark makes Excel read accents and curly quotes in notes correctly. */
       download(`myskate-ratings-${todayISO()}.csv`, "\uFEFF" + exportCSV(ctx.state, ctx.catalog), "text/csv");
       toast("Spreadsheet saved. Look in your downloads.");
     },
-    levelUp: (level) => celebrateLevelUp(level),
+    levelUp: (level) => (ctx.practice ? undefined : celebrateLevelUp(level)),
     /* What counts toward unlocking colors: your level and the badges you have earned. */
     lookHave: () => ({ level: derive().level.level, badgeIds: ctx.badges().filter((b) => b.earned).map((b) => b.id) }),
     /* The color to use for you: your choice if it is unlocked, otherwise the default. */
@@ -247,6 +253,7 @@ function buildContext(state, catalog, status) {
     /* Tell the skater about badges earned since the last look. The first time (and after a restore) it only notes what is
        already earned, so old progress does not set off a pile of celebrations. */
     async checkBadges({ silent = false } = {}) {
+      if (ctx.practice) return;
       const list = ctx.badges();
       const ids = list.filter((b) => b.earned).map((b) => b.id);
       const p = ctx.state.profile;
@@ -269,14 +276,32 @@ function buildContext(state, catalog, status) {
       await ctx.checkBadges({ silent: true });
       await ctx.showTour({ firstTime: true });
     },
-    /* The quick tour. With firstTime it only opens if it has not been seen on this device. Closing it either way counts as seen. */
+    /* Practice mode: the app shows a made-up copy of your data and keeps none of what happens, so the guided tour can have you really
+       plan, skate, and save a session without touching your own. Your data is put back when it ends. */
+    beginPractice() {
+      if (ctx.practice) return;
+      const real = ctx.state;
+      ctx.practice = { real };
+      ctx.setState(practiceState(real));
+      applySettings();
+    },
+    endPractice() {
+      if (!ctx.practice) return;
+      const { real } = ctx.practice;
+      ctx.practice = null;
+      ctx.setState(real);
+      applySettings();
+    },
+    /* The guided tour. The first time (firstTime) it is offered once, and turning it down counts as seen. Any other time it just starts. */
     async showTour({ firstTime = false } = {}) {
+      if (ctx.practice) return;
       if (firstTime && ctx.state.profile.tourSeen) return;
-      await openTour({ first: firstTime });
+      const go = firstTime ? await offerTour() : true;
       if (!ctx.state.profile.tourSeen) {
         ctx.state.profile.tourSeen = true;
         save();
       }
+      if (go) await runGuide(ctx);
     },
   };
 }

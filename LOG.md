@@ -557,3 +557,27 @@ The skater asked for a last pass before the deadline: review the planner code, l
 ### Not verified
 
 A real phone and Safari: touch dragging on the rink, the share sheet, the wake lock. The merge message was covered by tests but not clicked through with a real backup file in the browser.
+
+## 2026-10-17 (Saturday, late night): the tour becomes a guided practice run
+
+### Plan
+
+The skater asked for the tutorial to be interactive instead of a series of windows to read: keep the option to skip, add a sparkly path with words saying where to click and what it does, so the user learns by doing what the site does. Decided: the tour has to be real taps on the real screens, but it must not put made-up practice into the skater's own data, so it runs on a made-up copy (practice mode).
+
+### Changes
+
+- The old tour (a sheet of eight reading steps with pictures, `js/ui/tour.js` and its styles) is gone. In its place:
+  - `js/tour.js` (pure, tested): 25 steps. Each is something to do (it moves on by itself when done, judged from the real state, so it works however the skater did it, or when the target is tapped) or a card to read with a Next button. The first lap is Home (your week), Plan (the slot, a skill, a jump), Start session, the clock, rating, counting a jump's tries, Next skill, End session, Save session, and the first loop of the eight. After that, if the skater wants more: Progress, Ice, Competitions, blade life, and backups, then a last card. A step that does not apply is skipped (no jump in the plan, no next skill). If the skater wanders (discards the session, empties the plan) the tour slips back to the step that makes sense, and if they do a later step another way it moves on.
+  - `js/ui/coach.js` and `css/coach.css`: a spotlight ring on the thing to tap with a dotted path of sparkles from the card to it, and a dark card with the title, what to do and what it does, and "Skip tour". The card goes below the target, above it, or (for a tab in the side menu on a wide screen) beside it. A step inside a sheet (Save session) puts its words at the top of the sheet and rings the button, because a sheet sits above everything the tour can draw. Nothing blocks a tap. If a step's target is on another screen, it points at the tab that gets you back. With reduced motion the ring and the path stay and everything stops moving.
+  - Practice mode (`ctx.beginPractice()` and `ctx.endPractice()` in `js/app.js`, `practiceState` in `js/tour.js`): the app shows a made-up copy of the data (name, levels, usual slot, blades, look, and light, but no sessions, plan, goals, or friends) and keeps none of it: `save()`, the backup buttons, badge celebrations, and level-up celebrations do nothing while it runs. The skater's own data is put back when the tour ends or is skipped, and any sheet the tour left open is closed. A gold strip across the top says "Practice · nothing is saved", and messages such as "Session saved" appear under it so they do not cover the card.
+  - The first time (after setup) the tour is offered in a small sheet, "Learn it by doing", with Show me around and Skip for now; either counts as seen. Me (the Help card) and Home ("How MySkate works") start it directly.
+- Also fixed: on a 320-wide phone the "Show me how MySkate works" button on Me was 21px too wide and made the page scroll sideways (it was there before). It now wraps.
+- The style tile has a still of a tour step; ROADMAP and CLAUDE.md describe the tour and the rule that new code that saves data or interrupts with a celebration has to respect `ctx.practice`.
+
+### Verified
+
+241 tests pass in four time zones, including new ones for the steps (every step has a way to finish; every number the tour quotes and every button it names is real; every selector it points at still exists in the screens, so renaming a control breaks a test), the rules (done, skipped, slipped back, moved on), a pretend walk through the whole first session, and practice data sharing nothing with real data. In a real browser (headless Chrome) with made-up data, empty and full (13 sessions): the whole tour driven with real clicks from Welcome to the last card; afterwards the stored data was byte for byte what it was before, practice mode was off, and there were no console errors. Skipping from the Plan step and from inside the Save sheet left the stored data unchanged and closed the sheet; discarding the practice session sent the tour back to Start session. The first-time offer: Skip for now marks it seen and starts nothing, Show me around starts it. Every step at 390x844, 360x640, 1280x800 and (mostly) 320x568 and a phone held sideways (844x390): the card stays on screen and, apart from a few big targets on the smallest screens, off the thing to tap; no sideways scrolling. Looked at in high contrast, midday light, and reduced motion.
+
+### Not verified
+
+A real phone and Safari (the tour was checked in headless Chrome only: smooth scrolling to the target, the sparkle animation, and the sheet step). A screen reader (the step is announced through a live region, but it was not listened to). On the smallest phones and sideways, the card covers part of a large target (the figure eight) and a few wide ones.
