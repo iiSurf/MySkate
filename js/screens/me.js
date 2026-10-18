@@ -57,7 +57,7 @@ export function renderMe(ctx) {
           <span id="contrast-label">Text</span>
           <div class="limit-row" role="group" aria-labelledby="contrast-label"><button class="chip" type="button" data-action="contrast" aria-pressed="${state.settings.contrast}">High contrast</button></div>
         </div>
-        <p class="note">High contrast makes the text brighter and the surfaces solid. It also switches on by itself when your device asks for more contrast.</p>
+        <p class="note">High contrast makes the text darker and the edges stronger. It also switches on by itself when your device asks for more contrast.</p>
       </section>
 
       <section class="card card--ice stack">

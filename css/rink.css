@@ -54,7 +54,8 @@ h3 {
 
 .screen-head,
 .band {
-  margin: calc(-1 * var(--sp-5)) calc(-1 * var(--sp-4)) 0;
+  /* full width on a phone, whatever the screen's own side padding is */
+  margin: calc(-1 * var(--sp-5)) calc(50% - 50vw) 0;
   padding: var(--sp-5) var(--sp-4) var(--sp-5);
   border: 0;
   background: var(--band);
@@ -1419,4 +1420,46 @@ div.prow {
   .ch-gleam {
     display: none;
   }
+}
+
+/* Long button labels wrap on the narrowest phones instead of running off the screen. */
+.cluster .btn {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+}
+
+/* Home's two columns never grow past the screen because of a long word or a wide picture inside them. */
+.home {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.home__hero,
+.home__rest,
+.home__hero > *,
+.home__rest > * {
+  min-width: 0;
+}
+
+@media (min-width: 960px) {
+  /* The left column is now taller than a screen, so it scrolls with the page instead of sticking. */
+  .home__hero {
+    position: static;
+  }
+}
+
+/* The seven day circles share the width of the card, whatever the phone. */
+.stubs {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  width: 100%;
+}
+
+.stubs .st {
+  width: 100%;
+  max-width: 46px;
+  height: auto;
+  aspect-ratio: 1;
+  justify-self: center;
 }

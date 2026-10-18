@@ -106,7 +106,7 @@ function calendarCard(ctx, d) {
       <div class="cal-head" aria-hidden="true">${["M", "T", "W", "T", "F", "S", "S"].map((x) => html`<span>${x}</span>`)}</div>
       ${g.weeks.map((w) => html`<div class="cal-week ${w.streak ? "is-streak" : ""}">${w.days.map(cell)}</div>`)}
     </div>
-    <p class="note">Gold days are days you skated. A blue dot at the bottom is ice you picked on the Ice tab, and a green dot at the top is off-ice work. A glow behind a week means it counts toward your streak.</p>
+    <p class="note">Gold days are days you skated. A blue dot at the bottom is ice you picked on the Ice times tab, and a green dot at the top is off-ice work. A glow behind a week means it counts toward your streak.</p>
   </section>`;
 }
 
