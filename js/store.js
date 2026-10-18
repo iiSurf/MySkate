@@ -8,6 +8,7 @@ import { sanitizeGoals } from "./goals.js";
 import { sanitizeHomeworkList } from "./homework.js";
 import { sanitizeOffIceList } from "./office.js";
 import { sanitizeLookId, DEFAULT_LOOK } from "./looks.js";
+import { cleanCompete } from "./compete.js";
 import { sanitizeRink, sanitizeIceSession, sanitizeIceView, defaultIceView, LIMITS as ICE_LIMITS } from "./ice.js";
 
 export const SCHEMA_VERSION = 1;
@@ -47,6 +48,8 @@ export function defaultState(now = new Date()) {
     goals: [],
     homework: [],
     offIce: [],
+    events: [],
+    programs: [],
     rinks: [],
     iceSessions: [],
     iceView: defaultIceView(),
@@ -146,6 +149,7 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
   }
 
   const { rinks, iceSessions } = cleanIce(src.rinks, src.iceSessions);
+  const { events, programs } = cleanCompete(src.events, src.programs);
   const iceView = sanitizeIceView(src.iceView);
   iceView.rinkIds = iceView.rinkIds.filter((id) => rinks.some((r) => r.id === id));
 
@@ -189,6 +193,8 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
     goals: sanitizeGoals(src.goals),
     homework: sanitizeHomeworkList(src.homework),
     offIce: sanitizeOffIceList(src.offIce),
+    events,
+    programs,
     rinks,
     iceSessions,
     iceView,
@@ -282,6 +288,14 @@ export function mergeStates(current, incoming) {
   /* Off-ice workouts: yours win by id, and ones you do not have are added. */
   const offIds = new Set(current.offIce.map((e) => e.id));
   merged.offIce = sanitizeOffIceList([...current.offIce, ...incoming.offIce.filter((e) => !offIds.has(e.id))]);
+
+  /* Competitions and programs: yours win by id, and ones you do not have are added. */
+  const compete = cleanCompete(
+    [...current.events, ...incoming.events.filter((e) => !current.events.some((x) => x.id === e.id))],
+    [...current.programs, ...incoming.programs.filter((p) => !current.programs.some((x) => x.id === p.id))]
+  );
+  merged.events = compete.events;
+  merged.programs = compete.programs;
 
   /* Rinks and sessions you already have win over the file's copy of the same one; the rest are added. */
   const ice = cleanIce([...current.rinks, ...incoming.rinks], [...current.iceSessions, ...incoming.iceSessions]);

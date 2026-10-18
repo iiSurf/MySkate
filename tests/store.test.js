@@ -216,3 +216,45 @@ test("the badges you have already been told about are saved, cleaned, and unknow
   theirs.profile.badgesSeen = ["first-session", "sessions-5"];
   assert.deepEqual(mergeStates(mine, theirs).state.profile.badgesSeen, ["first-session"], "a merge keeps this device's answer");
 });
+
+test("competitions and programs are saved, cleaned, backed up, and an old backup without them still loads", () => {
+  assert.deepEqual(defaultState().events, []);
+  assert.deepEqual(defaultState().programs, []);
+  const raw = {
+    events: [{ id: "e1", name: "Fall Classic", date: "2026-11-14", day: [{ id: "d1", label: "Warm-up", time: "09:10", mins: 15 }] }, { id: "bad", date: "soon" }, "nope"],
+    programs: [{ id: "p1", name: "Moonlight", lengthSec: 90, eventId: "e1", elements: [{ id: "a", label: "Waltz jump", x: 0.5, y: 0.5, at: 28, dur: 8 }] }, { id: "p2", eventId: "gone" }],
+  };
+  const clean = sanitizeState(raw);
+  assert.equal(clean.events.length, 1, "an event with no real day is dropped");
+  assert.equal(clean.programs.length, 2);
+  assert.equal(clean.programs[1].eventId, "", "a program pointing at a missing event is detached");
+  const again = sanitizeState(JSON.parse(JSON.stringify(clean)));
+  assert.deepEqual(again.events, clean.events);
+  assert.deepEqual(again.programs, clean.programs);
+  const old = JSON.parse(exportJSON(defaultState()));
+  delete old.events;
+  delete old.programs;
+  const loaded = parseBackup(JSON.stringify(old));
+  assert.deepEqual(loaded.state.events, []);
+  assert.deepEqual(loaded.state.programs, []);
+  const roundTrip = parseBackup(exportJSON(clean)).state;
+  assert.deepEqual(roundTrip.programs, clean.programs);
+});
+
+test("merging keeps your competitions and programs, adds the backup's, and never duplicates", () => {
+  const mine = defaultState();
+  const m = sanitizeState({ events: [{ id: "e1", name: "Mine", date: "2026-11-14" }], programs: [{ id: "p1", name: "My version" }] });
+  mine.events = m.events;
+  mine.programs = m.programs;
+  const theirs = defaultState();
+  const t = sanitizeState({ events: [{ id: "e1", name: "Theirs", date: "2026-11-14" }, { id: "e2", name: "Spring Showcase", date: "2027-03-06" }], programs: [{ id: "p1", name: "Their version" }, { id: "p2", name: "Extra", eventId: "e2" }] });
+  theirs.events = t.events;
+  theirs.programs = t.programs;
+  const { state } = mergeStates(mine, theirs);
+  assert.deepEqual(state.events.map((e) => e.name), ["Mine", "Spring Showcase"]);
+  assert.deepEqual(state.programs.map((p) => p.name), ["My version", "Extra"]);
+  assert.equal(state.programs[1].eventId, "e2");
+  const twice = mergeStates(state, theirs).state;
+  assert.equal(twice.events.length, 2);
+  assert.equal(twice.programs.length, 2);
+});
