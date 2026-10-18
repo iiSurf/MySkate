@@ -4,7 +4,6 @@ import { html, fmtMinutes, fmtDate, fmtNum, fmt1, fmtClock, fmtDuration, fmtDura
 import { icon, medal, bar, bladeArt, skateSvg, timeNum } from "../ui/parts.js";
 import { eightSvg } from "../ui/eight.js";
 import { weekEight, streakEights, weekStubs } from "../week.js";
-import { flapRow } from "../ui/flaps.js";
 import { showBadges, showFriends, showTests } from "./progress.js";
 import { testList, skillsReadiness, freeReadiness, countdown } from "../testprep.js";
 import { board } from "../friends.js";
@@ -26,16 +25,6 @@ import { nextEvent, daysUntil, countdownText, programStatus, roman, seasonLabel 
 
 const ui = { bladeOpen: false, eightKey: null };
 const LIMITS = [20, 25, 30, 35];
-
-/* The line above your name: a theater's way of saying who is on. */
-function stagePre(state) {
-  if (state.active) return "now on the ice,";
-  const h = new Date().getHours();
-  return `${h < 12 ? "this morning" : h < 18 ? "this afternoon" : "tonight"}, starring`;
-}
-
-/* A short name can be huge; a long one steps down so it still fits across a phone. */
-const nameSize = (n) => (n.length <= 4 ? "xl" : n.length <= 6 ? "l" : n.length <= 9 ? "m" : "s");
 
 /* What tapping the figure eight does, and what its open loop says. */
 function eightCall(state) {
@@ -63,8 +52,35 @@ function ticket(ctx, d) {
 function takeTheIce(ctx) {
   const { state } = ctx;
   const call = eightCall(state);
-  const label = state.active ? "Back on the ice" : state.plan.skillIds.length ? "Take the ice" : "Plan the session";
+  const label = state.active ? "Back on the ice" : state.plan.skillIds.length ? "Start session" : "Plan the session";
   return html`<button class="btn home__go" type="button" data-action="${call.action}"><span>${label}</span>${icon("right")}</button>`;
+}
+
+/* Your next move: the one dark card on Home, with the one button that does the next thing, so there is never a question of where to go. */
+function nextMove(ctx) {
+  const { state } = ctx;
+  let title;
+  let line;
+  if (state.active) {
+    title = "You are on the ice";
+    line = `${fmtClock(elapsedMs(state.active) / 1000)} so far of ${fmtMinutes(state.active.bookedMin)}. ${state.active.running ? "The clock is running." : "The clock is paused."}`;
+  } else if (state.plan.skillIds.length) {
+    const n = state.plan.skillIds.length;
+    title = "Ready to skate";
+    line = `${n} ${n === 1 ? "skill" : "skills"} planned for ${fmtMinutes(state.plan.slotMin)}. Tap Start session when you step on the ice.`;
+  } else {
+    const next = state.rinks.length ? upcomingPicks(state.iceSessions, new Date(), 1)[0] : null;
+    const rink = next && state.rinks.find((r) => r.id === next.rinkId);
+    const day = next ? (next.date === todayISO() ? "today's" : `${fmtDate(next.date, { weekday: "long" })}'s`) : "";
+    title = next ? `Plan ${day} session` : "Plan your next session";
+    line = next ? `${kindName(next.kind)}${rink ? " at " + rink.name : ""}, ${fmtTime(next.start)}. Pick what to work on.` : "Pick a few skills to work on, then take them to the ice.";
+  }
+  return html`<section class="nextmove" aria-labelledby="next-title">
+    <p class="kicker">Your next move</p>
+    <h2 id="next-title">${title}</h2>
+    <p class="nextmove__line">${line}</p>
+    ${takeTheIce(ctx)}
+  </section>`;
 }
 
 /* The program sheet: what you are skating tonight (your plan), or what MySkate suggests when you have not planned yet. */
@@ -83,7 +99,7 @@ function protocol(ctx, d) {
     <div class="protocol__hdr"><b>Practice list</b><span>${planned.length ? "Tonight's plan" : "Suggested for you"}</span></div>
     <table><thead><tr><th></th><th>Element</th><th>Last</th><th>Goal</th></tr></thead><tbody>${rows}</tbody></table>
     ${more > 0 ? html`<p class="protocol__more">and ${more} more</p>` : ""}
-    <p class="protocol__foot">${planned.length ? html`${planned.length} ${planned.length === 1 ? "skill" : "skills"} for a ${state.plan.slotMin} minute slot. <button class="protocol__link" type="button" data-action="go-plan">Edit plan</button>` : html`Or pick your own on the <button class="protocol__link" type="button" data-action="go-plan">Plan</button> tab.`}</p>
+    <p class="protocol__foot">${planned.length ? html`${planned.length} ${planned.length === 1 ? "skill" : "skills"} for ${fmtMinutes(state.plan.slotMin)}. <button class="protocol__link" type="button" data-action="go-plan">Edit plan</button>` : html`Or pick your own on the <button class="protocol__link" type="button" data-action="go-plan">Plan</button> tab.`}</p>
   </section>`;
 }
 
@@ -112,31 +128,18 @@ function weekSection(ctx, d, week, animate) {
   </section>`;
 }
 
-/* How many badges are earned, on the board near the top of Home, with a way into the trophy case and the one closest to done. */
-function badgeRow(ctx) {
+/* Your progress at a glance: badges (with the way into the trophy case), all time on your skates, and the skill to try next. Each line
+   has a small colored icon for its job: gold is earned, blue is learning. */
+function progressList(ctx, d) {
   const list = ctx.badges();
   const earned = list.filter((b) => b.earned).length;
   const next = list.filter((b) => !b.earned && badgeRatio(b) > 0).sort((a, b) => badgeRatio(b) - badgeRatio(a))[0];
-  return html`${flapRow("Badges", `${earned} of ${list.length}`)}
-    ${bar({ pct: list.length ? (earned / list.length) * 100 : 0, cls: "bar--xp", thin: true, label: "Badges earned" })}
-    <button class="line line--btn" type="button" data-action="go-badges"><span class="eyebrow">Trophy case</span><span class="line__name">${next ? `Next: ${next.name}, ${progressText(next)}` : "See every badge"}</span><span class="line__go">${icon("right")}</span></button>`;
-}
-
-/* Backstage: blades, level, and streak on flap tiles, with a line that fills for the level and the blades. */
-function backstage(ctx, d) {
-  const L = d.level;
-  const info = bladeInfo(ctx.state);
-  const next = suggestNext(ctx.state, ctx.catalog, d.stats, d.today, 1)[0];
-  const nextSkill = next && ctx.catalog.skills.get(next.skillId);
-  return html`<section class="backstage" aria-label="Level, blades, and what is next">
-    <p class="cp-label">Backstage</p>
-    ${flapRow("Blades", `${info.hours * 60 < 1 ? "0 H" : fmtDurationShort(Math.round(info.hours * 60) * 60)} OF ${fmtNum(info.limit)} H`, { hi: info.tone === "due" || info.tone === "dull", say: `${fmtMinutes(info.hours * 60)} of ${fmtNum(info.limit)} hours` })}
-    ${bar({ pct: info.pct, cls: "bar--blade", thin: true, label: "Blade life used" })}
-    ${flapRow("All time on skates", fmtDurationShort(lifetimeSeconds(ctx.state)), { say: fmtDuration(lifetimeSeconds(ctx.state)) })}
-    ${flapRow(`Level ${L.level}`, `${L.into} / ${L.need} XP`)}
-    ${bar({ pct: L.pct, cls: "bar--xp", thin: true, label: "XP to the next level" })}
-    ${badgeRow(ctx)}
-    ${nextSkill ? html`<button class="line line--btn" type="button" data-action="go-plan"><span class="eyebrow">Next up</span><span class="line__name">${nextSkill.name}</span><span class="line__go">${icon("right")}</span></button>` : ""}
+  const skill = suggestNext(ctx.state, ctx.catalog, d.stats, d.today, 1)[0];
+  const skillName = skill && ctx.catalog.skills.get(skill.skillId).name;
+  return html`<section class="card plist" aria-label="Your progress at a glance">
+    <button class="prow" type="button" data-action="go-badges"><span class="prow__ic prow__ic--gold">${icon("star", "ic--fill")}</span><span class="grow"><b>${earned} of ${list.length} badges</b><small>${next ? `Next: ${next.name}, ${progressText(next)}` : "See every badge in the trophy case"}</small>${bar({ pct: list.length ? (earned / list.length) * 100 : 0, cls: "bar--gold", thin: true, label: "Badges earned" })}</span>${icon("right", "prow__go")}</button>
+    <div class="prow"><span class="prow__ic">${icon("clock")}</span><span class="grow"><b>${fmtDuration(lifetimeSeconds(ctx.state))}</b><small>All time on these skates</small></span></div>
+    ${skillName ? html`<button class="prow" type="button" data-action="go-plan"><span class="prow__ic">${icon("up")}</span><span class="grow"><b>${skillName}</b><small>Next up to work on</small></span>${icon("right", "prow__go")}</button>` : ""}
   </section>`;
 }
 
@@ -378,24 +381,26 @@ export function renderHome(ctx) {
   const key = `${week.count}/${week.needed}`;
   const animate = ui.eightKey !== key;
   ui.eightKey = key;
-  const sheet = protocol(ctx, d);
+  const L = d.level;
   return html`<div class="home">
     <div class="home__hero">
-      <div class="cp-date"><span>${fmtDate(d.today, { weekday: "long", month: "long", day: "numeric" })}</span><span>Season ${seasonLabel(d.today)}</span></div>
-      <header class="stage-hero">
-        <span class="stage-hero__ghost" aria-hidden="true">${d.level.level}</span>
-        <p class="stage-hero__pre">${stagePre(ctx.state)}</p>
-        <h1 class="is-${nameSize(name || "Skater")}">${name || "Skater"}</h1>
-        <p class="stage-hero__sub">Level ${d.level.level} · ${levelLabel(ctx.catalog, ctx.state.profile.levels.skills)}</p>
+      <header class="band">
+        <div class="band__date"><span>${fmtDate(d.today, { weekday: "long", month: "long", day: "numeric" })}</span><span>Season ${seasonLabel(d.today)}</span></div>
+        <h1>${name ? `Hi, ${name}` : "Hi there"}</h1>
+        <div class="band__lvl"><span>Level ${L.level} · ${levelLabel(ctx.catalog, ctx.state.profile.levels.skills)}</span></div>
+        <div class="band__xp">${bar({ pct: L.pct, cls: "bar--band", thin: true, label: "XP to the next level" })}<span>${L.into} / ${L.need} XP</span></div>
       </header>
+      ${nextMove(ctx)}
+      <h2 class="group">Tonight</h2>
+      ${weekSection(ctx, d, week, animate)}
       ${ticket(ctx, d)}
-      ${sheet}
-      ${takeTheIce(ctx)}
+      ${protocol(ctx, d)}
+      ${competeTile(ctx, d)}
     </div>
     <div class="home__rest">
-      ${weekSection(ctx, d, week, animate)}
-      ${backstage(ctx, d)}
-      <div class="tiles">${competeTile(ctx, d)}${homeworkTile(ctx, d)}${goalsTile(ctx, d)}${offIceTile(ctx, d)}${testTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
+      <h2 class="group">Your progress</h2>
+      ${progressList(ctx, d)}
+      <div class="tiles">${bladeTile(ctx)}${homeworkTile(ctx, d)}${goalsTile(ctx, d)}${testTile(ctx, d)}${offIceTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
       ${recent(ctx, d)}
       ${nudge(ctx)}
     </div>

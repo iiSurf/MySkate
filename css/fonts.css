@@ -1,64 +1,22 @@
-/* The two typefaces, served from this site (fonts/) instead of from Google, so the app makes no outside request to draw its text
-   and the type works offline. Both are open-licensed variable fonts: Bodoni Moda (weights 400 to 900, an optical size axis) for
-   big moments and numbers, and Jost (weights 300 to 800) for everything else. The Latin Extended files only load when a page
-   uses letters from that range, such as the ł in a name. See fonts/README.md. */
+/* The typeface, served from this site (fonts/) instead of from Google, so the app makes no outside request to draw its text and the
+   type works offline. Atkinson Hyperlegible Next, from the Braille Institute, made to be read at a glance: open letter shapes, no
+   hairlines, a clear difference between look-alike letters (I, l, 1 and O, 0). An open-licensed variable font, weights 200 to 800,
+   upright and italic. Latin only; letters outside it fall back to the system font. See fonts/README.md. */
 
-/* Bodoni Moda normal, latin-ext */
 @font-face {
-  font-family: "Bodoni Moda";
+  font-family: "Atkinson Hyperlegible Next";
   font-style: normal;
-  font-weight: 400 900;
+  font-weight: 200 800;
   font-display: swap;
-  src: url("../fonts/bodoni-moda-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-
-/* Bodoni Moda normal, latin */
-@font-face {
-  font-family: "Bodoni Moda";
-  font-style: normal;
-  font-weight: 400 900;
-  font-display: swap;
-  src: url("../fonts/bodoni-moda-latin.woff2") format("woff2");
+  src: url("../fonts/atkinson-next-latin.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* Bodoni Moda italic, latin-ext */
 @font-face {
-  font-family: "Bodoni Moda";
+  font-family: "Atkinson Hyperlegible Next";
   font-style: italic;
-  font-weight: 400 900;
+  font-weight: 200 800;
   font-display: swap;
-  src: url("../fonts/bodoni-moda-italic-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-
-/* Bodoni Moda italic, latin */
-@font-face {
-  font-family: "Bodoni Moda";
-  font-style: italic;
-  font-weight: 400 900;
-  font-display: swap;
-  src: url("../fonts/bodoni-moda-italic-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-/* Jost normal, latin-ext */
-@font-face {
-  font-family: "Jost";
-  font-style: normal;
-  font-weight: 300 800;
-  font-display: swap;
-  src: url("../fonts/jost-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-
-/* Jost normal, latin */
-@font-face {
-  font-family: "Jost";
-  font-style: normal;
-  font-weight: 300 800;
-  font-display: swap;
-  src: url("../fonts/jost-latin.woff2") format("woff2");
+  src: url("../fonts/atkinson-next-italic-latin.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }

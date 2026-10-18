@@ -5,18 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>MySkate</title>
   <meta name="description" content="A figure skating practice tracker: plan a session, log it at the rink, and watch your progress build. Your data stays on your device.">
-  <meta name="theme-color" content="#0a2549">
+  <meta name="theme-color" content="#0e2347">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="MySkate">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/app.css">
   <link rel="stylesheet" href="css/compete.css">
+  <link rel="stylesheet" href="css/rink.css">
   <link rel="stylesheet" href="css/coach.css">
 </head>
 <body>
@@ -43,6 +43,7 @@
     <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
     <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
     <symbol id="i-eight" viewBox="-17 -9 34 18"><path d="M0 0A8 8 0 1 0-16 0A8 8 0 1 0 0 0A8 8 0 1 1 16 0A8 8 0 1 1 0 0"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
     <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 7 4 12l5 5"/><path d="M4 12h10a5 5 0 0 1 0 10h-2"/></symbol>
   </defs>
 </svg>
@@ -52,12 +53,12 @@
 <div class="shell">
   <nav class="nav-wrap" id="nav" aria-label="Main">
     <div class="tabbar">
-      <a class="tab" href="#/home" data-route="home">Home</a>
-      <a class="tab" href="#/ice" data-route="ice">Ice</a>
-      <a class="tab" href="#/plan" data-route="plan">Plan</a>
-      <a class="tab" href="#/skate" data-route="skate">Skate</a>
-      <a class="tab" href="#/progress" data-route="progress">Progress</a>
-      <a class="tab" href="#/me" data-route="me">Profile</a>
+      <a class="tab" href="#/home" data-route="home"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg><span>Home</span></a>
+      <a class="tab" href="#/ice" data-route="ice"><svg class="ic" aria-hidden="true"><use href="#i-ice"/></svg><span>Ice times</span></a>
+      <a class="tab" href="#/plan" data-route="plan"><svg class="ic" aria-hidden="true"><use href="#i-plan"/></svg><span>Plan</span></a>
+      <a class="tab" href="#/skate" data-route="skate"><svg class="ic" aria-hidden="true"><use href="#i-skate"/></svg><span>Skate</span></a>
+      <a class="tab" href="#/progress" data-route="progress"><svg class="ic" aria-hidden="true"><use href="#i-chart"/></svg><span>Progress</span></a>
+      <a class="tab" href="#/me" data-route="me"><svg class="ic" aria-hidden="true"><use href="#i-me"/></svg><span>Profile</span></a>
     </div>
   </nav>
   <main class="screen" id="screen" tabindex="-1">

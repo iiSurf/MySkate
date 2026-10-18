@@ -39,7 +39,7 @@ function wrap(c, text, x, y, maxWidth, lineHeight) {
 
 async function loadFonts() {
   try {
-    await Promise.all([document.fonts.load('italic 800 100px "Bodoni Moda"'), document.fonts.load('500 40px "Jost"')]);
+    await Promise.all([document.fonts.load('800 100px "Atkinson Hyperlegible Next"'), document.fonts.load('italic 800 100px "Atkinson Hyperlegible Next"')]);
   } catch (err) {
     /* the page falls back to a serif and sans-serif */
   }
@@ -75,7 +75,7 @@ function scene(c, label, look = null) {
   }
   c.textAlign = "center";
   c.fillStyle = "#ffd98a";
-  c.font = '500 34px "Jost", system-ui, sans-serif';
+  c.font = '500 34px "Atkinson Hyperlegible Next", system-ui, sans-serif';
   if ("letterSpacing" in c) c.letterSpacing = "10px";
   c.fillText(label, W / 2, 150);
   if ("letterSpacing" in c) c.letterSpacing = "0px";
@@ -104,7 +104,7 @@ function medal(c, middle) {
     star(c, W / 2, 545, 120, 48);
     c.fill();
   } else {
-    c.font = 'italic 800 230px "Bodoni Moda", Georgia, serif';
+    c.font = 'italic 800 230px "Atkinson Hyperlegible Next", system-ui, sans-serif';
     c.fillText(String(middle), W / 2, 625);
   }
 }
@@ -125,17 +125,17 @@ export async function badgeImage(badge, name = "") {
   scene(c, "NEW BADGE");
   medal(c, null);
   c.fillStyle = "#fff4cd";
-  c.font = 'italic 800 104px "Bodoni Moda", Georgia, serif';
+  c.font = 'italic 800 104px "Atkinson Hyperlegible Next", system-ui, sans-serif';
   const nameBottom = wrap(c, badge.name, W / 2, 930, W - 160, 112);
   c.fillStyle = "#dff3ff";
-  c.font = '500 44px "Jost", system-ui, sans-serif';
+  c.font = '500 44px "Atkinson Hyperlegible Next", system-ui, sans-serif';
   wrap(c, badge.text, W / 2, nameBottom + 6, W - 200, 58);
   const took = badge.sessionsTaken ? ` · ${badge.sessionsTaken} ${badge.sessionsTaken === 1 ? "session" : "sessions"}` : "";
   c.fillStyle = "rgba(223, 243, 255, 0.8)";
-  c.font = '500 36px "Jost", system-ui, sans-serif';
+  c.font = '500 36px "Atkinson Hyperlegible Next", system-ui, sans-serif';
   if (badge.earnedOn) c.fillText(`Earned ${fmtDate(badge.earnedOn, { month: "long", day: "numeric", year: "numeric" })}${took}`, W / 2, 1210);
   c.fillStyle = "#ffd98a";
-  c.font = 'italic 800 64px "Bodoni Moda", Georgia, serif';
+  c.font = 'italic 800 64px "Atkinson Hyperlegible Next", system-ui, sans-serif';
   c.fillText(name ? `${name} · MySkate` : "MySkate", W / 2, 1290);
   return toBlob(canvas);
 }
@@ -191,10 +191,10 @@ export async function posterImage(program, event, name = "") {
      ellipsis only if even the smallest does not. */
   const inner = w - 140;
   const fit = (text, font, sizes, maxLines) => fitLines(text, { maxWidth: inner, maxLines, sizes, measure: (t, size) => ((c.font = font(size)), c.measureText(t).width) });
-  const bodoni = (weight, italic = false) => (size) => `${italic ? "italic " : ""}${weight} ${size}px "Bodoni Moda", Georgia, serif`;
+  const bodoni = (weight, italic = false) => (size) => `${italic ? "italic " : ""}${weight} ${size}px "Atkinson Hyperlegible Next", system-ui, sans-serif`;
   c.textAlign = "center";
   c.fillStyle = "#ffd98a";
-  c.font = '700 40px "Jost", system-ui, sans-serif';
+  c.font = '700 40px "Atkinson Hyperlegible Next", system-ui, sans-serif';
   c.fillText("O N E   N I G H T   O N L Y", W / 2, 270);
 
   const who = fit((name || "Skater").trim(), bodoni(600, true), [270, 230, 190, 160, 130, 110, 90, 70, 56], 2);
@@ -209,7 +209,7 @@ export async function posterImage(program, event, name = "") {
   const whoBottom = whoTop + (who.lines.length - 1) * whoStep;
 
   c.fillStyle = "#ffd98a";
-  c.font = 'italic 500 58px "Bodoni Moda", Georgia, serif';
+  c.font = 'italic 500 58px "Atkinson Hyperlegible Next", system-ui, sans-serif';
   c.fillText("in", W / 2, whoBottom + 100);
   /* a program name stays on one line if a not-too-small size lets it, so there is room below for the music and the competition */
   const oneLine = fit(program.name, bodoni(700), [110, 92, 76], 1);
@@ -231,14 +231,14 @@ export async function posterImage(program, event, name = "") {
   const shown = items.filter(([text]) => text);
   while (shown.length > room) shown.splice(shown.indexOf(shown.reduce((lo, it) => (it[1] < lo[1] ? it : lo))), 1);
   /* every line at one size, the biggest that suits the longest of them */
-  const jost = (size) => `600 ${size}px "Jost", system-ui, sans-serif`;
+  const jost = (size) => `600 ${size}px "Atkinson Hyperlegible Next", system-ui, sans-serif`;
   const fitted = shown.map(([line]) => fitLines(line.toUpperCase(), { maxWidth: inner, maxLines: 1, sizes: [42, 38, 34, 30, 26], measure: (t, size) => ((c.font = jost(size)), c.measureText(t).width) }));
   const infoSize = Math.min(42, ...fitted.map((f) => f.size));
   c.fillStyle = "#ffd98a";
   c.font = jost(infoSize);
   fitted.forEach((f, i) => c.fillText(f.lines[0], W / 2, nameBottom + i * step));
   c.fillStyle = "rgba(255, 217, 138, 0.8)";
-  c.font = '600 32px "Jost", system-ui, sans-serif';
+  c.font = '600 32px "Atkinson Hyperlegible Next", system-ui, sans-serif';
   c.fillText("M Y S K A T E", W / 2, footer);
   return toBlob(canvas);
 }
@@ -250,10 +250,10 @@ export async function cardImage(card) {
   scene(c, "SKATER CARD", card.look ? lookById(card.look) : null);
   medal(c, card.level);
   c.fillStyle = "rgba(74, 47, 0, 0.8)";
-  c.font = '600 34px "Jost", system-ui, sans-serif';
+  c.font = '600 34px "Atkinson Hyperlegible Next", system-ui, sans-serif';
   c.fillText("LEVEL", W / 2, 345);
   c.fillStyle = "#fff4cd";
-  c.font = 'italic 800 104px "Bodoni Moda", Georgia, serif';
+  c.font = 'italic 800 104px "Atkinson Hyperlegible Next", system-ui, sans-serif';
   let name = card.name;
   while (c.measureText(name).width > W - 140 && name.length > 3) name = name.slice(0, -1);
   c.fillText(name === card.name ? name : name + "…", W / 2, 930);
@@ -262,14 +262,14 @@ export async function cardImage(card) {
     const x = i % 2 ? 740 : 340;
     const y = 1030 + Math.floor(i / 2) * 120;
     c.fillStyle = "#fff4cd";
-    c.font = 'italic 800 64px "Bodoni Moda", Georgia, serif';
+    c.font = 'italic 800 64px "Atkinson Hyperlegible Next", system-ui, sans-serif';
     c.fillText(String(n), x, y);
     c.fillStyle = "rgba(223, 243, 255, 0.85)";
-    c.font = '500 32px "Jost", system-ui, sans-serif';
+    c.font = '500 32px "Atkinson Hyperlegible Next", system-ui, sans-serif';
     c.fillText(label, x, y + 40);
   });
   c.fillStyle = "rgba(223, 243, 255, 0.7)";
-  c.font = '500 30px "Jost", system-ui, sans-serif';
+  c.font = '500 30px "Atkinson Hyperlegible Next", system-ui, sans-serif';
   c.fillText(`As of ${fmtDate(card.updatedAt.slice(0, 10), { month: "long", day: "numeric", year: "numeric" })}`, W / 2, 1290);
   return toBlob(canvas);
 }

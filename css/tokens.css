@@ -1,15 +1,15 @@
-/* MySkate design tokens. Theme: the stage. A dark house with a burgundy glow, paper for the things you can hold (a ticket, a program),
-   a marquee for the big moments, and a button with a red offset shadow. Color has jobs: blue means learning, gold means earned,
-   coral means caution. */
+/* MySkate design tokens. Theme: the clean rink. Ice-white sheets on a soft white floor, navy ink and a navy band at the top, one
+   readable typeface (Atkinson Hyperlegible Next), and a navy button with a red offset shadow. Color has jobs: blue means learning,
+   gold means earned, coral means caution. (The stage look before it is kept at the git tag before-zamboni.) */
 
 :root {
-  --font-display: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
-  --font-ui: "Jost", "Futura", "Avenir Next", -apple-system, system-ui, sans-serif;
+  --font-display: "Atkinson Hyperlegible Next", -apple-system, system-ui, sans-serif;
+  --font-ui: "Atkinson Hyperlegible Next", -apple-system, system-ui, sans-serif;
 
-  --r-sm: 14px;
-  --r-md: 20px;
-  --r-lg: 28px;
-  --r-xl: 36px;
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 20px;
+  --r-xl: 24px;
   --r-pill: 999px;
 
   --sp-1: 4px;
@@ -22,77 +22,86 @@
   --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --spring-soft: cubic-bezier(0.22, 1.35, 0.36, 1);
 
-  color-scheme: dark;
+  color-scheme: light;
 
-  /* The house, and the stage lights */
-  --deep-0: #070e26;
-  --deep-1: #0a1432;
-  --deep-2: #101a42;
-  --cream: #f6e9cf;
-  --gold: #e6c777;
-  --gold-hi: #ffd98a;
-  --red: #e0493a;
-  --paper: #f1e7cf;
-  --ice: #5fd8e6;
-  --ice-bright: #a6f1ff;
-  --ice-white: #eef9ff;
+  /* The rink: ice-white sheets on a soft white floor, navy ink, and a navy band at the top of each screen. */
+  --navy: #0e2347;
+  --navy-2: #2c4466;
+  --mute: #51677f;
+  --floor: #f5f8fb;
+  --card: #ffffff;
+  --line: #c9d8e4;
+  --line-soft: #dbe7f0;
+  --band: #0e2347;
+  --band-text: #ffffff;
+  --band-dim: #c8d6e6;
+
+  /* Color has jobs: blue is learning, gold is earned, coral is caution, and red is only the button's shadow. */
+  --blue: #2a7fc1;
+  --blue-deep: #1d659f;
+  --blue-soft: #e1effa;
+  --gold-fill: #f4c04e;
+  --gold-text: #8a5a00;
+  --gold-soft: #fbf0d6;
+  --coral-soft: #fbe5e1;
+
+  /* The old names, now pointing at the light look, so every piece picks it up. */
+  --deep-0: var(--floor);
+  --deep-1: var(--card);
+  --deep-2: #eef3f8;
+  --cream: var(--navy);
+  --gold: var(--gold-text);
+  --gold-hi: #a06c00;
+  --red: #d9382c;
+  --paper: #ffffff;
+  --ice: var(--blue);
+  --ice-bright: var(--blue-deep);
+  --ice-white: #eaf3f9;
   --snow: #ffffff;
-
-  /* Golden hour light, and what it means */
-  --sun: #ffd98a;
-  --sun-deep: #f5a742;
-  --peach: #ffb98a;
-  --coral: #ff7a6b;
-  --coral-deep: #d9473c;
+  --sun: #d4951a;
+  --sun-deep: #b47a12;
+  --peach: #e38b5c;
+  --coral: #c8402f;
+  --coral-deep: #a8352a;
 
   /* Skill categories: flow, air, rotation */
-  --cat-skills: var(--ice);
-  --cat-jumps: var(--sun);
-  --cat-spins: #b9a6ff;
+  --cat-skills: var(--blue);
+  --cat-jumps: var(--gold-fill);
+  --cat-spins: #8f7be0;
 
-  /* Text: brighter than before so it stays readable on glass */
-  --text: #f6e9cf;
-  --text-dim: rgba(246, 233, 207, 0.9);
-  --text-faint: rgba(246, 233, 207, 0.74);
-  --ink: #14213f;
-  --ink-gold: #3b2500;
+  --text: var(--navy);
+  --text-dim: var(--navy-2);
+  --text-faint: var(--mute);
+  --ink: var(--navy);
+  --ink-gold: #5a3a00;
 
-  /* Type sits straight on the stage, with hairline rules between things, gold for a heading's rule. Panels (sheets, toasts) are
-     dark and nearly solid. */
-  --rule: rgba(246, 233, 207, 0.22);
-  --rule-strong: rgba(246, 233, 207, 0.42);
-  --rule-gold: rgba(230, 199, 119, 0.55);
-  --panel: rgba(8, 14, 40, 0.96);
-  --glass-tint: rgba(8, 14, 40, 0.55);
-  --glass-edge: rgba(246, 233, 207, 0.42);
-  --glass-edge-soft: rgba(246, 233, 207, 0.22);
-  --glass-blur: blur(18px) saturate(1.2);
-  --glass-shadow: 0 24px 70px rgba(0, 4, 20, 0.6);
-  --track: rgba(246, 233, 207, 0.2);
+  --rule: var(--line-soft);
+  --rule-strong: var(--line);
+  --rule-gold: var(--line);
+  --panel: #ffffff;
+  --glass-tint: #ffffff;
+  --glass-edge: var(--line);
+  --glass-edge-soft: var(--line-soft);
+  --glass-blur: none;
+  --glass-shadow: 0 14px 34px rgba(14, 35, 71, 0.16);
+  --track: var(--line-soft);
 
-  /* The stage and its light. Set by [data-light]: golden hour is the burgundy glow, the others tint it. */
-  --sky-top: #101a42;
-  --sky-mid: #0a1432;
-  --sky-bot: #070e26;
-  --glow: #7a1d37;
+  --sky-top: var(--floor);
+  --sky-mid: var(--floor);
+  --sky-bot: var(--floor);
+  --glow: transparent;
 }
 
-/* Time-of-day light. Golden hour is the default. */
+/* Time-of-day light: it tints the navy band at the top of each screen. Golden hour is the default. */
 
 :root[data-light="sunrise"] {
-  --glow: #8e3b2c;
+  --band: #33285e;
 }
 
 :root[data-light="midday"] {
-  --sky-top: #123a6e;
-  --sky-mid: #0b2550;
-  --sky-bot: #07142f;
-  --glow: #175a7e;
+  --band: #12507e;
 }
 
 :root[data-light="dusk"] {
-  --sky-top: #1a1a54;
-  --sky-mid: #0f0f3a;
-  --sky-bot: #070722;
-  --glow: #5a2f96;
+  --band: #24195a;
 }

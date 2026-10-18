@@ -30,7 +30,7 @@
 .coach__spot {
   position: absolute;
   box-sizing: border-box;
-  border: 2px solid var(--gold-hi);
+  border: 2px solid var(--gold-fill);
   box-shadow: 0 0 18px 2px rgba(255, 217, 138, 0.55), 0 0 0 100vmax rgba(4, 8, 24, 0.58);
 }
 
@@ -47,7 +47,7 @@
   content: "";
   position: absolute;
   inset: -2px;
-  border: 2px solid var(--gold-hi);
+  border: 2px solid var(--gold-fill);
   border-radius: inherit;
   animation: coach-ping 1.9s ease-out infinite;
 }
@@ -73,7 +73,7 @@
 
 .coach__glow {
   fill: none;
-  stroke: var(--gold-hi);
+  stroke: var(--gold-fill);
   stroke-width: 9;
   stroke-linecap: round;
   opacity: 0.16;
@@ -82,7 +82,7 @@
 /* Dots marching along the path, from the card to the target. */
 .coach__line {
   fill: none;
-  stroke: var(--gold-hi);
+  stroke: var(--gold-fill);
   stroke-width: 3.4;
   stroke-linecap: round;
   stroke-dasharray: 0.1 11;
@@ -97,14 +97,14 @@
 
 .coach__arrow {
   fill: none;
-  stroke: var(--gold-hi);
+  stroke: var(--gold-fill);
   stroke-width: 3.6;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .coach__star {
-  fill: var(--gold-hi);
+  fill: var(--gold-fill);
   transform: scale(var(--s, 5));
   transform-box: fill-box;
   transform-origin: center;
@@ -135,9 +135,9 @@
   height: calc(26px + env(safe-area-inset-top));
   margin: 0;
   padding-top: env(safe-area-inset-top);
-  background: var(--gold-hi);
-  color: var(--ink-gold);
-  font: 600 0.7rem/1 var(--font-ui);
+  background: var(--gold-fill);
+  color: var(--navy);
+  font: 800 0.72rem/1 var(--font-ui);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -160,7 +160,7 @@ html[data-practice] body {
   display: grid;
   gap: var(--sp-2);
   padding: var(--sp-4) var(--sp-4) var(--sp-3);
-  border: 1px solid var(--gold);
+  border: 2px solid var(--gold-fill);
   border-radius: var(--r-md);
   background: var(--panel);
   box-shadow: var(--glass-shadow);
@@ -190,12 +190,12 @@ html[data-practice] body {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: var(--gold-hi);
+  background: var(--gold-fill);
 }
 
 .coach__kicker {
   margin: 0;
-  color: var(--gold-hi);
+  color: var(--gold-text);
   font: 600 0.74rem/1 var(--font-ui);
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -203,7 +203,7 @@ html[data-practice] body {
 
 .coach__title {
   margin: 0;
-  font: italic 600 1.55rem/1.1 var(--font-display);
+  font: 800 1.45rem/1.15 var(--font-ui);
 }
 
 .coach__text {
@@ -227,8 +227,8 @@ html[data-practice] body {
   white-space: nowrap;
   border: 0;
   background: none;
-  color: var(--gold-hi);
-  font: 500 0.95rem/1 var(--font-ui);
+  color: var(--navy);
+  font: 700 0.95rem/1 var(--font-ui);
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
@@ -261,7 +261,7 @@ html[data-practice] body {
 }
 
 .coach-target {
-  outline: 3px solid var(--gold-hi);
+  outline: 3px solid var(--gold-fill);
   outline-offset: 4px;
   animation: coach-glow 1.5s ease-in-out infinite;
 }

@@ -1,0 +1,1129 @@
+/* The clean rink: the final word on how the shared pieces look. Loaded after the other stylesheets, so it wins over the stage look they
+   were written for. Ice-white sheets with a soft edge on a soft white floor, a navy band at the top of each screen, one readable
+   typeface, sturdy type (no hairlines, nothing under 15px that matters), and the next move always the one dark thing. */
+
+/* ---------- The floor and the type ---------- */
+
+body {
+  background: var(--floor);
+  color: var(--text);
+}
+
+h1 {
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+h2,
+h3 {
+  font-weight: 800;
+}
+
+.num,
+.stat-n {
+  font-family: var(--font-ui);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.dim {
+  color: var(--text-dim);
+}
+
+.note {
+  color: var(--mute);
+}
+
+.eyebrow,
+.cp-label,
+.kicker {
+  font: 800 0.8rem/1.2 var(--font-ui);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+/* A section's label with a rule after it becomes a plain label: no hairline to fight the type. */
+.cp-label::after,
+.eyebrow::after {
+  display: none !important;
+}
+
+/* ---------- The navy band at the top of each screen ---------- */
+
+.screen-head,
+.band {
+  margin: calc(-1 * var(--sp-5)) calc(-1 * var(--sp-4)) 0;
+  padding: var(--sp-5) var(--sp-4) var(--sp-5);
+  border: 0;
+  background: var(--band);
+  color: var(--band-text);
+}
+
+.screen-head .eyebrow,
+.screen-head p,
+.band .kicker {
+  color: var(--band-dim);
+}
+
+.screen-head h1 {
+  margin-top: 4px;
+  font-size: clamp(1.9rem, 7vw, 2.4rem);
+  color: var(--band-text);
+  font-style: normal;
+}
+
+.screen-head .btn {
+  --shade: transparent;
+  background: #fff;
+  color: var(--navy);
+}
+
+@media (min-width: 960px) {
+  .screen-head,
+  .band {
+    margin: 0;
+    border-radius: var(--r-xl);
+    padding: var(--sp-5);
+  }
+}
+
+/* ---------- Cards and tiles: white, a soft edge, room inside ---------- */
+
+.card,
+.tile,
+.card.tile,
+section.card {
+  padding: var(--sp-4);
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--card);
+  box-shadow: none;
+  color: var(--text);
+}
+
+.tile__head {
+  margin-bottom: 2px;
+}
+
+.card--ice,
+.card--glow {
+  border-color: var(--line);
+  background: var(--card);
+  box-shadow: none;
+}
+
+.tiles {
+  gap: var(--sp-3);
+}
+
+.row {
+  border-top-color: var(--line-soft);
+}
+
+.hours .num {
+  font-size: 2.2rem;
+}
+
+/* ---------- Buttons: navy with the red offset, white with a navy edge, and the chips ---------- */
+
+.btn {
+  --bg1: var(--navy);
+  --bg2: var(--navy);
+  --shade: var(--red);
+  --fg: #ffffff;
+  min-height: 56px;
+  padding: 0 22px;
+  border-radius: 14px;
+  font: 800 1.15rem/1.1 var(--font-ui);
+  font-style: normal;
+  letter-spacing: 0;
+  box-shadow: 4px 4px 0 var(--shade);
+}
+
+.btn--small {
+  min-height: 46px;
+  padding: 0 16px;
+  font-size: 1rem;
+}
+
+.btn--glass,
+.tile > .btn--glass.btn--small {
+  --bg1: #ffffff;
+  --bg2: #ffffff;
+  --fg: var(--navy);
+  --shade: transparent;
+  justify-self: start;
+  border: 2px solid var(--navy);
+  border-radius: 14px;
+  background: #ffffff;
+  color: var(--navy);
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: none;
+}
+
+.btn--glass:hover {
+  background: var(--blue-soft);
+}
+
+.tile > .btn--glass.btn--small::after {
+  display: none;
+}
+
+.btn--gold {
+  --bg1: var(--gold-fill);
+  --bg2: var(--gold-fill);
+  --fg: var(--navy);
+  --shade: var(--navy);
+}
+
+.btn--coral {
+  --bg1: var(--coral);
+  --bg2: var(--coral);
+  --fg: #ffffff;
+  --shade: var(--navy);
+}
+
+.btn:disabled,
+.btn[disabled] {
+  --bg1: #c5d1dc;
+  --bg2: #c5d1dc;
+  --fg: #51677f;
+  --shade: transparent;
+}
+
+.chip {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-pill);
+  background: #ffffff;
+  color: var(--navy);
+  font: 700 0.95rem/1 var(--font-ui);
+  box-shadow: none;
+}
+
+.chip[aria-pressed="true"],
+.chip--on {
+  border-color: var(--navy);
+  background: var(--navy);
+  color: #ffffff;
+}
+
+.chip--gold {
+  border-color: transparent;
+  background: var(--gold-soft);
+  color: var(--gold-text);
+}
+
+.chip--coral,
+.chip--discard {
+  border-color: transparent;
+  background: var(--coral-soft);
+  color: var(--coral);
+}
+
+.chip--tag {
+  min-height: 26px;
+  padding: 0 10px;
+  border-color: transparent;
+  background: var(--blue-soft);
+  color: var(--blue-deep);
+  font-size: 0.82rem;
+}
+
+.icon-btn {
+  border: 1.5px solid var(--line);
+  background: #ffffff;
+  color: var(--navy);
+}
+
+.icon-btn:disabled {
+  opacity: 0.4;
+}
+
+.line,
+.line--btn,
+.protocol__link {
+  color: var(--navy);
+}
+
+/* ---------- Bars ---------- */
+
+.bar {
+  background: var(--line-soft);
+  box-shadow: none;
+}
+
+.bar > i {
+  background: var(--blue);
+  box-shadow: none;
+}
+
+.bar--gold > i,
+.bar--xp > i {
+  background: var(--gold-fill);
+}
+
+.bar--blade > i {
+  background: var(--blue);
+}
+
+.bar--band {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.bar--band > i {
+  background: var(--gold-fill);
+}
+
+/* ---------- Forms ---------- */
+
+.input,
+select.input,
+textarea.input {
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--navy);
+  box-shadow: none;
+}
+
+.input:focus {
+  border-color: var(--blue);
+  outline: none;
+}
+
+.input::placeholder {
+  color: #7d8fa3;
+}
+
+.field > span,
+.field > label {
+  color: var(--navy);
+  font-weight: 700;
+}
+
+/* ---------- Sheets and toasts ---------- */
+
+.sheet,
+.glass,
+.toast {
+  border: 0;
+  background: #ffffff;
+  color: var(--navy);
+  box-shadow: var(--glass-shadow);
+}
+
+.sheet::backdrop {
+  background: rgba(14, 35, 71, 0.45);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.sheet__title {
+  font: 800 clamp(1.6rem, 6vw, 2rem) / 1.15 var(--font-ui);
+  font-style: normal;
+  color: var(--navy);
+}
+
+.toast {
+  background: var(--navy);
+  color: #ffffff;
+}
+
+.choice {
+  border: 1.5px solid var(--line);
+  background: #ffffff;
+  color: var(--navy);
+}
+
+/* ---------- Navigation: an icon over a word, the current tab filled in ---------- */
+
+.nav-wrap {
+  background: #ffffff;
+  border-top: 1.5px solid var(--line);
+}
+
+.tab {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 3px;
+  padding: 8px 2px 6px;
+  color: var(--mute);
+  font: 700 0.74rem/1 var(--font-ui);
+  letter-spacing: 0;
+  text-transform: none;
+  box-shadow: none !important;
+}
+
+.tab .ic {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.tab[aria-current="page"] {
+  color: var(--navy);
+}
+
+.tab[aria-current="page"] .ic {
+  width: 36px;
+  height: 28px;
+  padding: 3px 7px;
+  border-radius: 10px;
+  background: var(--navy);
+  color: #ffffff;
+}
+
+@media (min-width: 960px) {
+  .nav-wrap {
+    background: none;
+    border-top: 0;
+  }
+
+  .tab {
+    display: flex;
+    justify-content: flex-start;
+    gap: 12px;
+    border-radius: 12px;
+    font-size: 1rem;
+  }
+
+  .tab[aria-current="page"] {
+    background: #ffffff;
+    border: 1.5px solid var(--line);
+  }
+
+  .tab[aria-current="page"] .ic {
+    width: 32px;
+    height: 28px;
+  }
+}
+
+/* Segmented controls (Progress tabs, the planner's steps, My picks) */
+.seg,
+.ptabs {
+  background: var(--line-soft);
+  border-radius: 12px;
+}
+
+.seg button[aria-pressed="true"],
+.ptabs [aria-selected="true"],
+.ptabs [aria-current="page"] {
+  background: #ffffff;
+  color: var(--navy);
+  box-shadow: 0 1px 3px rgba(14, 35, 71, 0.18);
+}
+
+/* ---------- Home ---------- */
+
+.home__hero,
+.home__rest {
+  gap: var(--sp-3);
+}
+
+.band h1 {
+  margin-top: 6px;
+  font-size: 2.1rem;
+  color: #ffffff;
+}
+
+.band__date {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font: 800 0.8rem/1.2 var(--font-ui);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--band-dim);
+}
+
+.band__lvl {
+  margin-top: 4px;
+  font-weight: 700;
+  color: var(--band-dim);
+}
+
+.band__xp {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding-bottom: 52px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--band-dim);
+}
+
+.band__xp .bar {
+  flex: 1;
+}
+
+/* The next move sits lifted onto the band: the one place to look first. */
+.nextmove {
+  position: relative;
+  margin-top: -60px;
+  padding: var(--sp-4);
+  border-radius: var(--r-md);
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(14, 35, 71, 0.16);
+}
+
+.nextmove h2 {
+  margin: 4px 0 4px;
+  font-size: 1.5rem;
+}
+
+.nextmove__line {
+  margin-bottom: var(--sp-4);
+  color: var(--text-dim);
+}
+
+.home__go {
+  width: 100%;
+}
+
+@media (min-width: 960px) {
+  .band__xp {
+    padding-bottom: 56px;
+  }
+
+  .nextmove {
+    margin: -64px var(--sp-4) 0;
+  }
+}
+
+.group {
+  margin: var(--sp-4) 2px 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--navy);
+}
+
+/* This week: the figure eight, now ink on ice. */
+.home__eight {
+  padding: var(--sp-4);
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-md);
+  background: #ffffff;
+}
+
+.home__caption {
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.home__caption.is-whole {
+  color: var(--gold-text);
+}
+
+.eight__guide {
+  stroke: #9fb4c8;
+  stroke-width: 2;
+}
+
+.e--glow {
+  stroke: rgba(42, 127, 193, 0.14);
+  stroke-width: 9;
+}
+
+.e--echo1,
+.e--echo2 {
+  stroke: rgba(42, 127, 193, 0.35);
+}
+
+.e--main {
+  stroke: var(--blue);
+  stroke-width: 3.4;
+  filter: none;
+}
+
+.eight__done.is-whole .e--main,
+.home__eight .is-whole .e--main {
+  stroke: var(--gold-fill);
+}
+
+.eight__star {
+  fill: var(--gold-fill);
+  filter: none;
+  stroke: var(--navy);
+  stroke-width: 0.6;
+}
+
+.eight__tiny {
+  fill: var(--mute);
+  font-weight: 800;
+}
+
+.eight__big {
+  fill: var(--navy);
+  font: 800 22px var(--font-ui);
+}
+
+.eight__go {
+  fill: var(--red);
+  font-weight: 800;
+}
+
+.eight__dim .eight__tiny {
+  fill: #8195aa;
+}
+
+.streak {
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.ic--eight {
+  color: var(--line);
+}
+
+.ic--eight.is-done {
+  color: var(--gold-fill);
+}
+
+.ic--eight.is-ghost {
+  color: var(--line);
+}
+
+/* The week's days as circles: blue for a day you skated, a navy ring for today. */
+.stubs .st {
+  -webkit-mask: none;
+  mask: none;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--navy);
+  font-weight: 800;
+  box-shadow: none;
+  transform: none;
+}
+
+.stubs .st::before,
+.stubs .st::after {
+  display: none;
+}
+
+.stubs .st:not(.is-off) {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #ffffff;
+}
+
+.stubs .st.is-off {
+  color: var(--mute);
+  opacity: 1;
+}
+
+.stubs .st.is-today {
+  border-color: var(--navy);
+  border-width: 2.5px;
+  box-shadow: none;
+}
+
+/* Your next ice, as a ticket: white with a blue stub. */
+.ticket {
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-md);
+  background: #ffffff;
+  color: var(--navy);
+  box-shadow: none;
+}
+
+.ticket__main small,
+.ticket__stub small {
+  color: var(--mute);
+}
+
+.ticket__main b {
+  color: var(--navy);
+  font-family: var(--font-ui);
+  font-style: normal;
+}
+
+.ticket__stub {
+  border-left: 2px dashed var(--line);
+  background: var(--blue-soft);
+  color: var(--blue-deep);
+}
+
+.ticket__stub b {
+  color: var(--blue-deep);
+  font-family: var(--font-ui);
+}
+
+.ticket::before,
+.ticket::after {
+  background: var(--floor);
+}
+
+.barcode {
+  opacity: 0.5;
+}
+
+/* Tonight's practice list */
+.protocol {
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-md);
+  background: #ffffff;
+  color: var(--navy);
+  box-shadow: none;
+}
+
+.protocol__hdr {
+  border-bottom: 1.5px solid var(--line-soft);
+}
+
+.protocol__hdr b {
+  font: 800 0.8rem/1.2 var(--font-ui);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.protocol th {
+  color: var(--mute);
+}
+
+.protocol td {
+  border-top-color: var(--line-soft);
+  color: var(--navy);
+}
+
+.protocol td:first-child,
+.protocol td.n {
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-weight: 800;
+  color: var(--navy-2);
+}
+
+.protocol tr.hot td {
+  background: var(--blue-soft);
+}
+
+/* Your progress at a glance */
+.plist {
+  display: grid;
+  padding: 4px var(--sp-4);
+}
+
+.prow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 0;
+  border: 0;
+  border-top: 1.5px solid var(--line-soft);
+  background: none;
+  color: var(--navy);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+div.prow {
+  cursor: default;
+}
+
+.prow:first-child {
+  border-top: 0;
+}
+
+.prow b {
+  display: block;
+  font-size: 1.12rem;
+  font-weight: 800;
+}
+
+.prow small {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.92rem;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.prow__ic {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border-radius: 12px;
+  background: var(--blue-soft);
+  color: var(--blue-deep);
+}
+
+.prow__ic--gold {
+  background: var(--gold-soft);
+  color: var(--gold-text);
+}
+
+.prow__go {
+  color: var(--mute);
+}
+
+/* The blade on the blade life tile: the worn part greyer */
+.blade__dull {
+  filter: grayscale(1) brightness(0.8);
+}
+
+.alltime {
+  border-top-color: var(--line-soft);
+}
+
+.alltime .eyebrow {
+  color: var(--mute);
+}
+
+/* The level medallion and badge medals keep their gold. Earned skates keep their gold. */
+.level {
+  color: #3b2500;
+}
+
+/* ---------- The plan panel and the session list ---------- */
+
+.plan-summary.card {
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-md);
+  background: #ffffff;
+  color: var(--navy);
+  box-shadow: none;
+}
+
+.plan-summary h2 {
+  font: 800 1.3rem/1.2 var(--font-ui);
+}
+
+.plan-n {
+  font-family: var(--font-ui);
+  font-weight: 800;
+}
+
+.plan-item.is-current {
+  background: var(--blue-soft);
+}
+
+.plan-summary .mini .star {
+  stroke: var(--mute);
+}
+
+.plan-summary .mini .star.on {
+  fill: var(--gold-fill);
+  stroke: var(--gold-text);
+}
+
+/* Rating stars and small star rows on the light ice */
+.rating .star {
+  stroke: var(--navy);
+}
+
+.rating button[aria-pressed="true"] .star {
+  fill: var(--gold-fill);
+  stroke: var(--navy);
+}
+
+.mini .star {
+  stroke: var(--mute);
+}
+
+.mini .star.on {
+  fill: var(--gold-fill);
+  stroke: var(--gold-text);
+}
+
+.rating-label {
+  color: var(--navy);
+  font-weight: 700;
+}
+
+/* The clock at the rink: big and dark */
+.timer {
+  font-family: var(--font-ui);
+  font-weight: 800;
+  color: var(--navy);
+}
+
+.timer-card {
+  border: 0;
+  background: var(--band);
+  color: #ffffff;
+}
+
+.timer-card .eyebrow,
+.timer-card .dim {
+  color: var(--band-dim);
+}
+
+.timer-card .timer {
+  color: #ffffff;
+}
+
+.timer-card .icon-btn {
+  border-color: transparent;
+}
+
+.pips .pip {
+  background: var(--line-soft);
+}
+
+.pips .pip.on {
+  background: var(--blue);
+}
+
+.pips .pip.miss {
+  background: var(--coral);
+}
+
+.placeholder {
+  border: 2px dashed var(--line);
+  color: var(--mute);
+  background: transparent;
+}
+
+/* ---------- Ice times ---------- */
+
+.ice-card {
+  border: 1.5px solid var(--line);
+  background: #ffffff;
+  color: var(--navy);
+  box-shadow: none;
+}
+
+.ice-card.is-pick {
+  border-color: var(--gold-fill);
+  box-shadow: inset 4px 0 0 var(--gold-fill);
+}
+
+.ice-time {
+  color: var(--navy);
+  font-family: var(--font-ui);
+  font-weight: 800;
+}
+
+.ice-kind,
+.ice-rink {
+  color: var(--text-dim);
+}
+
+.ice-star {
+  color: var(--mute);
+}
+
+.ice-star[aria-pressed="true"] {
+  color: var(--gold-fill);
+}
+
+.ice-stale {
+  color: var(--coral);
+}
+
+/* ---------- Progress ---------- */
+
+.cal .d,
+.cal-day {
+  color: var(--navy);
+}
+
+.weekbars i {
+  background: var(--blue);
+}
+
+.weekbars i.none {
+  background: var(--line-soft);
+}
+
+.spark polyline {
+  stroke: var(--blue) !important;
+}
+
+/* ---------- Competitions keep their marquee, on navy ---------- */
+
+.cp-sign {
+  background: var(--band);
+  color: #ffffff;
+}
+
+.cp-sign h2,
+.cp-sign .cp-cd {
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.cp-sign .cp-when,
+.cp-sign small {
+  color: var(--band-dim);
+}
+
+.cp-ttl {
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-weight: 800;
+  color: var(--navy);
+}
+
+.cp-sub,
+.cp-date {
+  color: var(--text-dim);
+}
+
+/* ---------- Leftovers from the stage look, set right for the ice ---------- */
+
+.screen-head .eyebrow,
+.screen-head > div {
+  border: 0;
+  padding-bottom: 0;
+}
+
+.screen-head::after,
+.screen-head > div::after {
+  display: none;
+}
+
+.card.timer-card {
+  border: 0;
+  background: var(--band);
+  color: #ffffff;
+}
+
+.skill-title {
+  font: 800 clamp(1.5rem, 6vw, 1.9rem) / 1.15 var(--font-ui);
+  font-style: normal;
+  color: var(--navy);
+}
+
+.status--warn,
+.ice-clash,
+.cp-warn,
+.cp-ghost--danger {
+  color: var(--coral);
+}
+
+.cp-ghost--danger {
+  border-color: var(--coral);
+}
+
+.cp-ttl {
+  text-shadow: none;
+}
+
+.cp-sub {
+  color: var(--text-dim);
+}
+
+.cp-date {
+  border-bottom: 1.5px solid var(--line);
+  color: var(--mute);
+}
+
+.cp-obtn {
+  border-radius: 14px;
+  background: var(--navy);
+  color: #ffffff;
+  font: 800 1.2rem/1.1 var(--font-ui);
+  font-style: normal;
+}
+
+.cp-new {
+  border: 2px dashed var(--line);
+  color: var(--navy);
+}
+
+.cp-row,
+.cp-el,
+.cp-trow,
+.cp-bring li {
+  border-top-color: var(--line-soft);
+  color: var(--navy);
+}
+
+.cp-row b {
+  color: var(--gold-text);
+}
+
+.cp-el.is-sel,
+.cp-trow.is-sel {
+  background: var(--blue-soft);
+  box-shadow: inset 3px 0 0 var(--blue);
+}
+
+.cp-el__name,
+.cp-trow__name {
+  color: var(--navy);
+}
+
+.cp-track {
+  background:
+    repeating-linear-gradient(90deg, rgba(14, 35, 71, 0.18) 0 1px, transparent 1px 8.33%),
+    var(--line-soft);
+}
+
+.cp-tile .cp-bar {
+  background: var(--line-soft);
+}
+
+.cp-tile .cp-bar i {
+  background: var(--blue);
+  box-shadow: none;
+}
+
+.cp-paper,
+.cp-pcard {
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-md);
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.cp-pcard h3,
+.cp-paper h2,
+.cp-empty h2 {
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-weight: 800;
+}
+
+.cp-in {
+  border-bottom-color: var(--line);
+  color: var(--navy);
+}
+
+.cp-chip {
+  border-color: var(--line);
+  color: var(--navy);
+}
+
+.cp-chip--gold {
+  border-color: var(--gold-text);
+  background: var(--gold-soft);
+  color: var(--gold-text);
+}
+
+.cp-back {
+  color: var(--navy);
+}
+
+.cp-tabs,
+.cp-steps-nav {
+  background: var(--line-soft);
+}
+
+/* Planner and other big titles: the one typeface, upright */
+.cp-ttl,
+.cp-sign h2,
+.sheet__title,
+.level,
+.medal,
+.timer,
+.xp-big,
+.num {
+  font-style: normal;
+}

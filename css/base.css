@@ -1,4 +1,4 @@
-/* Reset, typography, and the rink background: clean, glossy ice under a low sun. */
+/* Reset, typography, and the floor behind everything. */
 
 *,
 *::before,
@@ -15,7 +15,7 @@ body {
   min-height: 100vh;
   background: var(--deep-0);
   color: var(--text);
-  font: 450 1.0625rem/1.6 var(--font-ui);
+  font: 400 1.0625rem/1.5 var(--font-ui);
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -42,7 +42,7 @@ p {
   text-wrap: pretty;
 }
 
-/* Bodoni is for big moments only (titles, medallions, numerals). Anything small is Jost. */
+/* One typeface for everything; titles are its heaviest weight. */
 h1 {
   font-family: var(--font-display);
   font-weight: 800;
@@ -66,7 +66,7 @@ select {
 }
 
 :focus-visible {
-  outline: 3px solid var(--gold-hi);
+  outline: 3px solid var(--blue);
   outline-offset: 3px;
 }
 
@@ -79,16 +79,7 @@ select {
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  background:
-    radial-gradient(90% 440px at 50% -70px, var(--glow) 0%, transparent 100%),
-    linear-gradient(var(--sky-top), var(--sky-mid) 720px, var(--sky-bot));
-}
-
-.rink-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(transparent 60%, rgba(3, 8, 24, 0.5));
+  background: var(--floor);
 }
 
 .sp {
@@ -124,32 +115,23 @@ select {
 
 @media (prefers-contrast: more) {
   :root {
-    --text-dim: #ffffff;
-    --text-faint: rgba(255, 255, 255, 0.9);
-    --glass-tint: rgb(6, 24, 78);
-    --glass-edge: rgba(255, 255, 255, 0.7);
-    --rule: rgba(255, 255, 255, 0.55);
-    --rule-strong: rgba(255, 255, 255, 0.8);
-    --panel: rgb(5, 18, 52);
+    --text-dim: var(--navy);
+    --text-faint: var(--navy-2);
+    --mute: var(--navy-2);
+    --line: #7e93ab;
+    --line-soft: #9fb2c6;
+    --floor: #ffffff;
   }
 }
 
 :root[data-contrast="high"] {
-  --text-dim: #ffffff;
-  --text-faint: rgba(255, 255, 255, 0.9);
-  --glass-tint: rgb(6, 24, 78);
-  --glass-edge: rgba(255, 255, 255, 0.7);
-  --rule: rgba(255, 255, 255, 0.55);
-  --rule-strong: rgba(255, 255, 255, 0.8);
-  --panel: rgb(5, 18, 52);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  :root {
-    --glass-tint: rgb(8, 30, 88);
-    --panel: rgb(6, 20, 56);
-    --glass-blur: none;
-  }
+  --text-dim: var(--navy);
+  --text-faint: var(--navy-2);
+  --mute: var(--navy-2);
+  --line: #7e93ab;
+  --line-soft: #9fb2c6;
+  --floor: #ffffff;
+  --navy: #000c24;
 }
 
 @media (prefers-reduced-motion: reduce) {

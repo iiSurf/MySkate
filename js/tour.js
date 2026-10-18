@@ -34,7 +34,7 @@ import { entryOf } from "./timer.js";
 import { defaultState } from "./store.js";
 
 /* The label of each tab, for "head back to Plan". Competitions has no tab of its own: Plan stays lit while you are in it. */
-export const TABS = { home: "Home", ice: "Ice", plan: "Plan", skate: "Skate", progress: "Progress", me: "Profile", compete: "Plan" };
+export const TABS = { home: "Home", ice: "Ice times", plan: "Plan", skate: "Skate", progress: "Progress", me: "Profile", compete: "Plan" };
 
 export const tabTarget = (route) => `#nav [data-route="${route === "compete" ? "plan" : route}"]`;
 
@@ -236,7 +236,7 @@ export const TOUR_STEPS = [
     kind: "act",
     target: tabTarget("ice"),
     title: "Find your ice time",
-    text: "Tap Ice.",
+    text: "Tap Ice times.",
     done: (v) => v.route === "ice",
   },
   {
@@ -269,7 +269,7 @@ export const TOUR_STEPS = [
     id: "blade",
     kind: "info",
     route: "home",
-    target: ".backstage .fl",
+    target: "#blade-tile",
     title: "Blade life",
     text: "Blades go dull, so MySkate adds up your time on ice. Most skaters sharpen after 20 to 35 hours. Tap the pencil on the Blade life tile to set your own, and I just got them sharpened to start the count again. The all-time total on your skates never starts over.",
   },

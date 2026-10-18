@@ -14,12 +14,12 @@ test("the typefaces are served from this site, and no page asks Google for them"
   assert.match(read("design/style-tile.html"), /href="\.\.\/css\/fonts\.css"/);
 });
 
-test("every font rule points at a real woff2 file and names one of the two families", () => {
-  assert.equal(faces.length, 6);
+test("every font rule points at a real woff2 file and names the one family", () => {
+  assert.equal(faces.length, 2);
   const files = [];
   for (const f of faces) {
     const family = /font-family:\s*"([^"]+)"/.exec(f)[1];
-    assert.ok(["Bodoni Moda", "Jost"].includes(family), family);
+    assert.equal(family, "Atkinson Hyperlegible Next");
     const file = /url\("\.\.\/(fonts\/[^"]+\.woff2)"\)/.exec(f)[1];
     assert.ok(existsSync(new URL(`../${file}`, import.meta.url)), `${file} is missing`);
     assert.match(f, /font-display:\s*swap/);
@@ -27,14 +27,14 @@ test("every font rule points at a real woff2 file and names one of the two famil
     assert.match(f, /font-weight:\s*\d{3} \d{3}/, "a variable font names its weight range");
     files.push(file);
   }
-  assert.equal(new Set(files).size, 6);
+  assert.equal(new Set(files).size, 2);
 });
 
-test("the font files are genuine woff2 files, and nothing else is in the folder but the README", () => {
+test("the font files are genuine woff2 files, and nothing else is in the folder but the README and the license", () => {
   const dir = new URL("../fonts/", import.meta.url);
   const names = readdirSync(dir).sort();
-  assert.deepEqual(names.filter((n) => n.endsWith(".woff2")).length, 6);
-  assert.deepEqual(names.filter((n) => !n.endsWith(".woff2")), ["README.md"]);
+  assert.deepEqual(names.filter((n) => n.endsWith(".woff2")).length, 2);
+  assert.deepEqual(names.filter((n) => !n.endsWith(".woff2")), ["OFL-atkinson-hyperlegible-next.txt", "README.md"]);
   let total = 0;
   for (const n of names.filter((x) => x.endsWith(".woff2"))) {
     const bytes = readFileSync(new URL(n, dir));
@@ -48,7 +48,6 @@ test("the font files are genuine woff2 files, and nothing else is in the folder 
 test("the fonts folder says where the files came from and how they are licensed", () => {
   const readme = read("fonts/README.md");
   assert.match(readme, /SIL Open Font License/);
-  assert.match(readme, /Bodoni Moda/);
-  assert.match(readme, /Jost/);
-  assert.match(readme, /Copyright 2020 The Bodoni Moda Project Authors/);
+  assert.match(readme, /Atkinson Hyperlegible Next/);
+  assert.match(readme, /Copyright 2020-2024 The Atkinson Hyperlegible Next Project Authors/);
 });

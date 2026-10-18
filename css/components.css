@@ -52,8 +52,8 @@
 }
 
 .card--ice {
-  border-top-color: rgba(246, 233, 207, 0.75);
-  box-shadow: 0 -14px 28px -22px rgba(246, 233, 207, 0.8);
+  border-top-color: rgba(14, 35, 71, 0.75);
+  box-shadow: 0 -14px 28px -22px rgba(14, 35, 71, 0.8);
 }
 
 /* A reminder that should not shout: a thin gold outline. */
@@ -101,7 +101,7 @@
   border-radius: 0;
   background: linear-gradient(180deg, var(--bg1), var(--bg2));
   color: var(--fg);
-  font: italic 600 1.3rem/1.1 var(--font-display);
+  font: 600 1.3rem/1.1 var(--font-display);
   white-space: nowrap;
   cursor: pointer;
   box-shadow: 4px 4px 0 var(--shade);
@@ -149,7 +149,7 @@
 }
 
 .btn--glass:hover {
-  background: rgba(246, 233, 207, 0.08);
+  background: rgba(14, 35, 71, 0.08);
   box-shadow: none;
   transform: none;
 }
@@ -843,7 +843,7 @@ select.input {
   padding: 6px 2px;
   border: 0;
   background: none;
-  color: rgba(246, 233, 207, 0.62);
+  color: rgba(14, 35, 71, 0.62);
   font: 600 0.74rem/1 var(--font-ui);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -928,7 +928,7 @@ select.input {
 }
 
 .sheet__title {
-  font: italic 800 clamp(2rem, 7vw, 2.6rem) / 1.05 var(--font-display);
+  font: 800 clamp(2rem, 7vw, 2.6rem) / 1.05 var(--font-display);
 }
 
 .sheet__foot {
