@@ -43,6 +43,19 @@ export const TOUR_STEPS = [
     ],
   },
   {
+    id: "compete",
+    title: "Plan a competition",
+    lead: "Open Competitions from Home or Plan to plan the skate for an event.",
+    demo: "compete",
+    points: [
+      { b: "Add the competition.", t: "Tap New competition for its day and place, and MySkate counts down. Add its day, from check-in to awards, and a list of what to bring." },
+      { b: "Make a program.", t: "Tap New program for your music, its length, and your elements. You can choose some from your own skills." },
+      { b: "Lay it out, then set it to the music.", t: "Place each element on the rink. Then give each a start and a length, and tap Run it through to practice with a clock." },
+      { b: "Write down how it went.", t: "After the event, record your placing, how each element went, and what your coach said. You can share a poster of the program too." },
+      { b: "Your event's rules come first.", t: "MySkate keeps your plan, not the rules. Check them and ask your coach." },
+    ],
+  },
+  {
     id: "skate",
     title: "On the ice",
     lead: "Open the Skate tab at the rink and tap Start session.",

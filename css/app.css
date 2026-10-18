@@ -984,6 +984,10 @@ select.input {
   width: min(100%, 280px);
 }
 
+.tour-compete {
+  width: 100%;
+}
+
 .tour__demo .pair,
 .tour__demo .blade {
   width: 100%;

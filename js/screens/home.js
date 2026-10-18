@@ -21,6 +21,7 @@ import { sortedGoals } from "../goals.js";
 import { sortedHomework } from "../homework.js";
 import { offIceSummary } from "../office.js";
 import { openOffIceSheet } from "../ui/officesheet.js";
+import { nextEvent, daysUntil, countdownText, programStatus } from "../compete.js";
 
 const ui = { bladeOpen: false, eightKey: null };
 const LIMITS = [20, 25, 30, 35];
@@ -232,6 +233,28 @@ function iceTile(ctx, d) {
   </section>`;
 }
 
+/* The next competition as a small marquee, with how much of its program is planned. With none yet, an invitation to plan one. */
+function competeTile(ctx, d) {
+  const { events, programs } = ctx.state;
+  const ev = nextEvent(events, d.today);
+  if (!ev) {
+    return html`<section class="card tile" aria-labelledby="comp-title">
+      <div class="tile__head"><p class="eyebrow" id="comp-title">Competition</p></div>
+      <p class="dim">Planning for a competition? Lay your program out on the rink, set it to the music, and count down the days.</p>
+      <button class="btn btn--glass btn--small" type="button" data-action="go-compete">${programs.length ? "Open competitions" : "Plan a competition"}</button>
+    </section>`;
+  }
+  const days = daysUntil(ev.date, d.today);
+  const prog = programs.find((p) => p.eventId === ev.id);
+  const st = prog && programStatus(prog);
+  return html`<section class="card tile cp-tile" aria-labelledby="comp-title">
+    <div class="tile__head"><p class="eyebrow" id="comp-title">Next competition</p></div>
+    <button class="cp-sign cp-bulbs" type="button" data-action="go-compete-event" data-id="${ev.id}"><h2>${ev.name}</h2><span class="cp-when">${fmtDate(ev.date, { weekday: "short", month: "short", day: "numeric" })}${ev.place ? " · " + ev.place : ""}</span><span class="cp-cd">${days > 1 ? html`${days}<span>days to go</span>` : countdownText(days)}</span></button>
+    ${prog ? html`<p class="dim">${prog.name} · ${st.planned} of ${st.total} ${st.total === 1 ? "element" : "elements"} planned</p><div class="cp-bar" role="progressbar" aria-label="Program planned" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${st.total ? Math.round((st.planned / st.total) * 100) : 0}"><i style="width:${st.total ? (st.planned / st.total) * 100 : 0}%"></i></div>` : html`<p class="dim">No program attached yet.</p>`}
+    <button class="btn btn--glass btn--small" type="button" data-action="go-compete">Open competitions</button>
+  </section>`;
+}
+
 /* What the ice costs. Only shown once a session has a cost. */
 function costTile(ctx, d) {
   const sum = costSummary(ctx.state.sessions, d.today);
@@ -305,7 +328,7 @@ export function renderHome(ctx) {
     </div>
     <div class="home__rest">
       ${glance(ctx, d)}
-      <div class="tiles">${badgeTile(ctx)}${homeworkTile(ctx, d)}${goalsTile(ctx, d)}${offIceTile(ctx, d)}${testTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
+      <div class="tiles">${competeTile(ctx, d)}${badgeTile(ctx)}${homeworkTile(ctx, d)}${goalsTile(ctx, d)}${offIceTile(ctx, d)}${testTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
       ${recent(ctx, d)}
       ${nudge(ctx)}
     </div>
@@ -350,6 +373,10 @@ export function homeActions(ctx) {
   return {
     "go-plan": () => ctx.go("plan"),
     "go-ice": () => ctx.go("ice"),
+    "go-compete": () => ctx.go("compete"),
+    "go-compete-event": (el) => {
+      location.hash = `#/compete/e/${el.dataset.id}`;
+    },
     "log-off": () => openOffIceSheet(ctx),
     "go-tests": () => {
       showTests();

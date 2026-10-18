@@ -4,8 +4,9 @@ import { html, uid, todayISO } from "../util.js";
 import { openSheet, confirmSheet, toast, $, $$ } from "./dom.js";
 import { pickSkill } from "./skillpick.js";
 import { keepAwake } from "../wake.js";
+import { fmtTime as clockText } from "../ice.js";
 import {
-  newEvent, newProgram, sanitizeEvent, addElement, updateElement, removeElement, addMoment, cueAt, roman,
+  newEvent, newProgram, sanitizeDayItem, sanitizeEvent, addElement, updateElement, removeElement, addMoment, cueAt, roman,
   KINDS, ELEMENT_TYPES, LIMITS, DEFAULT_LENGTH, fmtMmSs, parseMmSs,
 } from "../compete.js";
 import { fmtDate } from "../util.js";
@@ -274,3 +275,43 @@ export function openRunThrough(ctx, programId) {
   });
   return sheet.closed.then(() => stop());
 }
+
+/* One thing in a competition's day: check-in, warm-up, the Zamboni, your skate. Add or edit; edit has Remove. Resolves true when changed. */
+export async function openDayItemSheet(ctx, eventId, itemId = null) {
+  const event = ctx.state.events.find((e) => e.id === eventId);
+  if (!event) return false;
+  const item = itemId ? event.day.find((d) => d.id === itemId) : null;
+  const sheet = openSheet(
+    html`<h2 class="sheet__title sheet__title--small">${item ? "Edit this part of the day" : "Add to the day"}</h2>
+      <label class="field"><span>What</span><input class="input" id="di-label" type="text" maxlength="${LIMITS.name}" value="${item ? item.label : ""}" placeholder="Warm-up, group 2" autocomplete="off"></label>
+      <label class="field"><span>Time</span><input class="input" id="di-time" type="time" value="${item ? item.time : ""}"></label>
+      <label class="field"><span>How many minutes (optional)</span><input class="input input--num" id="di-mins" type="number" inputmode="numeric" min="0" max="600" value="${item && item.mins ? item.mins : ""}"></label>
+      <label class="field field--check"><span><input type="checkbox" id="di-mine" ${item && item.mine ? "checked" : ""}> This is my skate</span></label>
+      <p class="note">Use the times your event posts. A part called Zamboni gets its yellow and black stripes.</p>
+      <p class="status status--warn" role="alert" hidden></p>
+      <div class="sheet__foot">${item ? html`<button class="btn btn--coral btn--small" type="button" id="di-remove">Remove</button>` : html`<button class="btn btn--glass btn--small" type="button" data-close="cancel">Cancel</button>`}<button class="btn btn--small" type="button" id="di-save">${item ? "Save" : "Add"}</button></div>`,
+    { label: item ? "Edit this part of the day" : "Add to the day", sticky: true }
+  );
+  const root = sheet.dialog;
+  const fail = failer(root);
+  $("#di-label", root).focus();
+  let changed = false;
+  const store = (day) => {
+    ctx.state.events = ctx.state.events.map((e) => (e.id === eventId ? { ...e, day } : e));
+    ctx.save();
+    changed = true;
+    sheet.close("saved");
+  };
+  $("#di-save", root).addEventListener("click", () => {
+    const made = sanitizeDayItem({ id: item ? item.id : uid(), label: $("#di-label", root).value, time: $("#di-time", root).value, mins: Number($("#di-mins", root).value) || 0, mine: $("#di-mine", root).checked });
+    if (!made) return fail("Give it a name and a time.");
+    if (!item && event.day.length >= LIMITS.day) return fail(`A day holds up to ${LIMITS.day} parts.`);
+    store(item ? event.day.map((d) => (d.id === item.id ? made : d)) : [...event.day, made]);
+  });
+  const remove = $("#di-remove", root);
+  if (remove) remove.addEventListener("click", () => store(event.day.filter((d) => d.id !== item.id)));
+  await sheet.closed;
+  return changed;
+}
+
+export { clockText };

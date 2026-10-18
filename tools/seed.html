@@ -65,7 +65,8 @@
       { id: "m5", label: "One-foot spin", type: "spin", skillId: ids[6], x: 0.78, y: 0.68, at: 62, dur: 14 },
       { id: "m6", label: "Closing pose", type: "pose", skillId: "", x: 0.9, y: 0.3, at: 80, dur: 10 },
     ];
-    st.events = [past, ev];
+    if (q.get("result") === "1") ev.result = { programId: "p1", placing: 2, of: 9, marks: { m2: "clean", m3: "clean", m4: "clean", m5: "shaky", m6: "clean" }, note: "Felt calm on the ice", coach: "Keep the free leg quiet in the spin. Everything else, lovely.", recordedOn: iso(0) };
+    st.events = [past, ev, { id: "e2", name: "Spring Showcase", date: iso(-140), place: "Lynnwood Ice Center", note: "", day: [], bring: [], result: null }];
     st.programs = [{ id: "p1", name: "Moonlight", music: { title: "Clair de Lune", artist: "Debussy" }, lengthSec: 90, kind: "free", eventId: "e1", note: "", elements: els, moments: [{ id: "n1", at: 30, text: "the music swells" }, { id: "n2", at: 65, text: "crescendo" }], created: iso(5) }];
   }
   if (scene === "active") {

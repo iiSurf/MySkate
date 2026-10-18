@@ -233,6 +233,7 @@ export function renderPlan(ctx) {
         </section>
         ${goalsCard(ctx, d)}
         ${homeworkCard(ctx, d)}
+        <section class="card" aria-labelledby="comp-title"><div class="split"><p class="eyebrow" id="comp-title">Competitions</p><button class="chip" type="button" data-action="go-compete">Open</button></div><p class="dim">Plan the skate for your next competition: the music, the elements, where they go on the rink, and the day.</p></section>
         ${suggested}
         ${lists}
         <button class="btn btn--glass" type="button" data-action="browse">Browse every skill</button>
@@ -253,6 +254,7 @@ function openBrowse(ctx) {
 
 export function planActions(ctx) {
   return {
+    "go-compete": () => ctx.go("compete"),
     toggle: (el) => {
       ctx.togglePlan(el.dataset.id);
       ctx.update();

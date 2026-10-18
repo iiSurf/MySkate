@@ -30,6 +30,7 @@ const DEMOS = {
     <div class="tour-skates">${miniSkates(4)}</div>
     <div class="pair"><span class="btn btn--block">+ Landed</span><span class="btn btn--glass btn--block">+ Missed</span></div>`,
   grow: () => html`<div class="tour-eight">${eightSvg({ fraction: 1 / STREAK_MIN, complete: false, count: 1, needed: STREAK_MIN, loops: [{ date: "2026-10-13", onIceSec: 2400 }, null] }, { tiny: "Your turn", go: "STEP ON" })}</div>`,
+  compete: () => html`<div class="tour-compete cp-tile"><div class="cp-sign cp-bulbs"><h2>Fall Classic</h2><span class="cp-when">Sat Nov 14 · Highland Ice Arena</span><span class="cp-cd">28<span>days to go</span></span></div></div>`,
   blade: () => html`<div class="hours"><span class="num">17.5</span> <span class="dim">of 25 hours before sharpening</span></div>${bladeArt(70)}`,
   data: () => html`<div class="cluster"><span class="btn btn--small">Save a backup</span><span class="btn btn--glass btn--small">Spreadsheet (CSV)</span></div>
     <p class="note">Stays on this device</p>`,

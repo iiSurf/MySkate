@@ -7,14 +7,16 @@ import { icon } from "../ui/parts.js";
 import { toast, confirmSheet, $ } from "../ui/dom.js";
 import {
   competeHref, parseCompeteHash, seasonLabel, nextEvent, upcomingEvents, pastEvents, daysUntil, countdownText, programStatus, readiness,
-  kindName, fmtMmSs, parseMmSs, placingText, roman, typeName, KINDS, ELEMENT_TYPES, LIMITS, sanitizeProgram, moveElement, shiftElement,
-  removeElement, spreadEvenly, setLength, removeMoment, timelineBlocks, overlaps, programSpan,
+  kindName, fmtMmSs, parseMmSs, placingText, roman, typeName, markName, KINDS, ELEMENT_TYPES, MARKS, LIMITS, sanitizeProgram, sanitizeResult,
+  moveElement, shiftElement, removeElement, spreadEvenly, setLength, removeMoment, timelineBlocks, overlaps, programSpan, sortDay,
 } from "../compete.js";
-import { openEventSheet, openProgramSheet, openElementSheet, openMomentSheet, openRunThrough, replaceProgram } from "../ui/competesheets.js";
+import { uid, todayISO } from "../util.js";
+import { openEventSheet, openProgramSheet, openElementSheet, openMomentSheet, openRunThrough, openDayItemSheet, replaceProgram, clockText } from "../ui/competesheets.js";
 import { rinkInner, mountRink, RINK } from "../ui/rink.js";
+import { sharePoster } from "../ui/share.js";
 
 /* What the screen remembers between redraws: the selected element, and the kind last added. */
-const ui = { programId: null, sel: null, lastType: "move" };
+const ui = { programId: null, sel: null, lastType: "move", editResult: false, draft: null, draftFor: null };
 
 const go = (href) => {
   if (location.hash !== href) location.hash = href;
@@ -135,7 +137,7 @@ function setupTab(ctx, p) {
       <label class="cp-f"><span>Notes</span><textarea class="cp-in cp-in--small" data-input="pg-note" rows="2" maxlength="${LIMITS.note}" placeholder="What this program is about, or what your coach said">${p.note}</textarea></label>
       <p class="note">Your event decides the length and what is required. Check its rules and ask your coach.</p>
     </section>
-    <div class="cp-actions"><button class="cp-ghost cp-ghost--danger" type="button" data-action="delete-program">Delete this program</button></div>`;
+    <div class="cp-actions"><button class="cp-ghost" type="button" data-action="share-poster" data-id="${p.id}">Share a poster</button><button class="cp-ghost cp-ghost--danger" type="button" data-action="delete-program">Delete this program</button></div>`;
 }
 
 /* Layout: the rink, the marks on it, and the running order. */
@@ -205,10 +207,103 @@ function programView(ctx, route, d) {
   </div>`;
 }
 
+const eventOf = (ctx, id) => ctx.state.events.find((e) => e.id === id) || null;
+
+/* The day, in time order, with your skate stood out and the Zamboni in its stripes. */
+function dayList(ev) {
+  const items = sortDay(ev.day);
+  if (!items.length) return html`<p class="note">Nothing yet. Add check-in, warm-up, and your skate, with the times your event posts.</p>`;
+  return html`<ol class="cp-dayl">${items.map((i) => html`<li class="cp-di${i.mine ? " is-mine" : ""}${/zamboni|resurfac/i.test(i.label) ? " is-zam" : ""}"><span class="cp-di__t">${clockText(i.time)}</span><button class="cp-di__b" type="button" data-action="edit-day" data-id="${i.id}" aria-label="Edit: ${i.label}, ${clockText(i.time)}"><b>${i.label}</b>${i.mins ? html`<small>${i.mins} min</small>` : ""}</button></li>`)}</ol>`;
+}
+
+function resultCard(ctx, ev, program) {
+  const r = ev.result;
+  if (!r) return "";
+  return html`<section class="cp-score" aria-label="Result">${scoreboard(ctx, ev, program)}</section>`;
+}
+
+/* The kiss and cry: how it went, as a scoreboard. */
+function scoreboard(ctx, ev, program) {
+  const r = ev.result;
+  const marks = program ? program.elements.filter((e) => r.marks[e.id]) : [];
+  const nxt = nextEvent(ctx.state.events.filter((e) => e.id !== ev.id), todayISO());
+  return html`<div class="cp-tv">
+      <div class="cp-tv__bar"><b>Kiss &amp; cry</b><span>${ev.name} · ${fmtDate(ev.date, { month: "short", day: "numeric", year: "numeric" })}</span></div>
+      <div class="cp-tv__lower"><i></i><div><small>${ctx.state.profile.name || "Skater"}${program ? " · " + kindName(program.kind) : ""}</small><b>${program ? program.name : ev.name}</b></div></div>
+      ${r.placing ? html`<div class="cp-tv__score"><small>Placing</small><span class="num">${placingText(r)}</span></div>` : ""}
+      ${marks.length ? html`<ol class="cp-tv__els">${marks.map((e) => html`<li><span>${roman(program.elements.indexOf(e) + 1)}</span>${e.label}<em class="is-${r.marks[e.id]}">${markName(r.marks[e.id]).toLowerCase()}</em></li>`)}</ol>` : ""}
+      ${r.coach ? html`<p class="cp-tv__q"><b>Coach:</b> ${r.coach}</p>` : ""}
+      ${r.note ? html`<p class="cp-tv__q"><b>You:</b> ${r.note}</p>` : ""}
+      ${nxt ? html`<p class="cp-tv__next">Next skater: <b>you</b> · ${nxt.name} · ${fmtDate(nxt.date, { month: "short", day: "numeric" })}</p>` : ""}
+    </div>`;
+}
+
 function eventView(ctx, route, d) {
-  const e = ctx.state.events.find((x) => x.id === route.id);
-  if (!e) return hubView(ctx, d);
-  return html`<div class="cp"><button class="cp-back" type="button" data-action="back-hub">‹ Competitions</button><h1 class="cp-ttl">${e.name}</h1></div>`;
+  const ev = eventOf(ctx, route.id);
+  if (!ev) return hubView(ctx, d);
+  if (route.results) return resultsView(ctx, ev, d);
+  const days = daysUntil(ev.date, d.today);
+  const here = ctx.state.programs.filter((p) => p.eventId === ev.id);
+  const free = ctx.state.programs.filter((p) => !p.eventId);
+  const program = ev.result && ev.result.programId ? ctx.state.programs.find((p) => p.id === ev.result.programId) : here[0] || null;
+  return html`<div class="cp">
+    <button class="cp-back" type="button" data-action="back-hub">‹ Competitions</button>
+    <header>
+      <h1 class="cp-ttl">${ev.name}</h1>
+      <p class="cp-sub">${fmtDate(ev.date, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}${ev.place ? " · " + ev.place : ""}</p>
+      <p class="cp-sub"><span class="cp-when-chip ${days < 0 ? "is-past" : ""}">${days >= 0 ? (days > 1 ? `${days} days to go` : countdownText(days)) : countdownText(days)}</span> <button class="cp-link" type="button" data-action="edit-event">Edit</button></p>
+    </header>
+    ${resultCard(ctx, ev, program)}
+    <section class="cp-section" aria-label="Programs for this competition">
+      <p class="cp-label">Programs</p>
+      ${here.length
+        ? html`<div>${here.map((p) => html`<button class="cp-row" type="button" data-action="open-program" data-id="${p.id}"><span>${p.name}<small>${kindName(p.kind)} · ${fmtMmSs(p.lengthSec)} · ${p.elements.length} ${p.elements.length === 1 ? "element" : "elements"}${programStatus(p).done ? " · planned" : ""}</small></span><b>Open</b></button>`)}</div><div class="cp-chips">${here.map((p) => html`<button class="cp-chip" type="button" data-action="share-poster" data-id="${p.id}">Share a poster: ${p.name}</button>`)}</div>`
+        : html`<p class="note">No program yet. Attach one you have started, or begin a new one for this competition.</p>`}
+      <div class="cp-chips">${free.map((p) => html`<button class="cp-chip" type="button" data-action="attach" data-id="${p.id}">Attach ${p.name}</button>`)}<button class="cp-chip" type="button" data-action="new-program-here">+ New program</button></div>
+    </section>
+    <section class="cp-section" aria-label="The day">
+      <p class="cp-label">The day</p>
+      <div class="cp-paper cp-day">${dayList(ev)}<div class="cp-actions"><button class="cp-ghost cp-ghost--ink" type="button" data-action="add-day">Add to the day</button></div></div>
+    </section>
+    <section class="cp-section" aria-label="What to bring">
+      <p class="cp-label">What to bring</p>
+      <ul class="cp-bring">${ev.bring.map((b) => html`<li><button class="cp-chk" type="button" role="checkbox" aria-checked="${b.done}" data-action="bring-toggle" data-id="${b.id}"><i>${icon("check")}</i><span>${b.text}</span></button><button class="icon-btn icon-btn--sm" type="button" data-action="bring-remove" data-id="${b.id}" aria-label="Remove: ${b.text}">${icon("x")}</button></li>`)}</ul>
+      <div class="cp-addrow"><input class="input" data-input="bring-new" type="text" maxlength="${LIMITS.text}" placeholder="Add something to bring" aria-label="Something to bring" autocomplete="off"><button class="cp-ghost" type="button" data-action="bring-add">Add</button></div>
+    </section>
+    <div class="cp-actions"><button class="cp-obtn" type="button" data-action="open-results"><span>${ev.result ? "See the result" : days <= 0 ? "Record the result" : "Result, afterwards"}</span>${icon("right")}</button></div>
+    <div class="cp-actions"><button class="cp-ghost cp-ghost--danger" type="button" data-action="delete-event">Delete this competition</button></div>
+  </div>`;
+}
+
+/* The result form: placing, how each element went, and what was said. Held as a draft until saved. */
+function resultsView(ctx, ev, d) {
+  const here = ctx.state.programs.filter((p) => p.eventId === ev.id);
+  if (!ui.draft || ui.draftFor !== ev.id) {
+    const r = ev.result;
+    ui.draftFor = ev.id;
+    ui.draft = { programId: (r && r.programId) || (here[0] && here[0].id) || "", placing: r && r.placing ? String(r.placing) : "", of: r && r.of ? String(r.of) : "", marks: { ...(r ? r.marks : {}) }, coach: r ? r.coach : "", note: r ? r.note : "" };
+    ui.editResult = !r;
+  }
+  const dr = ui.draft;
+  const program = ctx.state.programs.find((p) => p.id === dr.programId) || null;
+  const back = html`<button class="cp-back" type="button" data-action="back-event" data-id="${ev.id}">‹ ${ev.name}</button>`;
+  if (ev.result && !ui.editResult) {
+    return html`<div class="cp">${back}<header><h1 class="cp-ttl">How it went</h1></header><section class="cp-score">${scoreboard(ctx, ev, program)}</section>
+      <div class="cp-actions"><button class="cp-obtn" type="button" data-action="back-hub"><span>Plan the next one</span>${icon("right")}</button><button class="cp-ghost" type="button" data-action="edit-result">Edit the result</button></div></div>`;
+  }
+  return html`<div class="cp">${back}
+    <header><h1 class="cp-ttl">How did it go?</h1><p class="cp-sub">${ev.name}, ${fmtDate(ev.date, { month: "long", day: "numeric", year: "numeric" })}. Only what you want to remember.</p></header>
+    <section class="cp-paper cp-form">
+      <div class="cp-f cp-f--row"><label><span>Placing</span><input class="cp-in cp-in--time" data-input="rs-placing" type="text" inputmode="numeric" value="${dr.placing}" placeholder="2" aria-label="Your placing, like 2" autocomplete="off"></label><label><span>Out of</span><input class="cp-in cp-in--time" data-input="rs-of" type="text" inputmode="numeric" value="${dr.of}" placeholder="9" aria-label="How many skaters" autocomplete="off"></label></div>
+      ${here.length > 1 ? html`<label class="cp-f"><span>Program</span><select class="cp-in cp-in--small" data-input="rs-program">${here.map((p) => html`<option value="${p.id}" ${p.id === dr.programId ? "selected" : ""}>${p.name}</option>`)}</select></label>` : ""}
+      ${program && program.elements.length
+        ? html`<div class="cp-f"><span>How each element went</span><div class="cp-marks">${program.elements.map((e, i) => html`<div class="cp-mk"><b>${roman(i + 1)}. ${e.label}</b><div class="cp-kinds" role="group" aria-label="${e.label}">${MARKS.map((m) => html`<button type="button" data-action="set-mark" data-id="${e.id}" data-mark="${m.id}" aria-pressed="${dr.marks[e.id] === m.id}">${m.name}</button>`)}</div></div>`)}</div></div>`
+        : html`<p class="note">Attach a program to this competition to mark how each element went.</p>`}
+      <label class="cp-f"><span>What your coach said</span><textarea class="cp-in cp-in--small" data-input="rs-coach" rows="2" maxlength="${LIMITS.note}" placeholder="Keep the free leg quiet in the spin">${dr.coach}</textarea></label>
+      <label class="cp-f"><span>Your own note</span><textarea class="cp-in cp-in--small" data-input="rs-note" rows="2" maxlength="${LIMITS.note}" placeholder="How it felt">${dr.note}</textarea></label>
+    </section>
+    <div class="cp-actions"><button class="cp-obtn" type="button" data-action="save-result"><span>Save the result</span>${icon("right")}</button>${ev.result ? html`<button class="cp-ghost cp-ghost--danger" type="button" data-action="clear-result">Remove the result</button>` : ""}</div>
+  </div>`;
 }
 
 export function renderCompete(ctx) {
@@ -247,6 +342,9 @@ export function mountCompete(ctx) {
 }
 
 const routeNow = () => parseCompeteHash(location.hash);
+
+/* "2" as 2, and anything that is not a plain whole number (up to three digits) as nothing. */
+const wholeNumber = (v) => (/^\d{1,3}$/.test(String(v).trim()) ? Number(String(v).trim()) : null);
 
 export function competeActions(ctx) {
   const prog = () => programOf(ctx, routeNow().id);
@@ -334,6 +432,90 @@ export function competeActions(ctx) {
       ctx.update();
     },
     run: () => openRunThrough(ctx, routeNow().id),
+    "edit-event": async () => {
+      await openEventSheet(ctx, eventOf(ctx, routeNow().id));
+      ctx.update();
+    },
+    "share-poster": async (el) => {
+      const p = programOf(ctx, el.dataset.id);
+      if (p) await sharePoster(p, eventOf(ctx, p.eventId), ctx.state.profile.name);
+    },
+    "back-event": (el) => go(competeHref({ view: "event", id: el.dataset.id })),
+    "open-results": () => go(competeHref({ view: "event", id: routeNow().id, results: true })),
+    attach: (el) => {
+      const ev = routeNow().id;
+      replaceProgram(ctx, { ...programOf(ctx, el.dataset.id), eventId: ev });
+      ctx.update();
+    },
+    "new-program-here": async () => {
+      const id = await openProgramSheet(ctx, { eventId: routeNow().id });
+      if (id) go(competeHref({ view: "program", id, tab: "layout" }));
+    },
+    "add-day": async () => {
+      if (await openDayItemSheet(ctx, routeNow().id)) ctx.update();
+    },
+    "edit-day": async (el) => {
+      if (await openDayItemSheet(ctx, routeNow().id, el.dataset.id)) ctx.update();
+    },
+    "bring-toggle": (el) => {
+      const ev = eventOf(ctx, routeNow().id);
+      ctx.state.events = ctx.state.events.map((e) => (e.id === ev.id ? { ...e, bring: e.bring.map((b) => (b.id === el.dataset.id ? { ...b, done: !b.done } : b)) } : e));
+      ctx.save();
+      ctx.update();
+    },
+    "bring-remove": (el) => {
+      const ev = eventOf(ctx, routeNow().id);
+      ctx.state.events = ctx.state.events.map((e) => (e.id === ev.id ? { ...e, bring: e.bring.filter((b) => b.id !== el.dataset.id) } : e));
+      ctx.save();
+      ctx.update();
+    },
+    "bring-add": () => {
+      const input = $('[data-input="bring-new"]');
+      const text = input.value.trim();
+      const ev = eventOf(ctx, routeNow().id);
+      if (!text) return input.focus();
+      if (ev.bring.length >= LIMITS.bring) return toast(`A list holds up to ${LIMITS.bring} things.`);
+      ctx.state.events = ctx.state.events.map((e) => (e.id === ev.id ? { ...e, bring: [...e.bring, { id: uid(), text: text.slice(0, LIMITS.text), done: false }] } : e));
+      ctx.save();
+      ctx.update();
+    },
+    "delete-event": async () => {
+      const ev = eventOf(ctx, routeNow().id);
+      if (!(await confirmSheet({ title: "Delete this competition?", message: `${ev.name}, its day, its list, and its result are removed. Your programs stay, and are no longer attached to it. This cannot be undone, so save a backup first if you are unsure.`, confirmLabel: "Delete" }))) return;
+      ctx.state.events = ctx.state.events.filter((e) => e.id !== ev.id);
+      ctx.state.programs = ctx.state.programs.map((p) => (p.eventId === ev.id ? { ...p, eventId: "" } : p));
+      ctx.save();
+      toast("Competition deleted.");
+      go(competeHref());
+    },
+    "set-mark": (el) => {
+      const dr = ui.draft;
+      dr.marks[el.dataset.id] = dr.marks[el.dataset.id] === el.dataset.mark ? undefined : el.dataset.mark;
+      if (dr.marks[el.dataset.id] === undefined) delete dr.marks[el.dataset.id];
+      ctx.update();
+    },
+    "edit-result": () => {
+      ui.editResult = true;
+      ctx.update();
+    },
+    "save-result": () => {
+      const ev = eventOf(ctx, routeNow().id);
+      const dr = ui.draft;
+      const result = sanitizeResult({ programId: dr.programId, placing: wholeNumber(dr.placing), of: wholeNumber(dr.of), marks: dr.marks, coach: dr.coach, note: dr.note, recordedOn: todayISO() });
+      ctx.state.events = ctx.state.events.map((e) => (e.id === ev.id ? { ...e, result } : e));
+      ctx.save();
+      ui.editResult = false;
+      toast("Result saved.");
+      go(competeHref({ view: "event", id: ev.id }));
+    },
+    "clear-result": async () => {
+      const ev = eventOf(ctx, routeNow().id);
+      if (!(await confirmSheet({ title: "Remove the result?", message: "The placing, the marks, and the notes for this competition are removed.", confirmLabel: "Remove" }))) return;
+      ctx.state.events = ctx.state.events.map((e) => (e.id === ev.id ? { ...e, result: null } : e));
+      ctx.save();
+      ui.draft = null;
+      go(competeHref({ view: "event", id: ev.id }));
+    },
     "add-moment": async () => {
       if (await openMomentSheet(ctx, routeNow().id)) ctx.update();
     },
@@ -381,6 +563,18 @@ export function competeInputs(ctx) {
         else editElement(el, { at: sec });
       }
       ctx.update();
+    },
+    "rs-placing": (el) => (ui.draft.placing = el.value),
+    "rs-of": (el) => (ui.draft.of = el.value),
+    "rs-program": (el, event) => {
+      ui.draft.programId = el.value;
+      ui.draft.marks = {};
+      if (event.type === "change") ctx.update();
+    },
+    "rs-coach": (el) => (ui.draft.coach = el.value),
+    "rs-note": (el) => (ui.draft.note = el.value),
+    "bring-new": (el, event) => {
+      if (event.type === "change" && el.value.trim()) el.closest(".cp-addrow").querySelector('[data-action="bring-add"]').focus();
     },
     "el-dur": (el, event) => {
       if (event.type !== "change") return;

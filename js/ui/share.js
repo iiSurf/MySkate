@@ -139,6 +139,95 @@ export async function badgeImage(badge, name = "") {
   return toBlob(canvas);
 }
 
+/* The poster for a program: a theater marquee with the skater's name in lights, the program, and the competition. Only what the skater
+   entered goes on it. */
+export async function posterImage(program, event, name = "") {
+  await loadFonts();
+  const [canvas, c] = makeCanvas();
+  const bg = c.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, "#1a0a22");
+  bg.addColorStop(1, "#0a0614");
+  c.fillStyle = bg;
+  c.fillRect(0, 0, W, H);
+  const glow = c.createRadialGradient(W / 2, 620, 80, W / 2, 620, 760);
+  glow.addColorStop(0, "rgba(255, 190, 100, 0.28)");
+  glow.addColorStop(1, "rgba(255, 190, 100, 0)");
+  c.fillStyle = glow;
+  c.fillRect(0, 0, W, H);
+
+  /* the marquee panel, with a ring of bulbs around it */
+  const x = 90, y = 90, w = W - 180, h = H - 180, r = 90;
+  const panel = c.createLinearGradient(0, y, 0, y + h);
+  panel.addColorStop(0, "#5a1230");
+  panel.addColorStop(1, "#36091d");
+  c.fillStyle = panel;
+  c.beginPath();
+  c.roundRect(x, y, w, h, r);
+  c.fill();
+  const bulbs = [];
+  const gap = 46;
+  for (let px = x + r; px <= x + w - r; px += gap) bulbs.push([px, y], [px, y + h]);
+  for (let py = y + r; py <= y + h - r; py += gap) bulbs.push([x, py], [x + w, py]);
+  for (let a = 0; a < 4; a++) {
+    const cx = a % 2 ? x + w - r : x + r;
+    const cy = a < 2 ? y + r : y + h - r;
+    for (let t = 0; t <= 6; t++) {
+      const ang = (Math.PI / 2) * (a === 0 ? 2 + t / 6 : a === 1 ? 3 + t / 6 : a === 3 ? 0 + t / 6 : 1 + t / 6);
+      bulbs.push([cx + Math.cos(ang) * r, cy + Math.sin(ang) * r]);
+    }
+  }
+  for (const [bx, by] of bulbs) {
+    c.shadowColor = "rgba(255, 210, 120, 0.95)";
+    c.shadowBlur = 18;
+    c.fillStyle = "#ffdf9a";
+    c.beginPath();
+    c.arc(bx, by, 9, 0, Math.PI * 2);
+    c.fill();
+  }
+  c.shadowBlur = 0;
+
+  c.textAlign = "center";
+  c.fillStyle = "#ffd98a";
+  c.font = '700 40px "Jost", system-ui, sans-serif';
+  c.fillText("O N E   N I G H T   O N L Y", W / 2, 270);
+  c.shadowColor = "rgba(255, 200, 100, 0.8)";
+  c.shadowBlur = 34;
+  c.fillStyle = "#fbeed0";
+  let who = (name || "Skater").trim();
+  let size = 270;
+  do {
+    c.font = `italic 600 ${size}px "Bodoni Moda", Georgia, serif`;
+    size -= 10;
+  } while (c.measureText(who).width > w - 120 && size > 90);
+  c.fillText(who, W / 2, 560);
+  c.shadowBlur = 0;
+  c.fillStyle = "#ffd98a";
+  c.font = 'italic 500 58px "Bodoni Moda", Georgia, serif';
+  c.fillText("in", W / 2, 660);
+  c.fillStyle = "#fbeed0";
+  c.font = '700 110px "Bodoni Moda", Georgia, serif';
+  const nameBottom = wrap(c, program.name, W / 2, 790, w - 140, 120);
+  c.fillStyle = "#ffd98a";
+  c.font = '600 42px "Jost", system-ui, sans-serif';
+  const lines = [[program.kind === "free" ? "Free skate" : program.kind === "short" ? "Short program" : program.kind === "showcase" ? "Showcase" : program.kind === "exhibition" ? "Exhibition" : ""].filter(Boolean).join(""), program.music.title ? (program.music.artist ? `${program.music.title}, ${program.music.artist}` : program.music.title) : ""].filter(Boolean);
+  if (event) {
+    lines.push(event.name);
+    lines.push(fmtDate(event.date, { weekday: "long", month: "long", day: "numeric", year: "numeric" }));
+    if (event.place) lines.push(event.place);
+  }
+  let ly = Math.max(nameBottom + 20, 900);
+  for (const line of lines) {
+    let text = line.toUpperCase();
+    while (c.measureText(text).width > w - 120 && text.length > 6) text = text.slice(0, -2).trimEnd() + "…";
+    c.fillText(text, W / 2, ly);
+    ly += 54;
+  }
+  c.fillStyle = "rgba(255, 217, 138, 0.8)";
+  c.font = '600 32px "Jost", system-ui, sans-serif';
+  c.fillText("M Y S K A T E", W / 2, y + h - 40);
+  return toBlob(canvas);
+}
+
 /* The picture for a friend card: the level in the medal, the name, and four numbers. */
 export async function cardImage(card) {
   await loadFonts();
@@ -204,6 +293,11 @@ async function pictureOf(make, what) {
 export async function shareBadge(badge, name = "") {
   const blob = await pictureOf(() => badgeImage(badge, name), "badge");
   if (blob) await sendImage(blob, `myskate-${badge.id}.jpg`, `${badge.name} · MySkate`, `I earned the ${badge.name} badge on MySkate.`);
+}
+
+export async function sharePoster(program, event, name = "") {
+  const blob = await pictureOf(() => posterImage(program, event, name), "poster");
+  if (blob) await sendImage(blob, "myskate-poster.jpg", `${program.name} · MySkate`, event ? `${program.name} at ${event.name}` : program.name);
 }
 
 export async function shareCardPicture(card) {
