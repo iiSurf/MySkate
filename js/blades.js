@@ -16,6 +16,11 @@ export function lifetimeHours(state) {
   return state.blades.lifetimeBase + state.sessions.reduce((sum, s) => sum + s.onIceSec, 0) / 3600;
 }
 
+/* The same in whole seconds, for showing as hours, minutes, and seconds. */
+export function lifetimeSeconds(state) {
+  return Math.round(lifetimeHours(state) * 3600);
+}
+
 /* Say how many hours are on the blades since the last sharpening. The difference is hours added (or taken off) by hand, so it goes
    into the all-time total too: the all-time total never has fewer hours than the blades do. */
 export function setBladeHours(state, wanted) {

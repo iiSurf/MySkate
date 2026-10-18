@@ -585,21 +585,40 @@ select.input {
 
 /* The all-time total on the skates, under the blade life: it never starts over when the blades are sharpened. */
 .alltime {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--sp-3);
+  display: grid;
+  gap: var(--sp-1);
   padding-top: var(--sp-3);
   border-top: 1px solid var(--rule-gold);
 }
 
+/* 10 hrs 14 mins 13 secs: the numbers big, the units small. */
 .alltime__n {
-  white-space: nowrap;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 6px;
 }
 
 .alltime .num {
   font-size: 1.9rem;
   line-height: 1;
+}
+
+.alltime .dim {
+  margin-right: 6px;
+}
+
+/* The hours and minutes boxes in the blade editor */
+.hm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.hm .input {
+  width: 5.5rem;
+  min-width: 0;
 }
 
 .blade {

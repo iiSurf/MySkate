@@ -601,3 +601,23 @@ The skater asked for an all-time on-ice hours total for the skating blades, upda
 ### Not verified
 
 A real phone and Safari. The Backstage row on Home does not redraw while the blade editor is typed in (the blades row there did not either); it is right again as soon as the screen redraws. One total, not one per pair of skates: a new pair needs the number set again by hand.
+
+## 2026-10-17 (Saturday, late night): the all-time total in hours, minutes, and seconds
+
+### Plan
+
+The skater saw the all-time total as 10.8 and wanted it as hours, minutes, and seconds ("10 hrs 14 mins 13 secs"), with the seconds only if they are needed.
+
+### Changes
+
+- `durationParts`, `fmtDuration`, and `fmtDurationShort` in `js/util.js`: a time as hours, minutes, and seconds. What is zero at the front is left out ("14 mins 13 secs"), so is what is zero at the end (no seconds when there are none: "10 hrs 14 mins"), a zero in the middle stays ("3 hrs 0 mins 20 secs"), one is singular, and nothing is "0 mins". `lifetimeSeconds` in `js/blades.js` gives the total in whole seconds.
+- The all-time total now reads that way on the Blade life tile (big numbers, small units), on the Backstage board (spelled on the flaps as "10 H 14 M 13 S", and read out in words), and on Progress. In the blade editor the all-time box is now an hours box and a minutes box, kept as you type (minutes above 59 are ignored; leaving a box shows what is kept).
+- On Progress the line no longer states the time from before MySkate: it is worked out from what was typed minus the sessions, so it showed odd seconds nobody entered.
+
+### Verified
+
+253 tests pass in four time zones, including new ones for the format (the skater's example, the leading and trailing zeros, the middle zero, singular units, odd input, and that the longest total still fits on the flap board). In a real browser: the tile, the board, and Progress show 10 hrs 48 mins 6 secs for the made-up sessions, typing 150 hours 30 minutes shows 150 hrs 30 mins, 75 minutes is ignored, and the longest possible total (20010 hrs 48 mins 6 secs) fits at 320, 390, and 1280 wide with no sideways scrolling.
+
+### Not verified
+
+A real phone and Safari. The older stats (hours this week, this month, and in all on Home and Progress) are still decimal hours, like 10.8.

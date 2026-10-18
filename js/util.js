@@ -86,6 +86,29 @@ export function fmtMinutes(min) {
   return `${m} min`;
 }
 
+/* A length of time as hours, minutes, and seconds: [{ n: 10, unit: "hrs" }, { n: 14, unit: "mins" }, { n: 13, unit: "secs" }]. What is zero at
+   the front is left out, and so is what is zero at the end (so no seconds when there are none); a zero in the middle stays. Nothing at all
+   is "0 mins". */
+export function durationParts(totalSec) {
+  const t = Math.max(0, Math.round(Number(totalSec) || 0));
+  const values = [Math.floor(t / 3600), Math.floor((t % 3600) / 60), t % 60];
+  const first = values.findIndex((v) => v > 0);
+  if (first < 0) return [{ n: 0, unit: "mins" }];
+  const last = values.length - 1 - [...values].reverse().findIndex((v) => v > 0);
+  const units = [["hr", "hrs"], ["min", "mins"], ["sec", "secs"]];
+  return values.slice(first, last + 1).map((n, i) => ({ n, unit: units[first + i][n === 1 ? 0 : 1] }));
+}
+
+/* "10 hrs 14 mins 13 secs" */
+export function fmtDuration(totalSec) {
+  return durationParts(totalSec).map((p) => `${p.n} ${p.unit}`).join(" ");
+}
+
+/* The same in the short form a flap board spells out, one letter to a tile: "10 H 14 M 13 S" */
+export function fmtDurationShort(totalSec) {
+  return durationParts(totalSec).map((p) => `${p.n} ${p.unit[0].toUpperCase()}`).join(" ");
+}
+
 export function fmtNum(n) {
   return String(Math.round(n * 100) / 100);
 }
