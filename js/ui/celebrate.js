@@ -17,7 +17,7 @@ export function twinkle(target, count = 8) {
     const dist = 22 + Math.random() * 34;
     star.style.setProperty("--dx", Math.cos(angle) * dist + "px");
     star.style.setProperty("--dy", Math.sin(angle) * dist + "px");
-    star.style.setProperty("--c", i % 2 ? "#ffd98a" : "#ffffff");
+    star.style.setProperty("--c", i % 2 ? "#f4c04e" : "#2a7fc1");
     target.appendChild(star);
     star.addEventListener("animationend", () => star.remove());
   }
@@ -195,13 +195,22 @@ const SCENES = {
 
 export function cheer({ scene = "spin", title, line = "" } = {}) {
   const overlay = el("div", "cheer");
-  overlay.setAttribute("role", "status");
-  overlay.setAttribute("aria-live", "polite");
+  overlay.setAttribute("aria-hidden", "true");
   const card = el("div", "cheer__card");
   card.innerHTML = `<svg class="cheer__scene cheer__scene--${scene}" viewBox="0 0 240 160" aria-hidden="true" focusable="false">${(SCENES[scene] || SCENES.spin)()}${sparkle()}</svg>`;
   card.append(el("p", "cheer__title", title), ...(line ? [el("p", "cheer__line", line)] : []));
   overlay.append(card);
   document.body.appendChild(overlay);
+  /* Screen readers hear it through a live region that is already on the page (one that arrives with its text is often not read). */
+  let live = document.getElementById("cheer-live");
+  if (!live) {
+    live = el("p", "sr-only");
+    live.id = "cheer-live";
+    live.setAttribute("aria-live", "polite");
+    document.body.appendChild(live);
+  }
+  live.textContent = "";
+  setTimeout(() => (live.textContent = line ? `${title} ${line}` : title), 60);
   const tapped = !navigator.userActivation || navigator.userActivation.hasBeenActive;
   if (navigator.vibrate && tapped && !reducedMotion()) navigator.vibrate(40);
   return new Promise((resolve) => {

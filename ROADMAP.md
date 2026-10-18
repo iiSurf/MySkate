@@ -267,6 +267,12 @@ Round five (2026-10-17, later that night): after ten rough drafts, then a combin
 - Retired: the figure eight as the main button (the cream button is; the eight is still tappable), the ice-cyan glow lines, the sparkles, and the sun and the sheen behind everything.
 - Plan's panel is a paper program sheet; the Competitions screens, the guided tour, the sheets, and the celebrations all share the same pieces.
 
+Round six and seven (2026-10-18): after trying everything on a phone at the rink, the skater found the stage look stressful to read (thin Bodoni strokes against thin rules) and not always clear about the next move. Three drafts in the Zamboni-day colors (`design/drafts-4.html`), then two improved versions of the favorite with every Home feature shown (`design/drafts-5.html`). The skater left the choice to MySkate's builder, who chose A3, the clean rink, because grouping Home into Tonight and Your progress makes the next move easiest to find; the interactive pieces the skater missed came along (the figure eight you trace, the ticket, springy buttons).
+
+- The look: see the Design section of CLAUDE.md. Light ice colors, navy ink, a navy band at the top of each screen, Atkinson Hyperlegible Next for everything, cards with a soft edge, and the next move as the one card with the one button.
+- Cheers: a quick skating scene when something is finished, about two and a half seconds, gone at a tap. A scratch spin for a saved session, the figure eight for a week that counts, the gold skate for a skill earned, a medal for a goal reached (one cheer per session, the biggest thing first), flowers on the ice for a competition result, a gleaming blade after sharpening, and a check for homework or off-ice work. Held back in practice mode, still with reduced motion.
+- Retired: the dark stage, the flap board on Home, the separate badge tile (its count is now in Your progress), Bodoni Moda and Jost.
+
 ## Open questions
 
 - Which skills should the first 3D poses cover? (Pick near Pre-Free Skate: waltz jump, mohawk, upright spin.)

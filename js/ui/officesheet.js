@@ -32,7 +32,7 @@ export function openOffIceSheet(ctx) {
     if (!b) return;
     $("#of-min", root).value = b.dataset.min;
   });
-  $("#of-save", root).addEventListener("click", () => {
+  $("#of-save", root).addEventListener("click", async () => {
     const result = addOffIce(ctx.state.offIce, { date: $("#of-date", root).value, kind, minutes: $("#of-min", root).value, note: $("#of-note", root).value }, uid(), todayISO());
     const message = {
       invalid: `Pick a real day and between ${MIN_MIN} and ${MAX_MIN} minutes.`,
@@ -49,7 +49,7 @@ export function openOffIceSheet(ctx) {
     sheet.close("saved");
     ctx.update();
     toast("Off-ice work logged.");
-    ctx.cheer({ scene: "check", title: "Off-ice work done!", line: "Strong off the ice, strong on it." });
+    await ctx.cheer({ scene: "check", title: "Off-ice work done!", line: "Strong off the ice, strong on it." });
     ctx.checkBadges();
   });
   return sheet.closed;

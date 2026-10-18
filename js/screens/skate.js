@@ -1,6 +1,6 @@
 /* Skate: the session at the rink. Big buttons, one skill at a time, a clock that cannot drift. */
 
-import { html, fmtClock, fmtMinutes, todayISO } from "../util.js";
+import { html, fmtClock, fmtMinutes } from "../util.js";
 import { icon, catDot, catName, ratingControl, miniSkates } from "../ui/parts.js";
 import { openSheet, confirmSheet, toast, $ } from "../ui/dom.js";
 import { openPicker } from "../ui/picker.js";
@@ -172,11 +172,11 @@ async function finish(ctx) {
   draft.note = (noteEl && noteEl.value ? noteEl.value : "").slice(0, 1000);
   draft.cost = sanitizeCost(costEl ? costEl.value : "");
   const metBefore = new Set(ctx.state.goals.filter((g) => goalStatus(g, skillStats(ctx.state.sessions)).met).map((g) => g.id));
-  const weekBefore = weekEight(ctx.state.sessions, todayISO(), STREAK_MIN).complete;
+  const weekBefore = weekEight(ctx.state.sessions, draft.date, STREAK_MIN).complete;   // the week the session belongs to, even if saved after midnight
   ctx.state.sessions.push(draft);
   const newGoal = ctx.state.goals.find((g) => !metBefore.has(g.id) && goalStatus(g, skillStats(ctx.state.sessions)).met);
-  const weekClosed = !weekBefore && weekEight(ctx.state.sessions, todayISO(), STREAK_MIN).complete;
-  const earnedNow = gain.parts.some((p) => /new at [45] stars/.test(p.label));
+  const weekClosed = !weekBefore && weekEight(ctx.state.sessions, draft.date, STREAK_MIN).complete;
+  const earnedNow = gain.parts.some((p) => /new at 4 stars/.test(p.label));   // a first 4 earns a skill; a first 5 on a skill already earned does not
   ctx.state.active = null;
   ctx.state.plan = { slotMin: ctx.state.profile.defaultSlotMin, skillIds: [] };
   keepAwake(false);

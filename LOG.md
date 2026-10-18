@@ -674,3 +674,30 @@ The skater liked draft A best but did not love it, asked whether features had be
 ### Verified
 
 Rendered in headless Chrome at 390-wide phone frames, with the whole of Home shown.
+
+## 2026-10-18 (Sunday): the clean rink, skating cheers, and a last sweep
+
+### Plan
+
+The skater picked draft A, left the choice between the two improved versions to me, missed the interactive parts of the stage look, and asked for quick figure-skating celebrations when a task is done, then one last polish and bug sweep to finish. I chose A3, the clean rink: Home grouped into Tonight and Your progress makes the next move easiest to find. The figure eight, the ticket, and the springy buttons come along.
+
+### Changes
+
+- Look: new tokens (`css/tokens.css`: ice-white, navy ink, a navy band that Light of day tints), a new last stylesheet (`css/rink.css`) for every shared piece (cards, buttons, chips, inputs, sheets, toasts, the tab bar with icons, bars, stars, the clock, ice cards, the planner's paper, the calendar), and the stage's cream-on-dark lines and text turned to navy across the other stylesheets. Italics and hairlines are gone.
+- Font: Atkinson Hyperlegible Next replaces Bodoni Moda and Jost everywhere, the share pictures too (`fonts/`, `css/fonts.css`, README, license, tests).
+- Home (`js/screens/home.js`): a navy band with the date, "Hi, Sam", your level and XP bar; Your next move lifted onto it (what to do next and the one button); then Tonight (the figure eight with a circle for each day, the ticket, the practice list, the competition) and Your progress (badges with a bar and the trophy case, all time on the skates, the next skill, then the blade tile and the rest). The flap board is gone.
+- Tabs have icons, and Ice is called Ice times. On a desktop the tall left column of Home no longer sticks.
+- Cheers (`cheer` in `js/ui/celebrate.js`, `ctx.cheer` in `js/app.js`): a scratch spin when a session is saved (or the figure eight when it closes the week, the gold skate when a skill is earned, a medal when a goal is reached: the biggest one only), flowers for a competition result, a gleaming blade after sharpening, a check for homework or off-ice work. About two and a half seconds, gone at a tap, held back in practice mode, still with reduced motion.
+- Fixed: on 320-wide phones Home and the backup buttons ran off the screen; the week's day circles now share the card's width.
+
+### Verified
+
+253 tests pass. In headless Chrome with made-up data: every screen at 320, 360, 390, and 1280 wide has no sideways scrolling and no console errors; the whole guided tour runs and leaves stored data unchanged; saving a real session shows "Clean skate!" and it goes by itself; each cheer scene looked at; Home, Plan, Skate, Ice times, Progress, the calendar, Profile, the planner (hub, rink, timing, result), the end-of-session sheet, and the tour looked at on a phone; Home on a desktop; high contrast and reduced motion.
+
+### Not verified
+
+A real phone and Safari.
+
+### Review and fixes (same day)
+
+An independent review of the day's changes found, and these were fixed: the desktop Home had lost its two columns (a phone-only rule in `rink.css` had no media query); form sheets kept a dark footer behind Save and Cancel; the backup reminder card was muddy grey with faint text; the off-ice cheer could cover a badge celebration (it is now waited for); "Skill earned!" also showed for a first 5 on a skill already earned (now only a first 4); the figure-eight cheer could be missed for a session saved after midnight (it now uses the session's own day); sparkline dots, gold text such as the friends board rank, and white twinkles were too faint on white; and the cheer is now read out by screen readers through a live region already on the page. Re-checked: 253 tests, every screen at 320, 390, and 1280 wide, the whole tour, a real session save, the goal sheet, and desktop Home.

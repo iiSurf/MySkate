@@ -1429,9 +1429,12 @@ div.prow {
   text-align: center;
 }
 
-/* Home's two columns never grow past the screen because of a long word or a wide picture inside them. */
-.home {
-  grid-template-columns: minmax(0, 1fr);
+/* Home's columns never grow past the screen because of a long word or a wide picture inside them (one column on a phone; the
+   desktop's two columns are set in app.css). */
+@media (max-width: 959px) {
+  .home {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .home__hero,
@@ -1462,4 +1465,20 @@ div.prow {
   height: auto;
   aspect-ratio: 1;
   justify-self: center;
+}
+
+/* Form sheets keep Save and Cancel at the bottom on a white fade, not the stage's dark one. */
+.sheet--form .sheet__foot {
+  background: linear-gradient(rgba(255, 255, 255, 0), #ffffff 28%);
+}
+
+/* The backup reminder and the can't-save warning: a white card with a coral edge. */
+.card.nudge {
+  border: 1.5px solid var(--coral);
+  background: #ffffff;
+  box-shadow: inset 5px 0 0 var(--coral);
+}
+
+.card.nudge .dim {
+  color: var(--text-dim);
 }

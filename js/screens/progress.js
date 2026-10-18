@@ -398,8 +398,8 @@ function sparkline(history) {
   const h = 70;
   const pts = rated.map((r, i) => [8 + (i / (rated.length - 1)) * (w - 16), h - 8 - ((r.stars - 1) / 4) * (h - 16)]);
   const line = pts.map((p) => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ");
-  const dots = pts.map((p) => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="#ffd98a"/>`).join("");
-  return html`<svg class="spark" viewBox="0 0 ${w} ${h}" role="img" aria-label="Rating over time, from ${rated[0].stars} to ${rated[rated.length - 1].stars} stars"><polyline points="${line}" fill="none" stroke="#a6f1ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>${raw(dots)}</svg>`;
+  const dots = pts.map((p) => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="#d4951a" stroke="#0e2347" stroke-width="1"/>`).join("");
+  return html`<svg class="spark" viewBox="0 0 ${w} ${h}" role="img" aria-label="Rating over time, from ${rated[0].stars} to ${rated[rated.length - 1].stars} stars"><polyline points="${line}" fill="none" stroke="#2a7fc1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>${raw(dots)}</svg>`;
 }
 
 function openSkill(ctx, id) {
