@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MySkate drafts, round 6: easy on the eyes</title>
+<!-- Three rough drafts of a calmer look: the Zamboni-day colors (ice white, navy, a red accent, a little Zamboni yellow), one sturdy,
+     very readable typeface (Atkinson Hyperlegible Next, OFL, files in design/mock-fonts), no hairlines, and the next move always in the
+     same place. Each shows Home and the Skate screen at 390 wide. Made-up data. Not part of the app. -->
+<style>
+  @font-face { font-family: "Atkinson Next"; src: url("mock-fonts/atkinson-next-latin.woff2") format("woff2"); font-weight: 200 800; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Atkinson Next"; src: url("mock-fonts/atkinson-next-italic-latin.woff2") format("woff2"); font-weight: 200 800; font-style: italic; font-display: swap; }
+  :root { --ice: #eaf3f9; --ice-2: #d6e6f1; --white: #ffffff; --navy: #0e2347; --navy-2: #2c4466; --mute: #4d6380; --red: #d9382c; --red-deep: #b42a20; --zam: #ffcf4a; --gold: #b7791f; --green: #2f7d4f; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #c9d6e0; font-family: "Atkinson Next", system-ui, sans-serif; color: var(--navy); }
+  .page { max-width: 1320px; margin: 0 auto; padding: 32px 20px 80px; display: grid; gap: 48px; }
+  .page > header h1 { margin: 0; font-size: 34px; font-weight: 800; }
+  .page > header p { max-width: 70ch; font-size: 18px; line-height: 1.45; margin: 8px 0 0; color: var(--navy-2); }
+  .opt { display: grid; gap: 14px; }
+  .opt > h2 { margin: 0; font-size: 26px; font-weight: 800; }
+  .opt > p { margin: 0; max-width: 78ch; font-size: 17px; line-height: 1.45; color: var(--navy-2); }
+  .phones { display: flex; flex-wrap: wrap; gap: 28px; }
+  .phone { position: relative; width: 390px; height: 844px; overflow: hidden; border-radius: 36px; box-shadow: 0 20px 50px rgba(14, 35, 71, 0.28); background: var(--ice); font-size: 17px; line-height: 1.4; }
+  .cap { margin: 8px 0 0; font-size: 15px; color: var(--navy-2); font-weight: 600; }
+  .scroll { position: absolute; inset: 0 0 84px; overflow: hidden; padding: 22px 20px 0; }
+  .num { font-variant-numeric: tabular-nums; }
+  svg.i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+  /* the tab bar: an icon over a word, the current one filled in */
+  .tabs { position: absolute; left: 0; right: 0; bottom: 0; height: 84px; display: grid; grid-template-columns: repeat(6, 1fr); padding: 8px 6px 22px; background: var(--white); border-top: 2px solid var(--navy); }
+  .tabs a { display: grid; justify-items: center; gap: 2px; color: var(--mute); text-decoration: none; font-size: 12.5px; font-weight: 700; }
+  .tabs a.on { color: var(--navy); }
+  .tabs a.on svg { color: var(--white); background: var(--navy); border-radius: 10px; padding: 3px; width: 32px; height: 28px; }
+
+  /* shared pieces */
+  .kicker { margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); }
+  .btn { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 58px; padding: 0 22px; border: 0; border-radius: 14px; background: var(--navy); color: var(--white); font: 800 20px/1 "Atkinson Next", sans-serif; box-shadow: 4px 4px 0 var(--red); }
+  .btn--ghost { background: var(--white); color: var(--navy); border: 2px solid var(--navy); box-shadow: none; min-height: 52px; font-size: 18px; }
+  .bar { height: 12px; border-radius: 99px; background: var(--ice-2); overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: inherit; background: var(--navy); }
+  .bar--gold i { background: var(--gold); }
+  .stars { display: flex; gap: 6px; }
+  .stars svg { width: 54px; height: 54px; stroke: var(--navy); stroke-width: 1.6; fill: none; }
+  .stars svg.on { fill: var(--zam); stroke: var(--navy); }
+  .tick { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--navy); font-weight: 800; font-size: 14px; }
+
+  /* ===== A · Rink board: white cards with sturdy 2px edges, the next move as the first card ===== */
+  .a h1 { margin: 2px 0 0; font-size: 30px; font-weight: 800; line-height: 1.1; }
+  .a .top { display: flex; justify-content: space-between; align-items: baseline; }
+  .a .lvl { font-weight: 700; color: var(--navy-2); }
+  .a .card { margin-top: 14px; padding: 16px; border: 2px solid var(--navy); border-radius: 16px; background: var(--white); }
+  .a .next h2 { margin: 4px 0 2px; font-size: 24px; font-weight: 800; }
+  .a .next p { margin: 0 0 14px; color: var(--navy-2); }
+  .a .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 10px; }
+  .a .week span { display: grid; place-items: center; height: 44px; border-radius: 10px; border: 2px solid var(--ice-2); font-weight: 800; color: var(--mute); }
+  .a .week span.done { background: var(--navy); border-color: var(--navy); color: var(--white); }
+  .a .week span.today { border-color: var(--red); color: var(--red); }
+  .a .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .a .tile { padding: 14px; border: 2px solid var(--navy); border-radius: 16px; background: var(--white); display: grid; gap: 6px; }
+  .a .tile b { font-size: 26px; font-weight: 800; line-height: 1; }
+  .a .tile small { font-size: 15px; color: var(--navy-2); font-weight: 600; }
+  .a .tile u { text-decoration: none; font-size: 15px; font-weight: 700; color: var(--mute); }
+  .a .clock { display: flex; align-items: center; justify-content: space-between; }
+  .a .clock b { font-size: 56px; font-weight: 800; line-height: 1; }
+  .a .skill h2 { margin: 4px 0; font-size: 26px; font-weight: 800; line-height: 1.15; }
+  .a .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+
+  /* ===== B · Zamboni day: the loop as a path at the top, so you always see where you are ===== */
+  .b { background: var(--ice); }
+  .b .band { margin: -22px -20px 0; padding: 22px 20px 18px; background: var(--navy); color: var(--white); }
+  .b .band .kicker { color: #b8c8dc; }
+  .b .band h1 { margin: 4px 0 0; font-size: 30px; font-weight: 800; }
+  .b .band p { margin: 2px 0 0; color: #d7e2ee; font-weight: 600; }
+  .b .stripe { height: 10px; margin: 0 -20px; background: repeating-linear-gradient(45deg, var(--zam) 0 12px, var(--navy) 12px 24px); }
+  .b .path { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 18px; counter-reset: s; }
+  .b .path div { position: relative; display: grid; justify-items: center; gap: 6px; font-weight: 800; font-size: 16px; color: var(--mute); }
+  .b .path div::before { content: ""; position: absolute; top: 20px; left: -50%; width: 100%; height: 4px; background: var(--ice-2); z-index: 0; }
+  .b .path div:first-child::before { display: none; }
+  .b .path i { position: relative; z-index: 1; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--white); border: 3px solid var(--ice-2); font-style: normal; font-size: 18px; }
+  .b .path .done i { background: var(--navy); border-color: var(--navy); color: var(--white); }
+  .b .path .done::before { background: var(--navy); }
+  .b .path .now { color: var(--navy); }
+  .b .path .now i { border-color: var(--red); color: var(--red); }
+  .b .sec { margin-top: 18px; padding: 16px; border-radius: 16px; background: var(--white); }
+  .b .sec h2 { margin: 2px 0 10px; font-size: 22px; font-weight: 800; }
+  .b .row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 2px solid var(--ice); font-weight: 600; }
+  .b .row:first-of-type { border-top: 0; }
+  .b .row span:last-child { margin-left: auto; color: var(--navy-2); font-weight: 700; }
+  .b .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+  .b .stats b { display: block; font-size: 24px; font-weight: 800; }
+  .b .stats small { font-size: 15px; color: var(--navy-2); font-weight: 600; }
+  .b .big { font-size: 60px; font-weight: 800; line-height: 1; }
+
+  /* ===== C · Scoreboard, light: no boxes, big type, the next move pinned above the tabs ===== */
+  .c { background: #f4f8fb; }
+  .c h1 { margin: 6px 0 0; font-size: 38px; font-weight: 800; line-height: 1.05; }
+  .c .sub { margin: 4px 0 0; font-size: 18px; color: var(--navy-2); font-weight: 600; }
+  .c .sect { margin-top: 22px; padding-top: 14px; border-top: 3px solid var(--navy); }
+  .c .line { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 8px 0; }
+  .c .line b { font-size: 28px; font-weight: 800; }
+  .c .line span { color: var(--navy-2); font-weight: 600; }
+  .c .pin { position: absolute; left: 0; right: 0; bottom: 84px; padding: 12px 20px 14px; background: linear-gradient(rgba(244, 248, 251, 0), #f4f8fb 30%); }
+  .c .scroll { inset: 0 0 160px; }
+  .c .dots { display: flex; gap: 8px; margin-top: 10px; }
+  .c .dots i { width: 34px; height: 34px; border-radius: 50%; border: 3px solid var(--ice-2); }
+  .c .dots i.on { background: var(--red); border-color: var(--red); }
+  .c .clock { font-size: 80px; font-weight: 800; line-height: 1; letter-spacing: -0.02em; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="home" viewBox="0 0 24 24"><path d="M3.5 11 12 3.5 20.5 11V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+    <symbol id="plan" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M8.5 9h7M8.5 13h7M8.5 17h4"/></symbol>
+    <symbol id="skate" viewBox="0 0 24 24"><path d="M7 3h5v8l5.5 2c1.7.6 2.5 1.8 2.5 3.4v1.1H7z"/><path d="M5 20.4h14.5c1.1 0 1.8-.9 1.5-1.8"/></symbol>
+    <symbol id="chart" viewBox="0 0 24 24"><path d="M4 20V11M10 20V5M16 20v-7M21 20H3"/></symbol>
+    <symbol id="me" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c0-4 3.4-6.5 7.5-6.5s7.5 2.5 7.5 6.5"/></symbol>
+    <symbol id="star" viewBox="0 0 24 24"><path d="m12 3.2 2.7 5.5 6 .9-4.4 4.2 1 6L12 17l-5.4 2.8 1-6L3.3 9.6l6-.9z"/></symbol>
+    <symbol id="right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="pause" viewBox="0 0 24 24"><path d="M8.5 5v14M15.5 5v14"/></symbol>
+    <symbol id="trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"/></symbol>
+  </defs>
+</svg>
+
+<main class="page">
+  <header>
+    <h1>Round six: easy on the eyes</h1>
+    <p>The Zamboni-day colors (ice white, navy, a red accent, a little Zamboni yellow) with one sturdy typeface, Atkinson Hyperlegible Next, which was made to be read at a glance. No hairlines, no thin strokes, body text at 17px and up, and the next thing to do always in the same place. Each draft shows Home and the Skate screen. The tabs are Home, Ice times, Plan, Skate, Progress, Profile, each with an icon.</p>
+  </header>
+
+  <!-- ================= A ================= -->
+  <section class="opt">
+    <h2>A · Rink board</h2>
+    <p>White cards with sturdy navy edges on pale ice. The first card on Home is always the next move (here: plan tonight's session), with one big button. Below: the week as seven day squares, then four tiles for blade life, all-time hours, level, and badges, each with a bar. On the ice, the clock is huge and the stars are 54px.</p>
+    <div class="phones">
+      <div>
+        <div class="phone a"><div class="scroll">
+          <div class="top"><p class="kicker">Sunday, October 18</p><p class="kicker">Season 2026–27</p></div>
+          <h1>Hi, Sam</h1>
+          <p class="lvl" style="margin:2px 0 0">Level 8 · Pre-Free Skate</p>
+          <div class="card next">
+            <p class="kicker">Next up</p>
+            <h2>Plan tonight's session</h2>
+            <p>Your ice: Tuesday 6 PM at Highland Ice Arena, 1 hr.</p>
+            <div class="btn">Plan the session <svg class="i"><use href="#right"/></svg></div>
+          </div>
+          <div class="card">
+            <div class="top"><p class="kicker">This week</p><b style="font-weight:800">1 of 2 sessions</b></div>
+            <div class="week"><span>M</span><span>T</span><span>W</span><span class="done">15</span><span>F</span><span>S</span><span class="today">18</span></div>
+          </div>
+          <div class="grid">
+            <div class="tile"><p class="kicker">Blade life</p><b>3 hrs 20 mins</b><small>of 25 hrs</small><div class="bar"><i style="width:14%"></i></div></div>
+            <div class="tile"><p class="kicker">All time</p><b>10 hrs 48 mins</b><small>on these skates</small><u>Since Sept 2</u></div>
+            <div class="tile"><p class="kicker">Level 8</p><b>147 / 450</b><small>XP to level 9</small><div class="bar"><i style="width:33%"></i></div></div>
+            <div class="tile"><p class="kicker">Badges</p><b>17 of 36</b><small>Next: Full month</small><div class="bar bar--gold"><i style="width:47%"></i></div></div>
+          </div>
+        </div>
+        <nav class="tabs"><a class="on"><svg class="i"><use href="#home"/></svg>Home</a><a><svg class="i"><use href="#cal"/></svg>Ice times</a><a><svg class="i"><use href="#plan"/></svg>Plan</a><a><svg class="i"><use href="#skate"/></svg>Skate</a><a><svg class="i"><use href="#chart"/></svg>Progress</a><a><svg class="i"><use href="#me"/></svg>Profile</a></nav></div>
+        <p class="cap">A · Home</p>
+      </div>
+      <div>
+        <div class="phone a"><div class="scroll">
+          <div class="card clock"><div><p class="kicker">On the ice</p><b class="num">12:40</b><p style="margin:4px 0 0;color:var(--navy-2);font-weight:600">47 mins left of 1 hr</p></div><div class="btn btn--ghost" style="width:64px;padding:0"><svg class="i"><use href="#pause"/></svg></div></div>
+          <div class="card skill">
+            <p class="kicker">Skill 2 of 3 · Jump</p>
+            <h2>Waltz jump</h2>
+            <p style="margin:0 0 12px;color:var(--navy-2)">Last time: 2 stars, 58% landed.</p>
+            <div class="top"><b class="num" style="font-size:34px">5 of 7</b><span style="font-weight:800">71% landed</span></div>
+            <div class="pair"><div class="btn">+ Landed</div><div class="btn btn--ghost">+ Missed</div></div>
+          </div>
+          <div class="card">
+            <p class="kicker">How did it go?</p>
+            <div class="stars" style="margin-top:8px"><svg class="on"><use href="#star"/></svg><svg class="on"><use href="#star"/></svg><svg class="on"><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg></div>
+            <p style="margin:8px 0 0;font-weight:700">3 stars: Getting there</p>
+          </div>
+          <div class="pair"><div class="btn btn--ghost">Back</div><div class="btn">Next skill</div></div>
+        </div>
+        <nav class="tabs"><a><svg class="i"><use href="#home"/></svg>Home</a><a><svg class="i"><use href="#cal"/></svg>Ice times</a><a><svg class="i"><use href="#plan"/></svg>Plan</a><a class="on"><svg class="i"><use href="#skate"/></svg>Skate</a><a><svg class="i"><use href="#chart"/></svg>Progress</a><a><svg class="i"><use href="#me"/></svg>Profile</a></nav></div>
+        <p class="cap">A · Skate</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= B ================= -->
+  <section class="opt">
+    <h2>B · Zamboni day</h2>
+    <p>A navy band with the date and your name, edged with a thin Zamboni stripe. Under it, every visit as three steps, Plan, Skate, Save, with the one you are on ringed in red, so where you are and what comes next never needs thinking about. Then plain white sections with lists and numbers. On the ice, the same three steps sit at the top, and the stars are 54px.</p>
+    <div class="phones">
+      <div>
+        <div class="phone b"><div class="scroll">
+          <div class="band"><p class="kicker">Sunday, October 18 · Season 2026–27</p><h1>Sam</h1><p>Level 8 · Pre-Free Skate</p></div>
+          <div class="stripe"></div>
+          <div class="path"><div class="now"><i>1</i>Plan</div><div><i>2</i>Skate</div><div><i>3</i>Save</div></div>
+          <div class="btn" style="margin-top:16px">Plan the session <svg class="i"><use href="#right"/></svg></div>
+          <div class="sec">
+            <p class="kicker">Your next ice</p>
+            <h2>Tuesday, 6 PM</h2>
+            <p style="margin:-6px 0 0;color:var(--navy-2);font-weight:600">Freestyle at Highland Ice Arena</p>
+          </div>
+          <div class="sec">
+            <p class="kicker">This week</p>
+            <div class="stats" style="margin-top:6px">
+              <div><b>1 of 2</b><small>sessions</small></div>
+              <div><b>40 mins</b><small>on the ice</small></div>
+            </div>
+          </div>
+          <div class="sec">
+            <p class="kicker">Your skates</p>
+            <div class="row"><span>Blade life</span><span>3 hrs 20 mins of 25 hrs</span></div>
+            <div class="row"><span>All time</span><span>10 hrs 48 mins</span></div>
+            <div class="row"><span>Badges</span><span>17 of 36</span></div>
+          </div>
+        </div>
+        <nav class="tabs"><a class="on"><svg class="i"><use href="#home"/></svg>Home</a><a><svg class="i"><use href="#cal"/></svg>Ice times</a><a><svg class="i"><use href="#plan"/></svg>Plan</a><a><svg class="i"><use href="#skate"/></svg>Skate</a><a><svg class="i"><use href="#chart"/></svg>Progress</a><a><svg class="i"><use href="#me"/></svg>Profile</a></nav></div>
+        <p class="cap">B · Home</p>
+      </div>
+      <div>
+        <div class="phone b"><div class="scroll">
+          <div class="band" style="padding-bottom:14px"><p class="kicker">On the ice · 47 mins left</p><div class="big num" style="margin-top:6px">12:40</div></div>
+          <div class="stripe"></div>
+          <div class="path"><div class="done"><i>✓</i>Plan</div><div class="now"><i>2</i>Skate</div><div><i>3</i>Save</div></div>
+          <div class="sec">
+            <p class="kicker">Skill 2 of 3 · Jump</p>
+            <h2 style="font-size:26px;margin-bottom:4px">Waltz jump</h2>
+            <div class="stats" style="margin:8px 0 12px"><div><b class="num">5 of 7</b><small>landed</small></div><div><b>71%</b><small>last time 58%</small></div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="btn">+ Landed</div><div class="btn btn--ghost">+ Missed</div></div>
+          </div>
+          <div class="sec">
+            <p class="kicker">How did it go?</p>
+            <div class="stars" style="margin-top:8px"><svg class="on"><use href="#star"/></svg><svg class="on"><use href="#star"/></svg><svg class="on"><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg></div>
+            <p style="margin:8px 0 0;font-weight:700">3 stars: Getting there</p>
+          </div>
+          <div class="btn" style="margin-top:14px">Next skill <svg class="i"><use href="#right"/></svg></div>
+        </div>
+        <nav class="tabs"><a><svg class="i"><use href="#home"/></svg>Home</a><a><svg class="i"><use href="#cal"/></svg>Ice times</a><a><svg class="i"><use href="#plan"/></svg>Plan</a><a class="on"><svg class="i"><use href="#skate"/></svg>Skate</a><a><svg class="i"><use href="#chart"/></svg>Progress</a><a><svg class="i"><use href="#me"/></svg>Profile</a></nav></div>
+        <p class="cap">B · Skate</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= C ================= -->
+  <section class="opt">
+    <h2>C · Light scoreboard</h2>
+    <p>The calmest: no boxes at all. Big, bold type on a soft white, sections split by one thick navy rule, numbers on the right like a scoreboard. The next move is pinned just above the tabs on every screen, in the same spot, so your thumb always knows where to go. On the ice the clock is 80px and the rest steps back.</p>
+    <div class="phones">
+      <div>
+        <div class="phone c"><div class="scroll">
+          <p class="kicker">Sunday, October 18 · Season 2026–27</p>
+          <h1>Sam</h1>
+          <p class="sub">Level 8 · Pre-Free Skate</p>
+          <div class="sect">
+            <p class="kicker">This week</p>
+            <div class="dots"><i class="on"></i><i></i></div>
+            <p style="margin:8px 0 0;font-weight:600;color:var(--navy-2)">One more session keeps your streak going.</p>
+          </div>
+          <div class="sect">
+            <p class="kicker">Your next ice</p>
+            <div class="line"><b>Tuesday, 6 PM</b><span>1 hr</span></div>
+            <p style="margin:0;color:var(--navy-2);font-weight:600">Freestyle at Highland Ice Arena</p>
+          </div>
+          <div class="sect">
+            <p class="kicker">Your skates and progress</p>
+            <div class="line"><span>Blade life</span><b>3 hrs 20 mins</b></div>
+            <div class="line"><span>All time</span><b>10 hrs 48 mins</b></div>
+            <div class="line"><span>Level 8</span><b>147 / 450 XP</b></div>
+            <div class="line"><span>Badges</span><b>17 of 36</b></div>
+          </div>
+        </div>
+        <div class="pin"><div class="btn">Plan the session <svg class="i"><use href="#right"/></svg></div></div>
+        <nav class="tabs"><a class="on"><svg class="i"><use href="#home"/></svg>Home</a><a><svg class="i"><use href="#cal"/></svg>Ice times</a><a><svg class="i"><use href="#plan"/></svg>Plan</a><a><svg class="i"><use href="#skate"/></svg>Skate</a><a><svg class="i"><use href="#chart"/></svg>Progress</a><a><svg class="i"><use href="#me"/></svg>Profile</a></nav></div>
+        <p class="cap">C · Home</p>
+      </div>
+      <div>
+        <div class="phone c"><div class="scroll">
+          <p class="kicker">On the ice · 47 mins left of 1 hr</p>
+          <div class="clock num" style="margin-top:4px">12:40</div>
+          <div class="sect">
+            <p class="kicker">Skill 2 of 3 · Jump</p>
+            <h1 style="font-size:32px">Waltz jump</h1>
+            <div class="line"><span>Landed</span><b class="num">5 of 7 · 71%</b></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px"><div class="btn">+ Landed</div><div class="btn btn--ghost">+ Missed</div></div>
+          </div>
+          <div class="sect">
+            <p class="kicker">How did it go?</p>
+            <div class="stars" style="margin-top:8px"><svg class="on"><use href="#star"/></svg><svg class="on"><use href="#star"/></svg><svg class="on"><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg></div>
+            <p style="margin:8px 0 0;font-weight:700">3 stars: Getting there</p>
+          </div>
+        </div>
+        <div class="pin"><div class="btn">Next skill <svg class="i"><use href="#right"/></svg></div></div>
+        <nav class="tabs"><a><svg class="i"><use href="#home"/></svg>Home</a><a><svg class="i"><use href="#cal"/></svg>Ice times</a><a><svg class="i"><use href="#plan"/></svg>Plan</a><a class="on"><svg class="i"><use href="#skate"/></svg>Skate</a><a><svg class="i"><use href="#chart"/></svg>Progress</a><a><svg class="i"><use href="#me"/></svg>Profile</a></nav></div>
+        <p class="cap">C · Skate</p>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>

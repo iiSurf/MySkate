@@ -645,3 +645,18 @@ The skater tried everything on a phone and asked for, before any new look: small
 ### Not verified
 
 A real phone. The tab bar at 390 wide is snug with "Progress" and "Profile" side by side; the new look will rework navigation.
+
+## 2026-10-18 (Sunday): round six drafts, easy on the eyes
+
+### Plan
+
+The skater found the stage look stressful to read at the rink (the thin Bodoni hairlines fight the thin rules) and not always clear about where the next move is, and liked the Zamboni-day colors and their easier text. Three rough drafts of a calmer look, each with Home and the Skate screen, before restyling anything.
+
+### Changes
+
+- `design/drafts-4.html`: A · Rink board (white cards with sturdy navy edges, the next move as the first card), B · Zamboni day (a navy band with a Zamboni stripe, and every visit as three steps, Plan, Skate, Save, with the one you are on ringed), C · Light scoreboard (no boxes, big type, the next move pinned above the tabs). All use ice white, navy, a red accent, Zamboni yellow, star ratings, and a tab bar with icons and the words Home, Ice times, Plan, Skate, Progress, Profile.
+- The typeface is Atkinson Hyperlegible Next (Braille Institute, SIL Open Font License), downloaded from Google Fonts on 2026-10-18 into `design/mock-fonts/` with its license. It is only used by the drafts so far.
+
+### Verified
+
+Rendered in headless Chrome at 390-wide phone frames.
