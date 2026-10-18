@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { EIGHT_R, eightPoint, weekSessions, weekEight, streakEights } from "../js/week.js";
+import { EIGHT_R, eightPoint, weekSessions, weekEight, streakEights, weekStubs } from "../js/week.js";
 import { session } from "./helpers.js";
 
 const R = EIGHT_R;
@@ -67,4 +67,15 @@ test("the row of eights is one gold eight per week in a row, with a ghost for th
   assert.deepEqual(streakEights(2, true), ["done", "done"]);
   assert.equal(streakEights(30, true).length, 8);
   assert.equal(streakEights(30, false).length, 9);
+});
+
+test("the week's stubs run Monday to Sunday, with the days you skated and today marked", () => {
+  const stubs = weekStubs([session("2026-10-13"), session("2026-10-15"), session("2026-10-05")], "2026-10-17");
+  assert.equal(stubs.map((x) => x.letter).join(""), "MTWTFSS");
+  assert.deepEqual(stubs.map((x) => x.day), [12, 13, 14, 15, 16, 17, 18]);
+  assert.deepEqual(stubs.map((x) => x.done), [false, true, false, true, false, false, false], "a session from last week does not count");
+  assert.deepEqual(stubs.map((x) => x.today), [false, false, false, false, false, true, false]);
+  assert.equal(weekStubs([], "2026-10-12")[0].today, true, "a Monday is the first stub");
+  assert.equal(weekStubs([], "2026-10-18")[6].today, true, "a Sunday is the last stub");
+  assert.equal(weekStubs([], "2026-12-31").map((x) => x.day).join(","), "28,29,30,31,1,2,3", "a week can cross the end of a month");
 });

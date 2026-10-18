@@ -6,6 +6,11 @@
      s = full | week0 | week2 | empty | active; r = home | ice | plan | skate | progress | me; n= (no name); plan=1; contrast=1; ob=1 (first run).
      Not part of the app. -->
 <script type="module">
+  /* This page replaces the saved data at its address with made-up data. It only runs on a local server, never on the live site. */
+  if (!["localhost", "127.0.0.1", "[::1]"].includes(location.hostname)) {
+    document.body.textContent = "This page is a tool for building MySkate, and it only runs on a local server.";
+    throw new Error("seed.html is local only");
+  }
   import { defaultState } from "../js/store.js";
 
   const q = new URLSearchParams(location.search);

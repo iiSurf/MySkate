@@ -52,3 +52,13 @@ export function streakEights(weeks, complete, max = 8) {
   if (!complete) out.push("ghost");
   return out;
 }
+
+/* The seven days of this week as ticket stubs: the day's letter, its number, whether you skated, and whether it is today. */
+export function weekStubs(sessions, todayIso) {
+  const start = weekKey(todayIso);
+  const skated = new Set(sessions.map((s) => s.date));
+  return Array.from({ length: 7 }, (_, i) => {
+    const date = addDays(start, i);
+    return { letter: "MTWTFSS"[i], day: Number(date.slice(8)), date, done: skated.has(date), today: date === todayIso };
+  });
+}

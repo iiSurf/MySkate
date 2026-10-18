@@ -1,5 +1,5 @@
-/* Shared components: type set on the ice, hairline rules, a few bright pieces, and bounce for rewards.
-   One glow per screen: .card--glow or .card--ice is it. Blue is learning, gold is earned, coral is caution. */
+/* Shared components, in the stage look: type on a dark house, gold hairlines, paper for what you can hold, a button with a red offset
+   shadow, and bounce for rewards. One glow per screen: .card--glow or .card--ice is it. Blue is learning, gold is earned, coral is caution. */
 
 .ic {
   width: 1.15em;
@@ -18,10 +18,10 @@
 }
 
 .eyebrow {
-  font: 600 0.78rem/1.2 var(--font-ui);
-  letter-spacing: 0.13em;
+  font: 700 0.74rem/1.2 var(--font-ui);
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--text-faint);
+  color: var(--gold);
 }
 
 .dim {
@@ -42,7 +42,7 @@
 
 .card {
   padding: var(--sp-4) 0 0;
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--rule-gold);
 }
 
 /* The one glow: the rule above this section catches the low gold sun. */
@@ -52,14 +52,14 @@
 }
 
 .card--ice {
-  border-top-color: rgba(166, 241, 255, 0.75);
-  box-shadow: 0 -14px 28px -22px rgba(120, 225, 255, 0.9);
+  border-top-color: rgba(246, 233, 207, 0.75);
+  box-shadow: 0 -14px 28px -22px rgba(246, 233, 207, 0.8);
 }
 
 /* A reminder that should not shout: a thin gold outline. */
 .card.nudge {
   padding: var(--sp-4);
-  border: 1px solid rgba(255, 217, 138, 0.5);
+  border: 1px solid var(--rule-gold);
   border-radius: var(--r-md);
   box-shadow: none;
   background: rgba(4, 14, 36, 0.45);
@@ -71,7 +71,7 @@
   background: var(--panel);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--rule-strong);
+  border: 1px solid var(--rule-gold);
   box-shadow: var(--glass-shadow);
 }
 
@@ -82,40 +82,42 @@
   gap: var(--sp-3);
 }
 
-/* Buttons: a bright ice-white pill that squishes and springs back. Gold is for rewards, coral for caution, outline for the rest. */
+/* Buttons: cream with a red offset shadow that you press into, in Bodoni italic. Gold is for rewards, coral for ending or deleting, and an
+   outline for everything else. */
 
 .btn {
-  --bg1: #ffffff;
-  --bg2: #c8eefa;
-  --halo: rgba(166, 241, 255, 0.34);
-  --fg: var(--ink);
+  --bg1: var(--cream);
+  --bg2: var(--cream);
+  --shade: var(--red);
+  --fg: #3d0c1b;
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   min-height: 52px;
-  padding: 0 28px;
+  padding: 0 26px;
   border: 0;
-  border-radius: var(--r-pill);
+  border-radius: 0;
   background: linear-gradient(180deg, var(--bg1), var(--bg2));
   color: var(--fg);
-  font: 600 1.05rem/1 var(--font-ui);
-  letter-spacing: 0.01em;
+  font: italic 600 1.3rem/1.1 var(--font-display);
+  white-space: nowrap;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 #fff, 0 8px 26px var(--halo);
-  transition: transform 0.45s var(--spring), box-shadow 0.25s, filter 0.2s, background 0.2s;
+  box-shadow: 4px 4px 0 var(--shade);
+  transition: transform 0.3s var(--spring), box-shadow 0.2s, filter 0.2s;
   -webkit-tap-highlight-color: transparent;
 }
 
 .btn:hover {
-  transform: translateY(-1px) scale(1.025);
-  filter: brightness(1.05);
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0 var(--shade);
 }
 
 .btn:active {
-  transform: scale(0.94);
-  transition-duration: 0.12s;
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--shade);
+  transition-duration: 0.1s;
 }
 
 .btn--block {
@@ -126,33 +128,47 @@
 .btn--gold {
   --bg1: #fff1c4;
   --bg2: #f5b64a;
-  --halo: rgba(255, 185, 90, 0.42);
+  --shade: #8a5a12;
   --fg: var(--ink-gold);
 }
 
 .btn--coral {
-  --bg1: #ff9d90;
-  --bg2: #e0503f;
-  --halo: rgba(255, 110, 95, 0.36);
+  --bg1: #ef6a58;
+  --bg2: #e0493a;
+  --shade: #6a1a14;
   --fg: #fff;
 }
 
 .btn--glass {
   border: 1.5px solid var(--rule-strong);
+  border-radius: var(--r-pill);
   background: none;
   color: var(--text);
+  font: 600 1rem/1.1 var(--font-ui);
   box-shadow: none;
 }
 
 .btn--glass:hover {
-  background: rgba(255, 255, 255, 0.08);
-  filter: none;
+  background: rgba(246, 233, 207, 0.08);
+  box-shadow: none;
+  transform: none;
+}
+
+.btn--glass:active {
+  transform: scale(0.97);
+  box-shadow: none;
 }
 
 .btn--small {
-  min-height: 42px;
+  min-height: 44px;
   padding: 0 18px;
+  font-size: 1.05rem;
+  box-shadow: 3px 3px 0 var(--shade);
+}
+
+.btn--small.btn--glass {
   font-size: 0.95rem;
+  box-shadow: none;
 }
 
 /* Two buttons side by side, such as + Landed and + Missed. */
@@ -177,7 +193,7 @@
   border: 1.5px solid var(--rule-strong);
   border-radius: 50%;
   background: none;
-  color: var(--ice-white);
+  color: var(--cream);
   cursor: pointer;
   transition: transform 0.4s var(--spring), background 0.2s;
 }
@@ -221,8 +237,8 @@
 }
 
 .chip[aria-pressed="true"] {
-  border-color: var(--ice-white);
-  background: var(--ice-white);
+  border-color: var(--cream);
+  background: var(--cream);
   color: var(--ink);
   font-weight: 600;
 }
@@ -243,7 +259,7 @@
 .chip--gold {
   border-color: rgba(255, 217, 138, 0.7);
   background: rgba(255, 200, 110, 0.12);
-  color: #ffe3a0;
+  color: var(--gold-hi);
 }
 
 .chip--coral {
@@ -756,7 +772,7 @@ select.input {
   box-shadow: 0 0 8px rgba(166, 241, 255, 0.5);
 }
 
-/* Tabs: words only, set on the ice. The one you are on is gold with a small glowing dot above it. */
+/* Tabs: words only, along the foot of the stage. The one you are on is cream with a gold line under it. */
 
 .tabbar {
   position: relative;
@@ -771,11 +787,11 @@ select.input {
   flex: 1;
   display: grid;
   place-items: center;
-  min-height: 52px;
-  padding: 10px 2px 6px;
+  min-height: 56px;
+  padding: 6px 2px;
   border: 0;
   background: none;
-  color: rgba(234, 246, 255, 0.7);
+  color: rgba(246, 233, 207, 0.62);
   font: 600 0.74rem/1 var(--font-ui);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -787,29 +803,9 @@ select.input {
   display: none;
 }
 
-.tab::before {
-  content: "";
-  position: absolute;
-  top: 6px;
-  left: 50%;
-  width: 6px;
-  height: 6px;
-  margin-left: -3px;
-  border-radius: 50%;
-  background: #ffd98a;
-  box-shadow: 0 0 10px #ffd98a;
-  opacity: 0;
-  transform: scale(0.3);
-  transition: opacity 0.3s, transform 0.5s var(--spring);
-}
-
 .tab[aria-current="page"] {
-  color: #ffe3a0;
-}
-
-.tab[aria-current="page"]::before {
-  opacity: 1;
-  transform: none;
+  color: var(--cream);
+  box-shadow: inset 0 -2px 0 var(--gold);
 }
 
 /* Placeholders and people */

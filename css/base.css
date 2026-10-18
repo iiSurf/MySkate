@@ -66,12 +66,12 @@ select {
 }
 
 :focus-visible {
-  outline: 3px solid var(--ice-bright);
+  outline: 3px solid var(--gold-hi);
   outline-offset: 3px;
 }
 
-/* Layers, back to front: the ice, the low sun, a long diagonal sheen, sparkles, and a darker foot so type stays readable.
-   Nothing is drawn on the ice: it stays clean. */
+/* The stage, behind everything: a dark house, a burgundy glow (or the light of day you chose) high in the middle, and a darker foot so
+   type stays readable. Nothing is drawn on it. */
 
 .rink-bg {
   position: fixed;
@@ -80,54 +80,24 @@ select {
   overflow: hidden;
   pointer-events: none;
   background:
-    radial-gradient(900px 620px at 16% -4%, rgba(120, 225, 255, 0.14), transparent 66%),
-    linear-gradient(168deg, var(--sky-top) 0%, var(--sky-mid) 46%, var(--sky-bot) 100%);
-}
-
-/* The low sun on the ice: gold at the core, then peach, rose, and lilac before it fades into the dark. */
-.rink-bg__sun {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(820px 500px at var(--sun-x) -10%, var(--sun-stops));
-}
-
-.rink-bg__sparkles {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-/* The sheen: a long soft streak of light across the ice, like a rink under high lamps. */
-.rink-bg::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(112deg, transparent 26%, rgba(255, 255, 255, 0.07) 40%, transparent 56%);
+    radial-gradient(90% 440px at 50% -70px, var(--glow) 0%, transparent 100%),
+    linear-gradient(var(--sky-top), var(--sky-mid) 720px, var(--sky-bot));
 }
 
 .rink-bg::after {
   content: "";
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(transparent 46%, rgba(3, 12, 30, 0.6) 100%),
-    radial-gradient(ellipse at 50% 34%, transparent 54%, rgba(2, 8, 28, 0.5) 100%);
+  background: linear-gradient(transparent 60%, rgba(3, 8, 24, 0.5));
 }
 
 .sp {
-  fill: var(--ice-white);
-  filter: drop-shadow(0 0 5px rgba(166, 241, 255, 0.9));
+  fill: var(--cream);
+  filter: drop-shadow(0 0 5px rgba(255, 217, 138, 0.9));
   transform-box: fill-box;
   transform-origin: center;
   animation: twinkle 3.6s ease-in-out infinite;
   animation-delay: var(--d, 0s);
-}
-
-.fleck {
-  fill: var(--snow);
-  opacity: 0.55;
-  animation: drift 40s ease-in-out infinite alternate;
 }
 
 @keyframes twinkle {
@@ -142,25 +112,12 @@ select {
   }
 }
 
-@keyframes drift {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(12px, 20px, 0);
-  }
-}
-
-/* Readability first. Type sits on dark ice, and people who ask for more contrast or less transparency
+/* Readability first. Type sits on the dark stage, and people who ask for more contrast or less transparency
    (in their device settings or in the app) get solid, brighter surfaces and plain edges. */
 
-/* On the Skate screen the phone may be running on battery for an hour, so the background holds still. */
-[data-route="skate"] .sp,
-[data-route="skate"] .fleck {
-  animation: none;
-}
-
+/* On the Skate screen the phone may be running on battery for an hour, so nothing twinkles. */
 [data-route="skate"] .sp {
+  animation: none;
   opacity: 0.7;
   filter: none;
 }
@@ -175,10 +132,6 @@ select {
     --rule-strong: rgba(255, 255, 255, 0.8);
     --panel: rgb(5, 18, 52);
   }
-
-  .rink-bg__sparkles {
-    opacity: 0.22;
-  }
 }
 
 :root[data-contrast="high"] {
@@ -189,10 +142,6 @@ select {
   --rule: rgba(255, 255, 255, 0.55);
   --rule-strong: rgba(255, 255, 255, 0.8);
   --panel: rgb(5, 18, 52);
-}
-
-:root[data-contrast="high"] .rink-bg__sparkles {
-  opacity: 0.22;
 }
 
 @media (prefers-reduced-transparency: reduce) {

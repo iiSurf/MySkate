@@ -1,5 +1,6 @@
-/* MySkate design tokens. Theme: fresh ice at golden hour. Clean, glossy ice with the low sun on it, and type set straight on the ice.
-   Color has jobs: blue means learning, gold means earned, coral means caution. */
+/* MySkate design tokens. Theme: the stage. A dark house with a burgundy glow, paper for the things you can hold (a ticket, a program),
+   a marquee for the big moments, and a button with a red offset shadow. Color has jobs: blue means learning, gold means earned,
+   coral means caution. */
 
 :root {
   --font-display: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
@@ -23,10 +24,15 @@
 
   color-scheme: dark;
 
-  /* Water and ice */
-  --deep-0: #05132e;
-  --deep-1: #0a2549;
-  --deep-2: #0f3560;
+  /* The house, and the stage lights */
+  --deep-0: #070e26;
+  --deep-1: #0a1432;
+  --deep-2: #101a42;
+  --cream: #f6e9cf;
+  --gold: #e6c777;
+  --gold-hi: #ffd98a;
+  --red: #e0493a;
+  --paper: #f1e7cf;
   --ice: #5fd8e6;
   --ice-bright: #a6f1ff;
   --ice-white: #eef9ff;
@@ -45,53 +51,48 @@
   --cat-spins: #b9a6ff;
 
   /* Text: brighter than before so it stays readable on glass */
-  --text: #f7fcff;
-  --text-dim: rgba(242, 251, 255, 0.9);
-  --text-faint: rgba(236, 248, 255, 0.74);
-  --ink: #052545;
-  --ink-gold: #4a2f00;
+  --text: #f6e9cf;
+  --text-dim: rgba(246, 233, 207, 0.9);
+  --text-faint: rgba(246, 233, 207, 0.74);
+  --ink: #14213f;
+  --ink-gold: #3b2500;
 
-  /* Type sits straight on the ice, with hairline rules between things. Panels (sheets, toasts) are dark and nearly solid. */
-  --rule: rgba(236, 248, 255, 0.22);
-  --rule-strong: rgba(236, 248, 255, 0.42);
-  --panel: rgba(6, 20, 48, 0.95);
-  --glass-tint: rgba(5, 20, 50, 0.55);
-  --glass-edge: rgba(236, 248, 255, 0.42);
-  --glass-edge-soft: rgba(236, 248, 255, 0.22);
-  --glass-blur: blur(18px) saturate(1.4);
-  --glass-shadow: 0 24px 70px rgba(0, 6, 28, 0.55);
-  --track: rgba(236, 248, 255, 0.2);
+  /* Type sits straight on the stage, with hairline rules between things, gold for a heading's rule. Panels (sheets, toasts) are
+     dark and nearly solid. */
+  --rule: rgba(246, 233, 207, 0.22);
+  --rule-strong: rgba(246, 233, 207, 0.42);
+  --rule-gold: rgba(230, 199, 119, 0.55);
+  --panel: rgba(8, 14, 40, 0.96);
+  --glass-tint: rgba(8, 14, 40, 0.55);
+  --glass-edge: rgba(246, 233, 207, 0.42);
+  --glass-edge-soft: rgba(246, 233, 207, 0.22);
+  --glass-blur: blur(18px) saturate(1.2);
+  --glass-shadow: 0 24px 70px rgba(0, 4, 20, 0.6);
+  --track: rgba(246, 233, 207, 0.2);
 
-  /* The ice and the light on it. Set by [data-light]. */
-  --sky-top: #0f3560;
-  --sky-mid: #0a2549;
-  --sky-bot: #06172f;
-  --sun-stops: rgba(255, 208, 120, 0.95) 0%, rgba(255, 166, 108, 0.7) 22%, rgba(214, 120, 150, 0.42) 46%, rgba(110, 110, 200, 0.2) 66%, transparent 82%;
-  --sun-x: 78%;
+  /* The stage and its light. Set by [data-light]: golden hour is the burgundy glow, the others tint it. */
+  --sky-top: #101a42;
+  --sky-mid: #0a1432;
+  --sky-bot: #070e26;
+  --glow: #7a1d37;
 }
 
 /* Time-of-day light. Golden hour is the default. */
 
 :root[data-light="sunrise"] {
-  --sky-top: #1c4a8a;
-  --sky-mid: #102f6a;
-  --sky-bot: #071845;
-  --sun-stops: rgba(255, 190, 150, 0.95) 0%, rgba(255, 140, 160, 0.7) 24%, rgba(200, 110, 170, 0.42) 48%, rgba(110, 110, 210, 0.2) 68%, transparent 84%;
-  --sun-x: 20%;
+  --glow: #8e3b2c;
 }
 
 :root[data-light="midday"] {
-  --sky-top: #2a79c4;
-  --sky-mid: #134f98;
-  --sky-bot: #082a63;
-  --sun-stops: rgba(255, 255, 255, 0.9) 0%, rgba(190, 245, 255, 0.6) 24%, rgba(110, 210, 245, 0.32) 50%, transparent 80%;
-  --sun-x: 52%;
+  --sky-top: #123a6e;
+  --sky-mid: #0b2550;
+  --sky-bot: #07142f;
+  --glow: #1d6b94;
 }
 
 :root[data-light="dusk"] {
-  --sky-top: #1b2a78;
-  --sky-mid: #101a58;
-  --sky-bot: #060c34;
-  --sun-stops: rgba(255, 150, 170, 0.85) 0%, rgba(210, 110, 200, 0.55) 26%, rgba(130, 100, 230, 0.32) 52%, transparent 80%;
-  --sun-x: 86%;
+  --sky-top: #1a1a54;
+  --sky-mid: #0f0f3a;
+  --sky-bot: #070722;
+  --glow: #5a2f96;
 }

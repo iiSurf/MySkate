@@ -3,33 +3,39 @@
 import { html, fmtMinutes, fmtDate, fmtNum, fmt1, fmtClock, todayISO, daysBetween, addDays } from "../util.js";
 import { icon, medal, bar, bladeArt, skateSvg } from "../ui/parts.js";
 import { eightSvg } from "../ui/eight.js";
-import { weekEight, streakEights } from "../week.js";
+import { weekEight, streakEights, weekStubs } from "../week.js";
+import { flapRow } from "../ui/flaps.js";
 import { showBadges, showFriends, showTests } from "./progress.js";
 import { testList, skillsReadiness, freeReadiness, countdown } from "../testprep.js";
 import { board } from "../friends.js";
 import { avatar } from "../ui/friends.js";
 import { badgeRatio, progressText } from "../badges.js";
 import { bladeInfo, bladeHours, logSharpening } from "../blades.js";
-import { levelProgress, suggestNext, isSkating, isAir } from "../stats.js";
+import { levelProgress, suggestNext, isSkating, isAir, EARNED_AT } from "../stats.js";
 import { levelLabel } from "../catalog.js";
 import { confirmSheet, toast, $ } from "../ui/dom.js";
 import { twinkle } from "../ui/celebrate.js";
 import { elapsedMs } from "../timer.js";
-import { upcomingPicks, kindName, fmtRange } from "../ice.js";
+import { upcomingPicks, kindName, fmtRange, fmtTime } from "../ice.js";
 import { costSummary, fmtMoney } from "../cost.js";
 import { sortedGoals } from "../goals.js";
 import { sortedHomework } from "../homework.js";
 import { offIceSummary } from "../office.js";
 import { openOffIceSheet } from "../ui/officesheet.js";
-import { nextEvent, daysUntil, countdownText, programStatus } from "../compete.js";
+import { nextEvent, daysUntil, countdownText, programStatus, roman, seasonLabel } from "../compete.js";
 
 const ui = { bladeOpen: false, eightKey: null };
 const LIMITS = [20, 25, 30, 35];
 
-function greeting() {
+/* The line above your name: a theater's way of saying who is on. */
+function stagePre(state) {
+  if (state.active) return "now on the ice,";
   const h = new Date().getHours();
-  return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+  return `${h < 12 ? "this morning" : h < 18 ? "this afternoon" : "tonight"}, starring`;
 }
+
+/* A short name can be huge; a long one steps down so it still fits across a phone. */
+const nameSize = (n) => (n.length <= 4 ? "xl" : n.length <= 6 ? "l" : n.length <= 9 ? "m" : "s");
 
 /* What tapping the figure eight does, and what its open loop says. */
 function eightCall(state) {
@@ -38,8 +44,51 @@ function eightCall(state) {
   return { action: "go-plan", title: "Plan a session", tiny: "Your turn", go: "PLAN IT" };
 }
 
-/* The one big button: this week's figure eight. */
-function eightHero(ctx, d, week, animate) {
+/* Your next starred ice time, as a ticket with a tear-off stub. Only shown once you have picked one. */
+function ticket(ctx, d) {
+  const { state } = ctx;
+  if (!state.rinks.length) return "";
+  const next = upcomingPicks(state.iceSessions, new Date(), 1)[0];
+  if (!next) return "";
+  const rink = state.rinks.find((r) => r.id === next.rinkId);
+  const tomorrow = addDays(d.today, 1);
+  const day = next.date === d.today ? "Today" : next.date === tomorrow ? "Tomorrow" : fmtDate(next.date, { weekday: "long" });
+  return html`<button class="ticket" type="button" data-action="go-ice" aria-label="Your next ice: ${day} at ${fmtTime(next.start)}, ${kindName(next.kind)}${rink ? " at " + rink.name : ""}. Open the ice week.">
+    <span class="ticket__main"><small>Admit one · ${kindName(next.kind)}</small><b>${day}<br>${fmtTime(next.start)}</b>${rink ? html`<span>${rink.name}</span>` : ""}</span>
+    <span class="ticket__stub"><span><small>Level</small><b>${d.level.level}</b></span><i class="barcode" aria-hidden="true"></i></span>
+  </button>`;
+}
+
+/* What the main button does, and says. */
+function takeTheIce(ctx) {
+  const { state } = ctx;
+  const call = eightCall(state);
+  const label = state.active ? "Back on the ice" : state.plan.skillIds.length ? "Take the ice" : "Plan the session";
+  return html`<button class="btn home__go" type="button" data-action="${call.action}"><span>${label}</span>${icon("right")}</button>`;
+}
+
+/* The program sheet: what you are skating tonight (your plan), or what MySkate suggests when you have not planned yet. */
+function protocol(ctx, d) {
+  const { state, catalog } = ctx;
+  const planned = state.plan.skillIds.filter((id) => catalog.skills.has(id));
+  const picks = planned.length ? planned.map((skillId) => ({ skillId })) : suggestNext(state, catalog, d.stats, d.today, 3);
+  if (!picks.length) return "";
+  const rows = picks.slice(0, 4).map((p, i) => {
+    const st = d.stats.get(p.skillId);
+    const goal = state.goals.find((g) => g.skillId === p.skillId);
+    return html`<tr class="${i === 0 && !planned.length ? "hot" : ""}"><td>${roman(i + 1)}.</td><td>${catalog.skills.get(p.skillId).name}</td><td class="n">${st ? st.latest || "–" : "–"}</td><td class="n">${goal ? goal.target : EARNED_AT}</td></tr>`;
+  });
+  const more = picks.length - rows.length;
+  return html`<section class="protocol" aria-label="${planned.length ? "Tonight's plan" : "Suggested skills"}">
+    <div class="protocol__hdr"><b>Protocol</b><span>${planned.length ? "Tonight's plan" : "Suggested for you"}</span></div>
+    <table><thead><tr><th></th><th>Element</th><th>Last</th><th>Goal</th></tr></thead><tbody>${rows}</tbody></table>
+    ${more > 0 ? html`<p class="protocol__more">and ${more} more</p>` : ""}
+    <p class="protocol__foot">${planned.length ? html`${planned.length} ${planned.length === 1 ? "skill" : "skills"} for a ${state.plan.slotMin} minute slot. <button class="protocol__link" type="button" data-action="go-plan">Edit plan</button>` : html`Pick your own on <button class="protocol__link" type="button" data-action="go-plan">Plan</button>.`}</p>
+  </section>`;
+}
+
+/* This week: the figure eight, a line about it, the streak, and a stub for each day. */
+function weekSection(ctx, d, week, animate) {
   const { state } = ctx;
   const call = eightCall(state);
   const more = week.needed - week.count;
@@ -50,30 +99,32 @@ function eightHero(ctx, d, week, animate) {
       : more === 1
         ? "One more session closes your eight."
         : `${more} more sessions close your eight.`;
-  const n = state.plan.skillIds.length;
   const items = streakEights(d.streak.weeks, week.complete);
   const streakText = d.streak.weeks > 0 ? `${d.streak.weeks} ${d.streak.weeks === 1 ? "week" : "weeks"} in a row` : `Skate ${week.needed} times in a week to start a streak`;
-  return html`<div class="home__eight">
+  const stubs = weekStubs(state.sessions, d.today);
+  return html`<section class="home__eight" aria-label="This week">
+    <p class="cp-label">This week</p>
     <button class="eight" type="button" data-action="${call.action}" aria-label="${call.title}. This week: ${week.count} of ${week.needed} sessions.">${eightSvg(week, call, animate)}</button>
     <p class="home__caption ${week.complete && !state.active ? "is-whole" : ""}">${caption}</p>
     <div class="streak"><span class="streak__eights" aria-hidden="true">${items.map((k) => icon("eight", `ic--eight is-${k}`))}</span><span>${streakText}</span></div>
-    ${!state.active && n ? html`<div class="cluster"><span class="dim">${n} ${n === 1 ? "skill" : "skills"} planned for a ${state.plan.slotMin} minute slot.</span><button class="chip" type="button" data-action="go-plan">Edit plan</button></div>` : ""}
-    ${!state.active && !state.sessions.length ? html`<div class="cluster"><button class="chip" type="button" data-action="tour">How MySkate works</button></div>` : ""}
-  </div>`;
+    <div class="stubs" role="img" aria-label="This week: ${stubs.filter((x) => x.done).length} days skated">${stubs.map((x) => html`<span class="st${x.done ? "" : " is-off"}${x.today ? " is-today" : ""}">${x.done ? x.day : x.letter}</span>`)}</div>
+    ${!state.sessions.length ? html`<div class="cluster"><button class="chip" type="button" data-action="tour">How MySkate works</button></div>` : ""}
+  </section>`;
 }
 
-/* Level, what to work on next, and blade life: the three numbers worth a glance. */
-function glance(ctx, d) {
+/* Backstage: blades, level, and streak on flap tiles, with a line that fills for the level and the blades. */
+function backstage(ctx, d) {
   const L = d.level;
   const info = bladeInfo(ctx.state);
   const next = suggestNext(ctx.state, ctx.catalog, d.stats, d.today, 1)[0];
   const nextSkill = next && ctx.catalog.skills.get(next.skillId);
-  return html`<section class="lines" aria-label="Level, next skill, and blades">
-    <div class="line"><p class="eyebrow">Level ${L.level}</p><p class="line__val"><span class="num">${L.into}</span> <span class="dim">/ ${L.need} XP</span></p></div>
+  return html`<section class="backstage" aria-label="Level, blades, and what is next">
+    <p class="cp-label">Backstage</p>
+    ${flapRow("Blades", `${fmt1(info.hours)} of ${fmtNum(info.limit)} h`, { hi: info.tone === "due" || info.tone === "dull" })}
+    ${bar({ pct: info.pct, cls: "bar--blade", thin: true, label: "Blade life used" })}
+    ${flapRow(`Level ${L.level}`, `${L.into} / ${L.need} XP`)}
     ${bar({ pct: L.pct, cls: "bar--xp", thin: true, label: "XP to the next level" })}
     ${nextSkill ? html`<button class="line line--btn" type="button" data-action="go-plan"><span class="eyebrow">Next up</span><span class="line__name">${nextSkill.name}</span><span class="line__go">${icon("right")}</span></button>` : ""}
-    <div class="line"><p class="eyebrow">Blades</p><p class="line__val"><span class="num">${fmt1(info.hours)}</span> <span class="dim">of ${fmtNum(info.limit)} hours</span></p></div>
-    ${bar({ pct: info.pct, cls: "bar--blade", thin: true, label: "Blade life used" })}
   </section>`;
 }
 
@@ -319,15 +370,23 @@ export function renderHome(ctx) {
   const key = `${week.count}/${week.needed}`;
   const animate = ui.eightKey !== key;
   ui.eightKey = key;
+  const sheet = protocol(ctx, d);
   return html`<div class="home">
     <div class="home__hero">
-      <header class="screen-head">
-        <div><p class="eyebrow">${greeting()} · ${fmtDate(d.today, { weekday: "long", month: "long", day: "numeric" })}</p><h1>${name || "Skater"}</h1><p class="home__sub">${ctx.state.active ? "You are on the ice" : "Your ice, this week"}</p></div>
+      <div class="cp-date"><span>${fmtDate(d.today, { weekday: "long", month: "long", day: "numeric" })}</span><span>Season ${seasonLabel(d.today)}</span></div>
+      <header class="stage-hero">
+        <span class="stage-hero__ghost" aria-hidden="true">${d.level.level}</span>
+        <p class="stage-hero__pre">${stagePre(ctx.state)}</p>
+        <h1 class="is-${nameSize(name || "Skater")}">${name || "Skater"}</h1>
+        <p class="stage-hero__sub">Level ${d.level.level} · ${levelLabel(ctx.catalog, ctx.state.profile.levels.skills)}</p>
       </header>
-      ${eightHero(ctx, d, week, animate)}
+      ${ticket(ctx, d)}
+      ${sheet}
+      ${takeTheIce(ctx)}
     </div>
     <div class="home__rest">
-      ${glance(ctx, d)}
+      ${weekSection(ctx, d, week, animate)}
+      ${backstage(ctx, d)}
       <div class="tiles">${competeTile(ctx, d)}${badgeTile(ctx)}${homeworkTile(ctx, d)}${goalsTile(ctx, d)}${offIceTile(ctx, d)}${testTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
       ${recent(ctx, d)}
       ${nudge(ctx)}

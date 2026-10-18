@@ -1,7 +1,7 @@
 /* Layout and the few pieces only the app uses. Shared pieces live in components.css. */
 
 a {
-  color: var(--ice-bright);
+  color: var(--gold-hi);
 }
 
 .shell {
@@ -16,7 +16,7 @@ a {
   width: 100%;
   max-width: 1080px;
   margin: 0 auto;
-  padding: var(--sp-5) var(--sp-4) 128px;
+  padding: var(--sp-5) var(--sp-4) 104px;
   outline: none;
 }
 
@@ -28,14 +28,22 @@ a {
   gap: var(--sp-4);
 }
 
-.screen-head h1 {
-  font: italic 500 clamp(2.6rem, 11vw, 4rem) / 1 var(--font-display);
-  text-shadow: 0 2px 26px rgba(0, 30, 70, 0.6);
+.screen-head > div:first-child {
+  flex: 1 1 14rem;
+  min-width: 0;
 }
 
-.screen-head .eyebrow,
-.screen > h2 {
-  text-shadow: 0 1px 14px rgba(2, 10, 40, 0.85);
+.screen-head h1 {
+  margin-top: 14px;
+  font: italic 500 clamp(2.6rem, 11vw, 3.6rem) / 1 var(--font-display);
+  text-shadow: 0 2px 26px rgba(0, 0, 0, 0.45);
+}
+
+/* The line above a screen's title: small gold capitals over a gold rule, like the date line on a program. */
+.screen-head .eyebrow {
+  display: block;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule-gold);
 }
 
 h2 {
@@ -88,8 +96,9 @@ h2 {
   z-index: 30;
   display: flex;
   justify-content: center;
-  padding: 30px 12px calc(2px + env(safe-area-inset-bottom));
-  background: linear-gradient(rgba(4, 13, 30, 0), rgba(4, 13, 30, 0.9) 50%);
+  padding: 0 12px env(safe-area-inset-bottom);
+  background: #070e26;
+  border-top: 1px solid var(--gold);
   pointer-events: none;
 }
 
@@ -122,6 +131,7 @@ h2 {
     display: block;
     padding: 28px 0 0 20px;
     background: none;
+    border-top: 0;
   }
 
   .nav-wrap .tabbar {
@@ -134,14 +144,12 @@ h2 {
     display: flex;
     justify-content: flex-start;
     min-height: 0;
-    padding: 14px 16px 14px 34px;
+    padding: 14px 16px 14px 20px;
     font-size: 0.84rem;
   }
 
-  .tab::before {
-    top: 50%;
-    left: 14px;
-    margin: -3px 0 0;
+  .tab[aria-current="page"] {
+    box-shadow: inset 3px 0 0 var(--gold);
   }
 
   .screen {
@@ -154,6 +162,336 @@ h2 {
 }
 
 /* Home: the week's figure eight, the streak, the level, and what comes next. */
+
+/* The poster: who is on tonight, in lights over the level. */
+
+.stage-hero {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  min-height: 250px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.stage-hero__ghost {
+  position: absolute;
+  right: -26px;
+  top: -24px;
+  color: rgba(150, 200, 245, 0.11);
+  font: 800 380px / 0.8 var(--font-display);
+  pointer-events: none;
+}
+
+.stage-hero__pre {
+  position: relative;
+  margin-top: 30px;
+  color: var(--gold);
+  font: italic 400 1.25rem/1.2 var(--font-display);
+}
+
+.stage-hero h1 {
+  position: relative;
+  max-width: 100%;
+  margin: 0;
+  font: italic 500 8.4rem / 0.9 var(--font-display);
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+  text-shadow: 0 6px 40px rgba(0, 0, 0, 0.4);
+}
+
+.stage-hero h1.is-l {
+  font-size: 5.6rem;
+}
+
+.stage-hero h1.is-m {
+  font-size: 4rem;
+}
+
+.stage-hero h1.is-s {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.stage-hero__sub {
+  position: relative;
+  margin-top: 10px;
+  color: var(--gold);
+  font: 600 0.8rem/1.3 var(--font-ui);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+/* The ticket: your next ice, with a stub to tear off. */
+
+.ticket {
+  display: grid;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.4));
+  transition: transform 0.4s var(--spring);
+}
+
+.ticket:hover {
+  transform: translateY(-2px);
+}
+
+.ticket:active {
+  transform: scale(0.98);
+}
+
+.ticket__main,
+.ticket__stub {
+  background: var(--paper);
+}
+
+.ticket__main {
+  display: grid;
+  gap: 2px;
+  padding: 16px 22px 14px;
+  border-radius: 16px 16px 0 0;
+  -webkit-mask: radial-gradient(circle 13px at 0 100%, #0000 97%, #000), radial-gradient(circle 13px at 100% 100%, #0000 97%, #000);
+  -webkit-mask-composite: source-in;
+  mask: radial-gradient(circle 13px at 0 100%, #0000 97%, #000), radial-gradient(circle 13px at 100% 100%, #0000 97%, #000);
+  mask-composite: intersect;
+}
+
+.ticket__main small,
+.ticket__stub small {
+  color: #c4382a;
+  font: 700 0.72rem/1.2 var(--font-ui);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.ticket__main b {
+  font: 700 2.7rem/0.98 var(--font-display);
+}
+
+.ticket__main > span {
+  color: #3b4a6b;
+  font-size: 1.02rem;
+}
+
+.ticket__stub {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: 12px 22px 14px;
+  border-radius: 0 0 16px 16px;
+  background-image: linear-gradient(90deg, rgba(20, 33, 63, 0.4) 50%, transparent 0);
+  background-size: 12px 2px;
+  background-repeat: repeat-x;
+  background-position: 14px 0;
+  -webkit-mask: radial-gradient(circle 13px at 0 0, #0000 97%, #000), radial-gradient(circle 13px at 100% 0, #0000 97%, #000);
+  -webkit-mask-composite: source-in;
+  mask: radial-gradient(circle 13px at 0 0, #0000 97%, #000), radial-gradient(circle 13px at 100% 0, #0000 97%, #000);
+  mask-composite: intersect;
+}
+
+.ticket__stub small {
+  color: #5a6786;
+}
+
+.ticket__stub b {
+  display: block;
+  font: 700 1.9rem/1 var(--font-display);
+}
+
+.barcode {
+  width: 140px;
+  height: 36px;
+  background: repeating-linear-gradient(90deg, #14213f 0 2px, transparent 2px 4px, #14213f 4px 5px, transparent 5px 9px, #14213f 9px 12px, transparent 12px 14px);
+}
+
+/* The program sheet: what you are skating, with your last rating and your goal. */
+
+.protocol {
+  padding: 16px 18px 12px;
+  border-radius: 6px;
+  background: #ecebe4;
+  color: #17181c;
+}
+
+.protocol__hdr {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding-bottom: 6px;
+  border-bottom: 3px solid #17181c;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.protocol__hdr b {
+  font-size: 0.88rem;
+  letter-spacing: 0.24em;
+}
+
+.protocol table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+.protocol th {
+  padding: 8px 4px 4px;
+  color: #5a5d66;
+  font: 700 0.68rem/1.2 var(--font-ui);
+  letter-spacing: 0.16em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.protocol th:nth-child(n + 3),
+.protocol td.n {
+  text-align: right;
+}
+
+.protocol td {
+  padding: 9px 4px;
+  border-top: 1px solid rgba(23, 24, 28, 0.3);
+  line-height: 1.3;
+}
+
+.protocol td:first-child {
+  width: 2.4em;
+  color: #7a1d37;
+  font: 700 1rem/1.3 var(--font-display);
+}
+
+.protocol td.n {
+  width: 3em;
+  font: 700 1.2rem/1.3 var(--font-display);
+}
+
+.protocol tr.hot td {
+  background: rgba(217, 56, 44, 0.09);
+}
+
+.protocol__more,
+.protocol__foot {
+  margin-top: 6px;
+  color: #5a5d66;
+  font-size: 0.92rem;
+}
+
+.protocol__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #17181c;
+  font: 600 0.92rem/1.3 var(--font-ui);
+  text-decoration: underline;
+  text-decoration-color: #d9382c;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.home__go {
+  justify-self: center;
+  width: min(100%, 320px);
+  justify-content: space-between;
+}
+
+.home__go .ic {
+  width: 26px;
+  height: 26px;
+  stroke-width: 2.2;
+}
+
+/* The week's stubs: a ticket stub for each day, cream for a day you skated. */
+
+.stubs {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 440px;
+  margin-top: 4px;
+}
+
+.stubs .st {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 50px;
+  border-radius: 5px;
+  background: var(--cream);
+  color: #4a0f21;
+  font: 700 1.05rem/1 var(--font-display);
+  -webkit-mask: radial-gradient(circle 5px at 0 50%, #0000 97%, #000), radial-gradient(circle 5px at 100% 50%, #0000 97%, #000);
+  -webkit-mask-composite: source-in;
+  mask: radial-gradient(circle 5px at 0 50%, #0000 97%, #000), radial-gradient(circle 5px at 100% 50%, #0000 97%, #000);
+  mask-composite: intersect;
+}
+
+.stubs .st.is-off {
+  border: 1.5px dashed rgba(246, 233, 207, 0.4);
+  background: none;
+  color: rgba(246, 233, 207, 0.55);
+  font: 600 0.78rem/1 var(--font-ui);
+  -webkit-mask: none;
+  mask: none;
+}
+
+.stubs .st.is-today {
+  box-shadow: 0 0 0 2px var(--gold-hi);
+}
+
+/* Backstage: flap tiles for blades and level, like a departures board. */
+
+.backstage {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.fl small {
+  display: block;
+  margin-bottom: 5px;
+  color: rgba(246, 233, 207, 0.62);
+  font: 700 0.72rem/1.2 var(--font-ui);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.flaps {
+  display: flex;
+  gap: 2px;
+}
+
+.f {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 32px;
+  border-radius: 3px;
+  background: linear-gradient(#26282f 49%, #0e0f13 50%, #1d1f25 51%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  color: var(--cream);
+  font: 600 17px / 1 var(--font-ui);
+  text-transform: uppercase;
+}
+
+.f--gap {
+  width: 9px;
+  background: none;
+  box-shadow: none;
+}
+
+.f--hi {
+  color: #f0b43c;
+}
+
 
 .home {
   display: grid;
@@ -193,6 +531,10 @@ h2 {
   gap: var(--sp-3);
   justify-items: center;
   text-align: center;
+}
+
+.home__eight .cp-label {
+  justify-self: stretch;
 }
 
 .home__caption {
@@ -621,6 +963,76 @@ h2 {
 .browse-list {
   max-height: min(40vh, 360px);
   overflow: auto;
+}
+
+/* Your plan is a program sheet: paper, with ink. */
+
+.plan-summary.card {
+  padding: 16px 18px;
+  border: 0;
+  border-radius: 6px;
+  background: #ecebe4;
+  color: #17181c;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.plan-summary h2 {
+  font: 700 1.3rem/1.2 var(--font-display);
+}
+
+.plan-summary .dim,
+.plan-summary .note {
+  color: #4a4d56;
+}
+
+.plan-summary .chip--on {
+  border-color: #17181c;
+  background: none;
+  color: #17181c;
+}
+
+.plan-summary .plan-item {
+  border-top-color: rgba(23, 24, 28, 0.25);
+}
+
+.plan-summary .plan-n {
+  background: rgba(23, 24, 28, 0.1);
+  color: #7a1d37;
+  font: 700 0.9rem/1 var(--font-display);
+}
+
+.plan-summary .plan-item.is-current {
+  background: rgba(217, 56, 44, 0.09);
+}
+
+.plan-summary .icon-btn {
+  border-color: rgba(23, 24, 28, 0.4);
+  color: #17181c;
+}
+
+.plan-summary .icon-btn:hover {
+  background: rgba(23, 24, 28, 0.08);
+}
+
+.plan-summary .btn {
+  --bg1: #17181c;
+  --bg2: #17181c;
+  --fg: #ecebe4;
+}
+
+.plan-summary .btn--glass {
+  --fg: #17181c;
+  border-color: #17181c;
+  background: none;
+  color: #17181c;
+}
+
+.plan-summary .bar {
+  background: rgba(23, 24, 28, 0.15);
+}
+
+.plan-summary .status--warn {
+  color: #b0302a;
 }
 
 /* Skate screen */

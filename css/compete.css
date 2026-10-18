@@ -1,30 +1,8 @@
-/* The competition planner (js/screens/compete.js). It has its own look, the stage: a dark house with a burgundy glow, paper cards for the
+/* The competition planner (js/screens/compete.js). Its look, the stage, is now the whole app's look: a dark house with a burgundy glow, paper cards for the
    things you can hold (a program, a day, a rink diagram), a marquee for the event, and a button with a red offset shadow.
    Everything is scoped to .cp or to the compete route, so no other screen changes. */
 
-[data-route="compete"] .rink-bg {
-  background:
-    radial-gradient(90% 440px at 50% -70px, #7a1d37 0%, rgba(74, 15, 33, 0) 100%),
-    linear-gradient(#101a42, #0a1432 720px, #070e26);
-}
-
-[data-route="compete"] .rink-bg__sun,
-[data-route="compete"] .rink-bg::before {
-  display: none;
-}
-
-[data-route="compete"] .rink-bg::after {
-  background: linear-gradient(transparent 60%, rgba(3, 8, 24, 0.5));
-}
-
-.cp,
-.cp-tile {
-  --cream: #f6e9cf;
-  --gold: #e6c777;
-  --gold-hi: #ffd98a;
-  --red: #e0493a;
-  --ink: #14213f;
-  --paper: #f1e7cf;
+.cp {
   display: grid;
   gap: var(--sp-5);
   align-content: start;
