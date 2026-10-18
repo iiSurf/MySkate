@@ -38,7 +38,7 @@ export function defaultState(now = new Date()) {
       test: null,
       look: DEFAULT_LOOK,
     },
-    blades: { name: "", limitHours: 25, baseHours: 0, countedFrom: now.toISOString() },
+    blades: { name: "", limitHours: 25, baseHours: 0, lifetimeBase: 0, countedFrom: now.toISOString() },
     sharpenings: [],
     sessions: [],
     plan: { slotMin: 60, skillIds: [] },
@@ -175,6 +175,9 @@ export function sanitizeState(data, { keepActive = false, now = new Date() } = {
       name: str(b.name, MAX.name),
       limitHours: num(b.limitHours, 5, 100, 25),
       baseHours: num(b.baseHours, 0, 500, 0),
+      /* Hours on the skates from before MySkate, for the all-time total. Older data has none: the hours already on the blades are
+         the least it can be, and it is never less than those. */
+      lifetimeBase: Math.max(num(b.baseHours, 0, 500, 0), num(b.lifetimeBase, 0, 20000, 0)),
       countedFrom: isoStamp(b.countedFrom) || base.blades.countedFrom,
     },
     sharpenings: (Array.isArray(src.sharpenings) ? src.sharpenings : [])

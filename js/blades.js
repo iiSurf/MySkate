@@ -1,4 +1,5 @@
-/* Blade life: hours on the blades since they were last sharpened, against the skater's own limit. */
+/* Blade life: hours on the blades since they were last sharpened, against the skater's own limit. And an all-time total on the skates,
+   which never starts over when they are sharpened. */
 
 import { todayISO } from "./util.js";
 
@@ -8,6 +9,32 @@ export function bladeHours(state) {
   const seconds = state.sessions.filter((s) => Date.parse(s.startedAt) >= from).reduce((sum, s) => sum + s.onIceSec, 0);
   return state.blades.baseHours + seconds / 3600;
 }
+
+/* All time on the skates = the hours from before MySkate (blades.lifetimeBase, entered once) plus the on-ice time of every session
+   saved. Sharpening never touches it. */
+export function lifetimeHours(state) {
+  return state.blades.lifetimeBase + state.sessions.reduce((sum, s) => sum + s.onIceSec, 0) / 3600;
+}
+
+/* Say how many hours are on the blades since the last sharpening. The difference is hours added (or taken off) by hand, so it goes
+   into the all-time total too: the all-time total never has fewer hours than the blades do. */
+export function setBladeHours(state, wanted) {
+  const b = state.blades;
+  const fromSessions = bladeHours(state) - b.baseHours;
+  const next = Math.max(0, wanted - fromSessions);
+  b.lifetimeBase = Math.min(LIFETIME_MAX, Math.max(0, b.lifetimeBase + (next - b.baseHours)));
+  b.baseHours = next;
+}
+
+/* Say how many hours are on the skates in all. The sessions are counted already, so what is kept is the rest (the hours from before
+   MySkate). It cannot be less than the hours on the blades since sharpening. */
+export function setLifetimeHours(state, wanted) {
+  const fromSessions = state.sessions.reduce((sum, s) => sum + s.onIceSec, 0) / 3600;
+  const target = Math.max(wanted, bladeHours(state));
+  state.blades.lifetimeBase = Math.min(LIFETIME_MAX, Math.max(0, target - fromSessions));
+}
+
+export const LIFETIME_MAX = 20000;
 
 export function bladeInfo(state) {
   const hours = bladeHours(state);

@@ -271,7 +271,7 @@ export const TOUR_STEPS = [
     route: "home",
     target: ".backstage .fl",
     title: "Blade life",
-    text: "Blades go dull, so MySkate adds up your time on ice. Most skaters sharpen after 20 to 35 hours. Tap the pencil on the Blade life tile to set your own, and I just got them sharpened to start the count again.",
+    text: "Blades go dull, so MySkate adds up your time on ice. Most skaters sharpen after 20 to 35 hours. Tap the pencil on the Blade life tile to set your own, and I just got them sharpened to start the count again. The all-time total on your skates never starts over.",
   },
   {
     id: "go-me",

@@ -581,3 +581,23 @@ The skater asked for the tutorial to be interactive instead of a series of windo
 ### Not verified
 
 A real phone and Safari (the tour was checked in headless Chrome only: smooth scrolling to the target, the sparkle animation, and the sheet step). A screen reader (the step is announced through a live region, but it was not listened to). On the smallest phones and sideways, the card covers part of a large target (the figure eight) and a few wide ones.
+
+## 2026-10-17 (Saturday, late night): all-time hours on the skates
+
+### Plan
+
+The skater asked for an all-time on-ice hours total for the skating blades, updated by every session, because it is nice to know and record all the ice time on the skates. The blade life tile only counts since the last sharpening and starts over, so this is a second number beside it that never does.
+
+### Changes
+
+- `js/blades.js`: `lifetimeHours(state)` is the hours from before MySkate (`blades.lifetimeBase`) plus the on-ice time of every saved session, including sessions from before the blade count began. Sharpening does not touch it. `setBladeHours` (moved here from Home, now tested) moves the all-time total by the same amount when the hours on the blades are corrected by hand, and `setLifetimeHours` sets the total (it keeps the saved sessions and stores the rest, and is never less than the hours on the blades).
+- Saved data: `blades.lifetimeBase`, an optional field cleaned on load (0 to 20,000 hours, never less than `baseHours`). Older data and backups without it start at the hours already on the blades. It has a default, so `schemaVersion` stays 1. A backup carries it, and a merge keeps this device's number unless the app is fresh.
+- Home: the Blade life tile shows "All time on these skates" under the blade, the pencil opens a field for the total ("Hours on these skates in all", kept as you type), and the Backstage board has an "All time on skates" row. Progress shows a line under "On the ice" when there is a starting number. First-run setup has an optional question for the hours on the ice in all with these skates (blank means the hours since the last sharpening). The tour's blade step mentions it.
+
+### Verified
+
+247 tests pass in four time zones, including new ones for the total (sessions from before the blade count, sharpening, correcting by hand, setting it, cleaning old data, a backup round trip, and a merge). In a real browser with made-up data: typing a total keeps it and shows it on the tile, +1 on the blade hours adds an hour to both, a number below what is recorded is held up to it, sharpening resets the blade hours and leaves the total, and Progress shows the line. Setup stores the right number for a blank answer, a bigger one, and a smaller one. No sideways scrolling on Home, Progress, Me, or with the blade editor open at 320 and 390 wide.
+
+### Not verified
+
+A real phone and Safari. The Backstage row on Home does not redraw while the blade editor is typed in (the blades row there did not either); it is right again as soon as the screen redraws. One total, not one per pair of skates: a new pair needs the number set again by hand.

@@ -4,6 +4,7 @@ import { html, raw, fmtMinutes, fmtDate, fmt1, addDays, weekKey, todayISO } from
 import { catDot, catName, miniSkates, bar, medallion, medal, icon } from "../ui/parts.js";
 import { openSheet, confirmSheet, toast, $ } from "../ui/dom.js";
 import { levelProgress, landedPct, minutesOnIce, EARNED_AT } from "../stats.js";
+import { lifetimeHours } from "../blades.js";
 import { nextLevelKey, levelLabel } from "../catalog.js";
 import { fmtMoney, costSummary, costByMonth, sanitizeCost } from "../cost.js";
 import { GROUPS, badgeRatio, progressText } from "../badges.js";
@@ -148,6 +149,7 @@ function overview(ctx, d) {
           <div><p class="num stat-n">${fmt1(totals.allMin / 60)}</p><p class="dim">hours in all</p></div>
           <div><p class="num stat-n">${totals.sessions}</p><p class="dim">${totals.sessions === 1 ? "session" : "sessions"}</p></div>
         </div>
+        ${ctx.state.blades.lifetimeBase > 0 ? html`<p class="note">All time on your skates: <strong>${fmt1(lifetimeHours(ctx.state))} hours</strong>, with the ${fmt1(ctx.state.blades.lifetimeBase)} from before MySkate. It is kept on the blade tile on Home.</p>` : ""}
       </section>
       ${levelCards}
       ${costCard(ctx, d)}

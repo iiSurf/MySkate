@@ -54,6 +54,7 @@ export function runOnboarding(ctx) {
           </div>
         </div>
         <label class="field"><span>Hours on your blades since the last sharpening</span><input class="input input--num" id="ob-since" type="number" inputmode="decimal" min="0" max="500" step="0.25" value="0"></label>
+        <label class="field"><span>Hours on the ice in all with these skates (optional)</span><input class="input input--num" id="ob-all" type="number" inputmode="decimal" min="0" max="20000" step="1" placeholder="e.g. 120"></label>
         <p class="note">Most skaters sharpen between 20 and 35 hours. You can change this any time from the blade tile on Home.</p>
       </div>
 
@@ -123,7 +124,7 @@ export function runOnboarding(ctx) {
         s.profile.levels = { skills: values.skills, jumps: values.jumps };
         s.profile.defaultSlotMin = values.slot;
         s.plan.slotMin = values.slot;
-        s.blades = { name: values.skates, limitHours: values.limit, baseHours: values.since, countedFrom: new Date().toISOString() };
+        s.blades = { name: values.skates, limitHours: values.limit, baseHours: values.since, lifetimeBase: Math.max(values.since, values.all), countedFrom: new Date().toISOString() };
       }
       s.profile.onboarded = true;
       ctx.save();
@@ -140,6 +141,7 @@ export function runOnboarding(ctx) {
         skates: $("#ob-skates", root).value.trim().slice(0, 80),
         limit: limit >= 5 && limit <= 100 ? limit : 25,
         since: Math.max(0, Number($("#ob-since", root).value) || 0),
+        all: Math.min(20000, Math.max(0, Number($("#ob-all", root).value) || 0)),
         skills: $("#ob-skills", root).value,
         jumps: $("#ob-jumps", root).value,
         slot: Number(pressed("#ob-slot").dataset.min),

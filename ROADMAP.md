@@ -29,7 +29,7 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 
 0. Ice times: your rinks' weekly sessions on one page, with filters, My picks, and calendar import (done)
 1. Your ice: the background draws each skill's marks as you skate (built, then retired in October 2026 because it read as random squiggles; the background is now clean, see Round four and Round five under Design direction)
-2. Blade life tile: editable sharpening limit (20, 25, 30, 35, or custom), hours since sharpening from logged on-ice time, a reset button (done)
+2. Blade life tile: editable sharpening limit (20, 25, 30, 35, or custom), hours since sharpening from logged on-ice time, a reset button, and an all-time total on the skates that never resets (done)
 3. Time-budget planner: split the booked slot across the chosen skills (done, shared evenly)
 4. Friend cards and a local friends board (done)
 5. Connect devices by code, in both directions (small payload by QR; full history by backup file) (not built: a backup file, and a friend's link, already move what matters, and a QR scanner would need a library and a camera)
@@ -149,6 +149,7 @@ There is no server, so a plan made on a laptop does not appear on a phone. "Send
 
 - Each skater sets their own limit: 20, 25, 30, 35 hours, or a custom number. Most sharpen between 20 and 35 hours; the app suggests nothing and uses what the skater or their sharpener says.
 - Hours on the blades are editable, and grow by the on-ice time of every logged session. "I just got them sharpened" resets to zero (later: keep a history of sharpenings).
+- All time on the skates: a running total that grows with every saved session and never starts over when the blades are sharpened. It is the hours from before MySkate (`blades.lifetimeBase`, one number the skater enters in setup or from the blade tile's pencil) plus the on-ice time of every session. It shows on the Blade life tile, on the Backstage board on Home, and on Progress (when there is a starting number). Correcting the hours on the blades by hand moves the all-time total by the same amount, and the total is never fewer than the hours on the blades or the sessions saved. Older data starts it at the hours already on the blades. It is an optional field with a default, so `schemaVersion` stays 1. Later: start a new count for a new pair of skates.
 - States by share of the limit: under 60% Sharp (blue), 60 to 89% Getting dull (gold), 90% and up Time to sharpen (coral). The tile draws the blade, bright for the fresh part and dull for the worn part.
 
 ### First run

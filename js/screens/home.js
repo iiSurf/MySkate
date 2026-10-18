@@ -10,7 +10,7 @@ import { testList, skillsReadiness, freeReadiness, countdown } from "../testprep
 import { board } from "../friends.js";
 import { avatar } from "../ui/friends.js";
 import { badgeRatio, progressText } from "../badges.js";
-import { bladeInfo, bladeHours, logSharpening } from "../blades.js";
+import { bladeInfo, bladeHours, lifetimeHours, setBladeHours, setLifetimeHours, logSharpening, LIFETIME_MAX } from "../blades.js";
 import { levelProgress, suggestNext, isSkating, isAir, EARNED_AT } from "../stats.js";
 import { levelLabel } from "../catalog.js";
 import { confirmSheet, toast, $ } from "../ui/dom.js";
@@ -122,6 +122,7 @@ function backstage(ctx, d) {
     <p class="cp-label">Backstage</p>
     ${flapRow("Blades", `${fmt1(info.hours)} of ${fmtNum(info.limit)} h`, { hi: info.tone === "due" || info.tone === "dull" })}
     ${bar({ pct: info.pct, cls: "bar--blade", thin: true, label: "Blade life used" })}
+    ${flapRow("All time on skates", `${fmt1(lifetimeHours(ctx.state))} h`)}
     ${flapRow(`Level ${L.level}`, `${L.into} / ${L.need} XP`)}
     ${bar({ pct: L.pct, cls: "bar--xp", thin: true, label: "XP to the next level" })}
     ${nextSkill ? html`<button class="line line--btn" type="button" data-action="go-plan"><span class="eyebrow">Next up</span><span class="line__name">${nextSkill.name}</span><span class="line__go">${icon("right")}</span></button>` : ""}
@@ -167,6 +168,7 @@ function bladeTile(ctx) {
     ${bladeArt(info.pct)}
     <div class="split"><span class="chip ${info.tone === "due" ? "chip--coral" : info.tone === "dull" ? "chip--gold" : "chip--on"}" id="blade-state">${info.label}</span><span class="dim" id="blade-left"></span></div>
     ${bar({ pct: info.pct, cls: "bar--blade", thin: true, label: "Blade life used" })}
+    <div class="alltime"><span class="eyebrow alltime__label">All time on these skates</span><span class="alltime__n"><b class="num" id="blade-all">${fmt1(lifetimeHours(ctx.state))}</b> <span class="dim">hours</span></span></div>
     <div class="edit" id="blade-panel" ${ui.bladeOpen ? "" : "hidden"}>
       <label class="field"><span>Skate and blade names (optional)</span><input class="input" type="text" data-input="blade-name" value="${b.name}" maxlength="80" autocomplete="off" placeholder="Edea Piano with Gold Seal blades"></label>
       <div class="field">
@@ -181,6 +183,11 @@ function bladeTile(ctx) {
           <button class="icon-btn icon-btn--sm" type="button" data-action="blade-step" data-d="1" aria-label="One hour more">${icon("plus")}</button>
         </div>
       </div>
+      <div class="field">
+        <span id="all-label">Hours on these skates in all</span>
+        <input class="input input--num" id="h-all" type="number" inputmode="decimal" step="1" min="0" max="${LIFETIME_MAX}" value="${fmt1(lifetimeHours(ctx.state))}" data-input="blade-all" aria-labelledby="all-label" aria-describedby="all-note">
+      </div>
+      <p class="note" id="all-note">The all-time total never starts over when you sharpen. MySkate adds your on-ice time after every session. If you skated before MySkate, put in the hours you know about.</p>
       <p class="note">Most skaters sharpen between 20 and 35 hours. Use what your coach or sharpener says. MySkate adds your on-ice time after every session.${last ? ` Last sharpened ${fmtDate(last.date, { month: "short", day: "numeric" })} at ${fmtNum(last.hours)} hours.` : ""}</p>
     </div>
     <button class="btn btn--glass btn--small" type="button" data-action="blade-log">I just got them sharpened</button>
@@ -404,6 +411,7 @@ export function paintBlade(ctx) {
     if (n) n.textContent = text;
   };
   set("#blade-hours", fmt1(info.hours));
+  set("#blade-all", fmt1(lifetimeHours(ctx.state)));
   set("#blade-limit", fmtNum(info.limit));
   set("#blade-left", info.left > 0 ? `${fmt1(info.left)} ${info.left === 1 ? "hour" : "hours"} left` : `Over by ${fmt1(-info.left)} ${-info.left === 1 ? "hour" : "hours"}`);
   const art = $(".blade", root);
@@ -421,12 +429,12 @@ export function paintBlade(ctx) {
   if (custom && document.activeElement !== custom) custom.value = fmtNum(info.limit);
   const now = $("#h-now", root);
   if (now && document.activeElement !== now) now.value = fmt1(info.hours);
+  const all = $("#h-all", root);
+  if (all && document.activeElement !== all) all.value = fmt1(lifetimeHours(ctx.state));
 }
 
-function setHours(ctx, wanted) {
-  const sessionHours = bladeHours(ctx.state) - ctx.state.blades.baseHours;
-  ctx.state.blades.baseHours = Math.max(0, wanted - sessionHours);
-}
+/* Hours put in by hand on the blades also go into the all-time total (see setBladeHours). */
+const setHours = (ctx, wanted) => setBladeHours(ctx.state, wanted);
 
 export function homeActions(ctx) {
   return {
@@ -506,6 +514,19 @@ export function homeInputs(ctx) {
       const n = Number(el.value);
       if (el.value !== "" && n >= 0 && n <= 500) {
         setHours(ctx, n);
+        ctx.save();
+        paintBlade(ctx);
+      }
+    },
+    /* The all-time total is kept as you type. Leaving the box shows what is actually kept (it is never fewer than the hours on the blades). */
+    "blade-all": (el, event) => {
+      if (event.type === "change") {
+        el.value = fmt1(lifetimeHours(ctx.state));
+        return;
+      }
+      const n = Number(el.value);
+      if (el.value !== "" && n >= 0 && n <= LIFETIME_MAX) {
+        setLifetimeHours(ctx.state, n);
         ctx.save();
         paintBlade(ctx);
       }
