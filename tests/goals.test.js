@@ -54,7 +54,7 @@ test("a rating from before the goal was set does not count as the day it was rea
 test("the countdown and overdue", () => {
   const g = goal({ date: "2026-10-29" });
   const s = goalStatus(g, stats(rate("2026-10-03", 2)), "2026-10-17");
-  assert.deepEqual([s.countdown.label, s.overdue], ["D-12", false]);
+  assert.deepEqual([s.countdown.label, s.overdue], ["12 days", false]);
   const late = goalStatus(g, stats(rate("2026-10-03", 2)), "2026-11-02");
   assert.deepEqual([late.countdown.label, late.overdue], ["Passed", true]);
   const metLate = goalStatus(g, stats(rate("2026-10-20", 4)), "2026-11-02");

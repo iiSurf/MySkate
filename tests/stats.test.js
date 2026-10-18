@@ -48,7 +48,7 @@ test("skillStats follows each skill's ratings and landings", () => {
   assert.deepEqual(st.history.map((h) => h.stars), [2, 4]);
 });
 
-test("level progress counts skills at 4 skates or more", () => {
+test("level progress counts skills at 4 stars or more", () => {
   const ids = levelSkillIds(catalog, PFS);
   const stars = { [ids[0]]: 4, [ids[1]]: 5, [ids[2]]: 3 };
   const p = levelProgress(catalog, PFS, skillStats([session("2026-10-05", { stars })]));

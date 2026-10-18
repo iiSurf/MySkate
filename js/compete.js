@@ -285,7 +285,7 @@ export function programStatus(p) {
   return { total, placed, timed, planned, steps, done: steps.layout && steps.timing };
 }
 
-/* How many of a program's elements are skills you have rated, and how many of those you have earned (4 skates or more). */
+/* How many of a program's elements are skills you have rated, and how many of those you have earned (4 stars or more). */
 export function readiness(p, stats, earnedAt = 4) {
   const linked = p.elements.filter((e) => e.skillId);
   const confident = linked.filter((e) => ((stats.get && stats.get(e.skillId)) || { latest: 0 }).latest >= earnedAt).length;

@@ -2,7 +2,7 @@
    the rink, and a timing against the music; an event has a day and a result. Every view has its own address (#/compete/...), so
    the back button works. */
 
-import { html, fmtDate } from "../util.js";
+import { html, fmtDate, fmtMinutes } from "../util.js";
 import { icon } from "../ui/parts.js";
 import { toast, confirmSheet, $ } from "../ui/dom.js";
 import {
@@ -44,7 +44,7 @@ function programCard(ctx, p, stats) {
     <p>${meta}</p>
     <p>${ev ? html`For ${ev.name}, ${fmtDate(ev.date, { month: "short", day: "numeric" })}` : "Not for a competition yet"}</p>
     <div class="cp-steps"><span class="cp-step ${st.steps.elements ? "" : "is-no"}">${st.total} ${st.total === 1 ? "element" : "elements"}</span><span class="cp-step ${st.steps.layout ? "" : "is-no"}">Layout</span><span class="cp-step ${st.steps.timing ? "" : "is-no"}">Timing</span></div>
-    ${rd.linked ? html`<p>${rd.confident} of ${rd.linked} skills in it ${rd.linked === 1 ? "is" : "are"} earned.</p>` : ""}
+    ${rd.linked ? html`<p>${rd.linked === 1 ? (rd.confident ? "Its one skill is earned." : "Its one skill is not earned yet.") : `${rd.confident} of its ${rd.linked} skills are earned.`}</p>` : ""}
   </button>`;
 }
 
@@ -93,16 +93,16 @@ function hubView(ctx, d) {
 
 const programOf = (ctx, id) => ctx.state.programs.find((p) => p.id === id) || null;
 
-/* "you: 4 skates" for an element that is one of your skills. */
+/* "you: 4 stars" for an element that is one of your skills. */
 function ratingOf(e, stats) {
   const st = e.skillId && stats.get(e.skillId);
   return st ? st.latest : null;
 }
-const skatesText = (n) => `${n} ${n === 1 ? "skate" : "skates"}`;
+const starsText = (n) => `${n} ${n === 1 ? "star" : "stars"}`;
 
 function elementDetail(e, stats) {
   const r = ratingOf(e, stats);
-  return [typeName(e.type), r !== null ? `you: ${skatesText(r)}` : "", e.at !== null ? `starts ${fmtMmSs(e.at)}` : "", e.x === null ? "not on the rink" : ""].filter(Boolean).join(" · ");
+  return [typeName(e.type), r !== null ? `you: ${starsText(r)}` : "", e.at !== null ? `starts ${fmtMmSs(e.at)}` : "", e.x === null ? "not on the rink" : ""].filter(Boolean).join(" · ");
 }
 
 const programMeta = (p) => [kindName(p.kind), fmtMmSs(p.lengthSec), p.music.title && (p.music.artist ? `${p.music.title}, ${p.music.artist}` : p.music.title)].filter(Boolean).join(" · ");
@@ -225,7 +225,7 @@ const eventOf = (ctx, id) => ctx.state.events.find((e) => e.id === id) || null;
 function dayList(ev) {
   const items = sortDay(ev.day);
   if (!items.length) return html`<p class="note">Nothing yet. Add check-in, warm-up, and your skate, with the times your event posts.</p>`;
-  return html`<ol class="cp-dayl">${items.map((i) => html`<li class="cp-di${i.mine ? " is-mine" : ""}${/zamboni|resurfac/i.test(i.label) ? " is-zam" : ""}"><span class="cp-di__t">${clockText(i.time)}</span><button class="cp-di__b" type="button" data-action="edit-day" data-id="${i.id}" aria-label="Edit: ${i.label}, ${clockText(i.time)}"><b>${i.label}</b>${i.mins ? html`<small>${i.mins} min</small>` : ""}</button></li>`)}</ol>`;
+  return html`<ol class="cp-dayl">${items.map((i) => html`<li class="cp-di${i.mine ? " is-mine" : ""}${/zamboni|resurfac/i.test(i.label) ? " is-zam" : ""}"><span class="cp-di__t">${clockText(i.time)}</span><button class="cp-di__b" type="button" data-action="edit-day" data-id="${i.id}" aria-label="Edit: ${i.label}, ${clockText(i.time)}"><b>${i.label}</b>${i.mins ? html`<small>${fmtMinutes(i.mins)}</small>` : ""}</button></li>`)}</ol>`;
 }
 
 function resultCard(ctx, ev, program) {

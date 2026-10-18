@@ -34,7 +34,7 @@ import { entryOf } from "./timer.js";
 import { defaultState } from "./store.js";
 
 /* The label of each tab, for "head back to Plan". Competitions has no tab of its own: Plan stays lit while you are in it. */
-export const TABS = { home: "Home", ice: "Ice", plan: "Plan", skate: "Skate", progress: "Progress", me: "Me", compete: "Plan" };
+export const TABS = { home: "Home", ice: "Ice", plan: "Plan", skate: "Skate", progress: "Progress", me: "Profile", compete: "Plan" };
 
 export const tabTarget = (route) => `#nav [data-route="${route === "compete" ? "plan" : route}"]`;
 
@@ -89,7 +89,7 @@ export const TOUR_STEPS = [
     kind: "act",
     route: "plan",
     target: '[role="group"][aria-labelledby="slot-title"]',
-    title: "How long is your ice?",
+    title: "How long is your ice time?",
     text: `Tap your ice slot in minutes: ${SLOTS.slice(0, -1).join(", ")}, or ${SLOTS[SLOTS.length - 1]}. Booked something else? Type your own.`,
     click: true,
   },
@@ -137,7 +137,7 @@ export const TOUR_STEPS = [
     route: "skate",
     target: ".rating",
     title: "Rate each skill",
-    text: `Tap the skates to say how it went, one to five. ${EARNED_AT} skates or more earns the skill. Be honest: it is your notebook.`,
+    text: `Tap the stars to say how it went, one to five. ${EARNED_AT} stars or more earns the skill. Be honest: it is your notebook.`,
     requires: (v) => Boolean(v.state.active),
     done: (v) => {
       const c = current(v);
@@ -278,7 +278,7 @@ export const TOUR_STEPS = [
     kind: "act",
     target: tabTarget("me"),
     title: "Keep your data safe",
-    text: "Tap Me.",
+    text: "Tap Profile.",
     done: (v) => v.route === "me",
   },
   {

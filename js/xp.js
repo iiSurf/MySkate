@@ -69,8 +69,8 @@ export function replayXp(sessions) {
     }
     if (practiced) parts.push({ label: `${practiced} ${practiced === 1 ? "skill" : "skills"} practiced`, xp: practiced * XP.perSkill });
     if (pbs) parts.push({ label: `${pbs} personal ${pbs === 1 ? "best" : "bests"}`, xp: pbs * XP.personalBest });
-    if (fours) parts.push({ label: `${fours} new at 4 skates`, xp: fours * XP.firstFour });
-    if (fives) parts.push({ label: `${fives} new at 5 skates`, xp: fives * XP.firstFive });
+    if (fours) parts.push({ label: `${fours} new at 4 stars`, xp: fours * XP.firstFour });
+    if (fives) parts.push({ label: `${fives} new at 5 stars`, xp: fives * XP.firstFive });
 
     const wk = weekKey(s.date);
     const count = (weekCounts.get(wk) || 0) + 1;

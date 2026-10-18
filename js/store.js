@@ -336,7 +336,7 @@ function structuredCloneSafe(value) {
 
 /* A spreadsheet export, one row per skill rating. Cells that start like a formula get a leading apostrophe. */
 export function exportCSV(state, catalog) {
-  const header = ["date", "booked_min", "on_ice_min", "track", "level", "skill", "type", "skates", "landed", "attempts", "note", "session_cost"];
+  const header = ["date", "booked_min", "on_ice_min", "track", "level", "skill", "type", "stars", "landed", "attempts", "note", "session_cost"];
   const cell = (v) => {
     let text = String(v ?? "");
     if (/^[=+\-@\t\r]/.test(text)) text = "'" + text;

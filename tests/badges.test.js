@@ -67,8 +67,8 @@ test("time on ice adds up across sessions, and one long session counts on its ow
   const list = got([session("2026-10-01", { onIceSec: min(40) }), session("2026-10-02", { onIceSec: min(30) })]);
   assert.deepEqual([one(list, "hour-1").earned, one(list, "hour-1").earnedOn], [true, "2026-10-02"]);
   assert.equal(one(list, "long-90").earned, false);
-  assert.equal(progressText(one(list, "hours-10")), "1.2 of 10 h");
-  assert.equal(progressText(one(list, "long-90")), "40 of 90 min");
+  assert.equal(progressText(one(list, "hours-10")), "1 hr 10 mins of 10 hrs");
+  assert.equal(progressText(one(list, "long-90")), "40 mins of 1 hr 30 mins");
   assert.equal(one(got([session("2026-10-01", { onIceSec: min(95) })]), "long-90").earned, true);
   assert.equal(one(got([session("2026-10-01", { onIceSec: min(89) })]), "long-90").earned, false);
   assert.equal(one(got([session("2026-10-01", { onIceSec: min(1572) })]), "marathon").earned, true);

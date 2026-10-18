@@ -504,29 +504,29 @@ select.input {
   cursor: pointer;
 }
 
-.rating .skate {
-  filter: grayscale(1) brightness(0.62);
-  opacity: 0.5;
-  transition: transform 0.45s var(--spring), opacity 0.3s, filter 0.3s;
+/* Stars for a rating: an outline when it does not count, filled gold when it does. Big enough to hit with a glove on. */
+.rating .star {
+  width: 46px;
+  height: 46px;
+  fill: transparent;
+  stroke: var(--text-faint);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  transition: transform 0.45s var(--spring), fill 0.2s, stroke 0.2s;
 }
 
-.rating button:hover .skate {
-  transform: translateY(-3px) scale(1.07);
+.rating button:hover .star {
+  transform: translateY(-2px) scale(1.06);
 }
 
-.rating button[aria-pressed="true"] .skate {
-  filter: drop-shadow(0 4px 10px rgba(255, 196, 110, 0.5));
-  opacity: 1;
+.rating button[aria-pressed="true"] .star {
+  fill: var(--gold-hi);
+  stroke: var(--gold-hi);
 }
 
-.rating button.earn .skate {
+.rating button.earn .star {
   animation: earn 0.7s var(--spring-soft) both;
   animation-delay: var(--i, 0s);
-}
-
-/* On a screen that already has its one glow, keep earned skates flat. */
-.rating--flat button[aria-pressed="true"] .skate {
-  filter: none;
 }
 
 @keyframes earn {
@@ -554,6 +554,20 @@ select.input {
 .mini .skate.off {
   filter: grayscale(1) brightness(0.62);
   opacity: 0.42;
+}
+
+.mini .star {
+  width: 17px;
+  height: 17px;
+  fill: transparent;
+  stroke: var(--text-faint);
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.mini .star.on {
+  fill: var(--gold-hi);
+  stroke: var(--gold-hi);
 }
 
 /* Sections with a job. A tile is just a section that holds a number, a picture, and a button. */

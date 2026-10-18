@@ -176,7 +176,7 @@ test("CSV has one row per rating and protects against spreadsheet formulas", () 
   const csv = exportCSV(state, catalog);
   const lines = csv.trim().split("\n");
   assert.equal(lines.length, 2);
-  assert.match(lines[0], /^date,booked_min,on_ice_min,track,level,skill,type,skates,landed,attempts,note,session_cost$/);
+  assert.match(lines[0], /^date,booked_min,on_ice_min,track,level,skill,type,stars,landed,attempts,note,session_cost$/);
   assert.match(lines[1], /Waltz jump/);
   assert.match(lines[1], /,4,7,10,/);
   assert.match(lines[1], /"'=HYPERLINK\(""http:\/\/example.com""\), ""quoted""",$/, "the cost column is empty when the session has no cost");

@@ -37,7 +37,7 @@ const ROUTES = {
   plan: { title: "Plan", render: renderPlan, actions: planActions, inputs: planInputs },
   skate: { title: "Skate", render: renderSkate, mount: mountSkate, actions: skateActions, inputs: skateInputs },
   progress: { title: "Progress", render: renderProgress, actions: progressActions, inputs: none },
-  me: { title: "Me", render: renderMe, mount: mountMe, actions: meActions, inputs: meInputs },
+  me: { title: "Profile", render: renderMe, mount: mountMe, actions: meActions, inputs: meInputs },
   /* Competitions has no tab of its own: you reach it from Home and Plan, and Plan stays lit while you are in it. */
   compete: { title: "Competitions", render: renderCompete, mount: mountCompete, actions: competeActions, inputs: competeInputs, nav: "plan" },
 };
@@ -106,7 +106,7 @@ function renderRoute({ keepScroll = false } = {}) {
   const y = window.scrollY;
   const refocus = keepScroll ? focusSelector(document.activeElement) : null;
   const blocked = ctx.flags.storageBlocked
-    ? html`<section class="card nudge"><p><strong>Your browser is not letting MySkate save.</strong></p><p class="dim">This can happen in a private window. Everything works until you close this tab, so save a backup from the Me screen before you leave.</p></section>`
+    ? html`<section class="card nudge"><p><strong>Your browser is not letting MySkate save.</strong></p><p class="dim">This can happen in a private window. Everything works until you close this tab, so save a backup from Profile before you leave.</p></section>`
     : "";
   render(screenEl, html`${blocked}${route.render(ctx)}`);
   handlers = { actions: route.actions(ctx), inputs: route.inputs(ctx) };
@@ -163,7 +163,7 @@ function save() {
   const ok = saveState(ctx.state);
   if (!ok && !warnedSave) {
     warnedSave = true;
-    toast("Could not save in this browser. Save a backup from the Me screen.", 6000);
+    toast("Could not save in this browser. Save a backup from Profile.", 6000);
   }
 }
 

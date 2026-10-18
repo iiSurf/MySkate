@@ -1,7 +1,7 @@
 /* Progress: totals, levels, every skill you have tried, and every session. */
 
 import { html, raw, fmtMinutes, fmtDate, fmt1, fmtDuration, addDays, weekKey, todayISO } from "../util.js";
-import { catDot, catName, miniSkates, bar, medallion, medal, icon } from "../ui/parts.js";
+import { catDot, catName, miniSkates, bar, medallion, medal, icon, timeNum } from "../ui/parts.js";
 import { openSheet, confirmSheet, toast, $ } from "../ui/dom.js";
 import { levelProgress, landedPct, minutesOnIce, EARNED_AT } from "../stats.js";
 import { lifetimeSeconds } from "../blades.js";
@@ -64,7 +64,7 @@ function costCard(ctx, d) {
   if (!sessions.length) return "";
   const sum = costSummary(sessions, d.today);
   if (!sum.all.costed) {
-    return html`<section class="card tile"><div class="tile__head"><p class="eyebrow">Ice cost</p></div><p class="dim">Add what the ice cost when you save a session, or set your usual cost in Me. MySkate adds it up by month and works out the cost per hour.</p></section>`;
+    return html`<section class="card tile"><div class="tile__head"><p class="eyebrow">Ice cost</p></div><p class="dim">Add what the ice cost when you save a session, or set your usual cost in Profile. MySkate adds it up by month and works out the cost per hour.</p></section>`;
   }
   /* Months with no sessions are left out, except this one. */
   const months = costByMonth(sessions, d.today, 6).filter((m, i) => i === 0 || m.sessions > 0);
@@ -77,7 +77,7 @@ function costCard(ctx, d) {
       <div><p class="num stat-n">${per(sum.all.perHour)}</p><p class="dim">per hour on ice</p></div>
       <div><p class="num stat-n">${fmtMoney(sum.all.total)}</p><p class="dim">in all</p></div>
     </div>
-    <div>${months.map((m) => html`<div class="row"><span class="grow">${fmtDate(m.month + "-01", { month: "long", year: "numeric" })}<br><span class="dim">${m.sessions ? `${m.sessions} ${m.sessions === 1 ? "session" : "sessions"}, ${fmt1(m.hours)} h` : "No sessions"}</span></span>${m.costed ? html`<span class="chip chip--gold">${fmtMoney(m.total)}</span><span class="chip chip--tag">${per(m.perHour)} an hour</span>` : m.sessions ? html`<span class="dim">no cost added</span>` : ""}</div>`)}</div>
+    <div>${months.map((m) => html`<div class="row"><span class="grow">${fmtDate(m.month + "-01", { month: "long", year: "numeric" })}<br><span class="dim">${m.sessions ? `${m.sessions} ${m.sessions === 1 ? "session" : "sessions"}, ${fmtMinutes(m.hours * 60)}` : "No sessions"}</span></span>${m.costed ? html`<span class="chip chip--gold">${fmtMoney(m.total)}</span><span class="chip chip--tag">${per(m.perHour)} an hour</span>` : m.sessions ? html`<span class="dim">no cost added</span>` : ""}</div>`)}</div>
     ${sum.all.unknown ? html`<p class="note">${sum.all.unknown} ${sum.all.unknown === 1 ? "session has" : "sessions have"} no cost, so ${sum.all.unknown === 1 ? "it is" : "they are"} left out. Add one from the Sessions tab.</p>` : ""}
   </section>`;
 }
@@ -99,7 +99,7 @@ function calendarCard(ctx, d) {
     <div class="tile__head"><p class="eyebrow" id="cal-title">Practice calendar</p>${ym !== d.today.slice(0, 7) ? html`<button class="chip" type="button" data-action="cal-today">This month</button>` : ""}</div>
     <div class="weekbar cal-nav">
       <button class="icon-btn" type="button" data-action="cal-prev" aria-label="Previous month">${icon("left")}</button>
-      <div class="weekbar__label"><strong>${label}</strong><span class="dim">${g.daysSkated ? `${g.daysSkated} ${g.daysSkated === 1 ? "day" : "days"} skated, ${g.sessions} ${g.sessions === 1 ? "session" : "sessions"}, ${fmt1(g.minutes / 60)} h` : "No sessions this month"}</span></div>
+      <div class="weekbar__label"><strong>${label}</strong><span class="dim">${g.daysSkated ? `${g.daysSkated} ${g.daysSkated === 1 ? "day" : "days"} skated, ${g.sessions} ${g.sessions === 1 ? "session" : "sessions"}, ${fmtMinutes(g.minutes)}` : "No sessions this month"}</span></div>
       <button class="icon-btn" type="button" data-action="cal-next" aria-label="Next month">${icon("right")}</button>
     </div>
     <div class="cal" role="group" aria-label="${label}">
@@ -144,9 +144,9 @@ function overview(ctx, d) {
       <section class="card tile">
         <div class="tile__head"><p class="eyebrow">On the ice</p></div>
         <div class="stats">
-          <div><p class="num stat-n">${fmt1(totals.weekMin / 60)}</p><p class="dim">hours this week</p></div>
-          <div><p class="num stat-n">${fmt1(totals.monthMin / 60)}</p><p class="dim">hours this month</p></div>
-          <div><p class="num stat-n">${fmt1(totals.allMin / 60)}</p><p class="dim">hours in all</p></div>
+          <div><p class="num stat-n">${timeNum(totals.weekMin)}</p><p class="dim">this week</p></div>
+          <div><p class="num stat-n">${timeNum(totals.monthMin)}</p><p class="dim">this month</p></div>
+          <div><p class="num stat-n">${timeNum(totals.allMin)}</p><p class="dim">in all</p></div>
           <div><p class="num stat-n">${totals.sessions}</p><p class="dim">${totals.sessions === 1 ? "session" : "sessions"}</p></div>
         </div>
         ${ctx.state.blades.lifetimeBase > 0 ? html`<p class="note">All time on your skates: <strong>${fmtDuration(lifetimeSeconds(ctx.state))}</strong>, counting the time from before MySkate. It is kept on the blade tile on Home.</p>` : ""}
@@ -211,7 +211,7 @@ function friendsTab(ctx) {
     <section class="card tile" aria-labelledby="card-title">
       <div class="tile__head"><p class="eyebrow" id="card-title">Your card</p></div>
       <div class="friend-head">${avatar(me.name, me.look)}<div><strong>${me.name}</strong><br><span class="dim">Level ${me.level} · ${me.xpTotal} XP · ${me.badges} ${me.badges === 1 ? "badge" : "badges"}</span></div></div>
-      ${state.profile.name.trim() ? "" : html`<p class="note">Your card says "Skater". Add your name in Me to put it on the card.</p>`}
+      ${state.profile.name.trim() ? "" : html`<p class="note">Your card says "Skater". Add your name in Profile to put it on the card.</p>`}
       <div class="cluster"><button class="btn btn--small" type="button" data-action="share-card">Share my card</button><button class="btn btn--glass btn--small" type="button" data-action="card-picture">Save as a picture</button><button class="chip" type="button" data-action="copy-card">Copy link</button></div>
       <p class="note">Your friend opens the link on their phone and taps Add. The link keeps your card after the # in the address, so it is never sent to any website.</p>
     </section>
@@ -266,7 +266,7 @@ function testsTab(ctx, d) {
     </section>
     <section class="card tile" aria-labelledby="ss-title">
       <div class="tile__head"><p class="eyebrow" id="ss-title">Skating skills</p><span class="chip chip--on">${skills.earned} of ${skills.total}</span></div>
-      <div>${skills.rows.map((r) => html`<div class="row row--pick" role="button" tabindex="0" data-action="skill" data-id="${r.skillId}"><span class="tick" aria-hidden="true" data-on="${r.earned}">${icon("check")}</span><span class="grow">${r.name}<br><span class="dim">${r.tried ? `Latest ${r.latest} ${r.latest === 1 ? "skate" : "skates"}, best ${r.best}` : "Not tried yet"}</span></span>${r.recent.length ? html`<span class="pips pips--mini" role="img" aria-label="Last ratings: ${r.recent.join(", ")}">${r.recent.map((n) => html`<i class="pip ${n >= EARNED_AT ? "on" : ""}"></i>`)}</span>` : ""}</div>`)}</div>
+      <div>${skills.rows.map((r) => html`<div class="row row--pick" role="button" tabindex="0" data-action="skill" data-id="${r.skillId}"><span class="tick" aria-hidden="true" data-on="${r.earned}">${icon("check")}</span><span class="grow">${r.name}<br><span class="dim">${r.tried ? `Latest ${r.latest} ${r.latest === 1 ? "star" : "stars"}, best ${r.best}` : "Not tried yet"}</span></span>${r.recent.length ? html`<span class="pips pips--mini" role="img" aria-label="Last ratings: ${r.recent.join(", ")}">${r.recent.map((n) => html`<i class="pip ${n >= EARNED_AT ? "on" : ""}"></i>`)}</span>` : ""}</div>`)}</div>
       ${todo.length ? html`<button class="btn btn--glass btn--small" type="button" data-action="plan-test">Plan the ${todo.length} not earned</button>` : html`<p class="note">Every skating skill for this test is earned. Keep them fresh before test day.</p>`}
     </section>
     ${goal.free
@@ -298,7 +298,7 @@ function openDay(ctx, date) {
           })}
           ${s.note ? html`<p class="note">${s.note}</p>` : ""}</div>`;
       })}
-      ${offToday.length ? html`<div class="card"><p class="eyebrow">Off-ice</p>${offToday.map((e) => html`<div class="row"><span class="grow">${offKindName(e.kind)} · ${e.minutes} min${e.note ? html`<br><span class="dim">${e.note}</span>` : ""}</span></div>`)}</div>` : ""}
+      ${offToday.length ? html`<div class="card"><p class="eyebrow">Off-ice</p>${offToday.map((e) => html`<div class="row"><span class="grow">${offKindName(e.kind)} · ${fmtMinutes(e.minutes)}${e.note ? html`<br><span class="dim">${e.note}</span>` : ""}</span></div>`)}</div>` : ""}
       ${planned.length ? html`<div class="card"><p class="eyebrow">Ice you picked</p>${planned.map((o) => html`<div class="row"><span class="grow"><strong>${fmtRange(o.start, o.end)}</strong><br><span class="dim">${kindName(o.kind)} at ${rinkName(o.rinkId)}</span></span></div>`)}</div>` : ""}
       <div class="sheet__foot"><span></span><button class="btn btn--small" type="button" data-close="done">Done</button></div>`,
     { label: fmtDate(date, { weekday: "long", month: "long", day: "numeric" }), sticky: true }
@@ -351,7 +351,7 @@ function offIceCard(ctx, d) {
   const recent = recentOffIce(list).slice(0, 8);
   return html`<section class="card" aria-labelledby="off-title">
     <div class="split"><p class="eyebrow" id="off-title">Off-ice log</p><button class="chip" type="button" data-action="log-off">Log off-ice work</button></div>
-    ${list.length ? html`<p class="dim">This week: ${sum.weekMin} min in ${sum.weekCount} ${sum.weekCount === 1 ? "workout" : "workouts"}. In all: ${fmt1(sum.allMin / 60)} h.</p><div>${recent.map((e) => html`<div class="row"><span class="grow">${offKindName(e.kind)} · ${e.minutes} min<br><span class="dim">${fmtDate(e.date, { weekday: "short", month: "short", day: "numeric" })}${e.note ? " · " + e.note : ""}</span></span><button class="icon-btn icon-btn--sm" type="button" data-action="off-remove" data-id="${e.id}" aria-label="Delete ${offKindName(e.kind)} on ${fmtDate(e.date)}">${icon("x")}</button></div>`)}</div>` : html`<p class="dim">Stretching, strength, jump drills, dance, or cardio away from the rink. It counts toward badges and shows on the calendar.</p>`}
+    ${list.length ? html`<p class="dim">This week: ${fmtMinutes(sum.weekMin)} in ${sum.weekCount} ${sum.weekCount === 1 ? "workout" : "workouts"}. In all: ${fmtMinutes(sum.allMin)}.</p><div>${recent.map((e) => html`<div class="row"><span class="grow">${offKindName(e.kind)} · ${fmtMinutes(e.minutes)}<br><span class="dim">${fmtDate(e.date, { weekday: "short", month: "short", day: "numeric" })}${e.note ? " · " + e.note : ""}</span></span><button class="icon-btn icon-btn--sm" type="button" data-action="off-remove" data-id="${e.id}" aria-label="Delete ${offKindName(e.kind)} on ${fmtDate(e.date)}">${icon("x")}</button></div>`)}</div>` : html`<p class="dim">Stretching, strength, jump drills, dance, or cardio away from the rink. It counts toward badges and shows on the calendar.</p>`}
   </section>`;
 }
 
@@ -393,13 +393,13 @@ export function renderProgress(ctx) {
 
 function sparkline(history) {
   const rated = history.filter((h) => h.stars > 0);
-  if (rated.length < 2) return rated.length === 1 ? html`<p class="dim">Rated once so far: ${rated[0].stars} ${rated[0].stars === 1 ? "skate" : "skates"}. Rate it again next time to see a trend.</p>` : "";
+  if (rated.length < 2) return rated.length === 1 ? html`<p class="dim">Rated once so far: ${rated[0].stars} ${rated[0].stars === 1 ? "star" : "stars"}. Rate it again next time to see a trend.</p>` : "";
   const w = 240;
   const h = 70;
   const pts = rated.map((r, i) => [8 + (i / (rated.length - 1)) * (w - 16), h - 8 - ((r.stars - 1) / 4) * (h - 16)]);
   const line = pts.map((p) => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ");
   const dots = pts.map((p) => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="#ffd98a"/>`).join("");
-  return html`<svg class="spark" viewBox="0 0 ${w} ${h}" role="img" aria-label="Rating over time, from ${rated[0].stars} to ${rated[rated.length - 1].stars} skates"><polyline points="${line}" fill="none" stroke="#a6f1ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>${raw(dots)}</svg>`;
+  return html`<svg class="spark" viewBox="0 0 ${w} ${h}" role="img" aria-label="Rating over time, from ${rated[0].stars} to ${rated[rated.length - 1].stars} stars"><polyline points="${line}" fill="none" stroke="#a6f1ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>${raw(dots)}</svg>`;
 }
 
 function openSkill(ctx, id) {

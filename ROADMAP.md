@@ -17,7 +17,7 @@ Source of truth for scope. Update it when a decision changes, and note the chang
 - [x] Level picker, separate for skating skills and free skate (owner starts at Pre-Free Skate), with suggested next skills
 - [x] First-run setup: skates and sharpening limit, level pickers, usual ice slot, or restore from a backup file
 - [x] Plan screen: pick skills, pick an ice slot (30, 45, 60, 75, 90, 120 minutes, or custom)
-- [x] Skate mode: booked-slot countdown, actual on-ice timer with pause, skill checklist, 1-5 skate rating, notes, and a landed/missed counter for jumps
+- [x] Skate mode: booked-slot countdown, actual on-ice timer with pause, skill checklist, 1-5 star rating (it was skates until October 2026; the skate picture now only marks an earned skill), notes, and a landed/missed counter for jumps
 - [x] History and progress: per-skill trend, level progress, ice time totals by week and month
 - [x] XP, level bar, and weekly streak
 - [x] Backup: export JSON (full), export CSV (read-only), restore with Merge or Replace, reminder after 7 days without a backup
@@ -97,7 +97,7 @@ Level n to n+1 costs `100 + 50 * (n - 1)` XP. XP is effort relative to your own 
 
 ### Badges
 
-- 29 badges in five groups (On the ice, Skills, Jumps, Habits, Levels): first session, sessions, a full month, time on ice up to a marathon (26.2 hours), skills earned, five skates, personal bests, a level complete, jumps landed, a jump landed 80 percent of 20 tries, weekly streaks, notes, an all-rounder session, a sharpening, a backup, and levels 3, 5, and 10.
+- 29 badges in five groups (On the ice, Skills, Jumps, Habits, Levels): first session, sessions, a full month, time on ice up to a marathon (26.2 hours), skills earned, five stars, personal bests, a level complete, jumps landed, a jump landed 80 percent of 20 tries, weekly streaks, notes, an all-rounder session, a sharpening, a backup, and levels 3, 5, and 10.
 - Like XP, badges are worked out from the saved sessions every time and never stored, so merging, restoring, and fixing sessions always give the right trophy case. Replaying the sessions in order finds the day each was earned and how many sessions and days it took. A skill counts at its best rating, so a bad day cannot take a badge away.
 - Progress has a Badges tab (a trophy case: gold medals earned, dashed ghosts with a progress bar for the rest, an "Almost there" list) and tapping a badge shows what it takes and when you earned it. Home has a Badges tile.
 - A full-screen "New badge!" celebration (after the level-up one) follows saving a session, logging a sharpening, or saving a backup. `profile.badgesSeen` remembers which badges you were told about; the first time (and after a restore) it only notes what is already earned, so old progress does not set off a pile of celebrations.

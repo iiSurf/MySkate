@@ -77,13 +77,9 @@ export function fmtClock(totalSec) {
   return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
 }
 
+/* Minutes as hours and minutes, the same way everywhere in the app: "1 hr 5 mins", "40 mins", "2 hrs". */
 export function fmtMinutes(min) {
-  const total = Math.round(min);
-  const h = Math.floor(total / 60);
-  const m = total % 60;
-  if (h > 0 && m > 0) return `${h} h ${m} min`;
-  if (h > 0) return `${h} h`;
-  return `${m} min`;
+  return fmtDuration(Math.round(Number(min) || 0) * 60);
 }
 
 /* A length of time as hours, minutes, and seconds: [{ n: 10, unit: "hrs" }, { n: 14, unit: "mins" }, { n: 13, unit: "secs" }]. What is zero at

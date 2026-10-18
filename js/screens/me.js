@@ -1,4 +1,4 @@
-/* Me: your name and level, how MySkate looks, and keeping your data safe with backups. */
+/* Profile (the "me" route): your name and level, how MySkate looks, and keeping your data safe with backups. */
 
 import { html, fmtDate, todayISO } from "../util.js";
 import { $, openSheet, confirmSheet, toast } from "../ui/dom.js";
@@ -19,7 +19,7 @@ export function renderMe(ctx) {
   const safe = (url) => (typeof url === "string" && /^https:\/\//.test(url) ? url : "");
   const have = ctx.lookHave();
   return html`
-    <header class="screen-head"><div><p class="eyebrow">Your setup</p><h1>Me</h1></div></header>
+    <header class="screen-head"><div><p class="eyebrow">Your setup</p><h1>Profile</h1></div></header>
     <section class="card card--ice help-card" aria-labelledby="help-title">
       <div class="grow"><h2 id="help-title">Help</h2><p class="dim">New here, or forgot how something works? Take a guided practice run: you plan, skate, and save a session while sparkles show where to tap. Nothing in practice is saved.</p></div>
       <button class="btn" type="button" data-action="tour">Show me how MySkate works</button>
@@ -57,7 +57,7 @@ export function renderMe(ctx) {
           <span id="contrast-label">Text</span>
           <div class="limit-row" role="group" aria-labelledby="contrast-label"><button class="chip" type="button" data-action="contrast" aria-pressed="${state.settings.contrast}">High contrast</button></div>
         </div>
-        <p class="note">High contrast makes surfaces solid, text white, and the ice calmer. It also switches on by itself when your device asks for more contrast.</p>
+        <p class="note">High contrast makes the text brighter and the surfaces solid. It also switches on by itself when your device asks for more contrast.</p>
       </section>
 
       <section class="card card--ice stack">

@@ -1,6 +1,6 @@
 /* Plan: choose your ice slot, pick skills (suggested, your levels, or anything in the catalog), and see the minutes. */
 
-import { html, uid, todayISO, fmtDate } from "../util.js";
+import { html, uid, todayISO, fmtDate, fmtMinutes } from "../util.js";
 import { icon, catDot, miniSkates, bar } from "../ui/parts.js";
 import { $, $$, openSheet, confirmSheet, toast } from "../ui/dom.js";
 import { pickSkill } from "../ui/skillpick.js";
@@ -35,11 +35,11 @@ function levelList(ctx, d, key, want, title) {
 /* Skill goals: a skill, the rating to reach, and a date. */
 function goalRow(ctx, g) {
   const sk = ctx.catalog.skills.get(g.skillId);
-  const skates = (n) => `${n} ${n === 1 ? "skate" : "skates"}`;
+  const stars = (n) => `${n} ${n === 1 ? "star" : "stars"}`;
   const chip = g.met ? html`<span class="chip chip--gold">Reached</span>` : g.countdown ? html`<span class="chip ${g.overdue ? "chip--coral" : "chip--gold"}">${g.countdown.label}</span>` : "";
   return html`<div class="row goal-row">
     ${g.met ? html`<span class="tick" aria-hidden="true" data-on="true">${icon("check")}</span>` : catDot(sk.cat)}
-    <span class="grow">${sk.name}<br><span class="dim">${g.met ? `Reached ${fmtDate(g.metOn, { month: "short", day: "numeric" })}, goal was ${skates(g.target)}` : g.tried ? `Now ${skates(g.latest)}, goal ${skates(g.target)}` : `Not tried yet, goal ${skates(g.target)}`}${g.date && !g.met ? ` by ${fmtDate(g.date, { month: "short", day: "numeric" })}` : ""}</span>${g.met ? "" : bar({ pct: g.pct, thin: true, label: `${sk.name}: ${g.pct} percent of the way to the goal` })}</span>
+    <span class="grow">${sk.name}<br><span class="dim">${g.met ? `Reached ${fmtDate(g.metOn, { month: "short", day: "numeric" })}, goal was ${stars(g.target)}` : g.tried ? `Now ${stars(g.latest)}, goal ${stars(g.target)}` : `Not tried yet, goal ${stars(g.target)}`}${g.date && !g.met ? ` by ${fmtDate(g.date, { month: "short", day: "numeric" })}` : ""}</span>${g.met ? "" : bar({ pct: g.pct, thin: true, label: `${sk.name}: ${g.pct} percent of the way to the goal` })}</span>
     ${chip}
     ${g.met ? "" : html`<button class="chip" type="button" data-action="goal-plan" data-id="${g.id}">${ctx.state.plan.skillIds.includes(g.skillId) ? "In plan" : "Plan it"}</button>`}
     <button class="icon-btn icon-btn--sm" type="button" data-action="goal-remove" data-id="${g.id}" aria-label="Remove the goal for ${sk.name}">${icon("x")}</button>
@@ -133,9 +133,9 @@ async function openGoalSheet(ctx) {
   const sheet = openSheet(
     html`<h2 class="sheet__title sheet__title--small">Set a goal</h2>
       <div class="field"><span id="gs-skill-l">Skill</span><button class="btn btn--glass btn--small" type="button" id="gs-skill" aria-labelledby="gs-skill-l gs-skill">Choose a skill</button></div>
-      <div class="field"><span id="gs-target-l">Reach this rating</span><div class="limit-row" id="gs-target" role="group" aria-labelledby="gs-target-l">${TARGETS.map((n) => html`<button class="chip" type="button" data-n="${n}" aria-pressed="${n === target}">${n} skates</button>`)}</div></div>
+      <div class="field"><span id="gs-target-l">Reach this rating</span><div class="limit-row" id="gs-target" role="group" aria-labelledby="gs-target-l">${TARGETS.map((n) => html`<button class="chip" type="button" data-n="${n}" aria-pressed="${n === target}">${n} stars</button>`)}</div></div>
       <label class="field"><span>By this day (optional)</span><input class="input" id="gs-date" type="date" min="${todayISO()}"></label>
-      <p class="note">A goal is reached when the skill's latest rating is at or above the target. 4 skates is how MySkate counts a skill as earned.</p>
+      <p class="note">A goal is reached when the skill's latest rating is at or above the target. 4 stars is how MySkate counts a skill as earned.</p>
       <p class="status status--warn" role="alert" hidden></p>
       <div class="sheet__foot"><button class="btn btn--glass btn--small" type="button" data-close="cancel">Cancel</button><button class="btn btn--small" type="button" id="gs-save">Save goal</button></div>`,
     { label: "Set a goal", sticky: true }
@@ -164,7 +164,7 @@ async function openGoalSheet(ctx) {
     if (!skillId) return fail("Choose a skill first.");
     if (date && date < todayISO()) return fail("That day has passed. Pick today or later, or leave it empty.");
     const st = d.stats.get(skillId);
-    if (st && st.latest >= target) return fail(`You are already at ${st.latest} ${st.latest === 1 ? "skate" : "skates"} on that skill. Choose a higher rating.`);
+    if (st && st.latest >= target) return fail(`You are already at ${st.latest} ${st.latest === 1 ? "star" : "stars"} on that skill. Choose a higher rating.`);
     const result = addGoal(ctx.state.goals, { skillId, target, date }, uid(), todayISO());
     if (result.status === "full") return fail("MySkate holds up to 30 goals. Remove one first.");
     if (result.status === "already") return fail("You already have that exact goal.");
@@ -186,7 +186,7 @@ function summary(ctx) {
     const sk = catalog.skills.get(id);
     return html`<li class="plan-item">
       <span class="plan-n">${i + 1}</span>${catDot(sk.cat)}
-      <span class="grow">${sk.name}<br><span class="dim">${mins[i]} min</span></span>
+      <span class="grow">${sk.name}<br><span class="dim">${fmtMinutes(mins[i])}</span></span>
       <span class="plan-tools">
         <button class="icon-btn icon-btn--sm" type="button" data-action="up" data-i="${i}" aria-label="Move ${sk.name} earlier" ${i === 0 ? "disabled" : ""}>${icon("up")}</button>
         <button class="icon-btn icon-btn--sm" type="button" data-action="down" data-i="${i}" aria-label="Move ${sk.name} later" ${i === ids.length - 1 ? "disabled" : ""}>${icon("down")}</button>
@@ -197,7 +197,7 @@ function summary(ctx) {
   const over = planned > state.plan.slotMin;
   const startLabel = state.active ? "Back to the ice" : "Start session";
   return html`<aside class="card card--ice plan-summary" aria-labelledby="plan-title">
-    <div class="split"><h2 id="plan-title">Your plan</h2><span class="chip chip--on">${state.plan.slotMin} min slot</span></div>
+    <div class="split"><h2 id="plan-title">Your plan</h2><span class="chip chip--on">${fmtMinutes(state.plan.slotMin)} slot</span></div>
     ${ids.length ? html`<ol class="plan-list">${items}</ol>${bar({ pct: (planned / state.plan.slotMin) * 100, label: "Minutes planned" })}${over ? html`<p class="status status--warn">That is ${planned - state.plan.slotMin} minutes more than your slot. Every skill gets at least 5 minutes, so drop a few or pick a longer slot.</p>` : html`<p class="note">${planned} of ${state.plan.slotMin} minutes planned, shared evenly. You can change the order.</p>`}` : html`<p class="dim">Nothing yet. Tap a skill on the left to add it.</p>`}
     <div class="cluster">
       <button class="btn" type="button" data-action="${state.active ? "resume" : "start"}" ${ids.length || state.active ? "" : "disabled"}>${startLabel}</button>

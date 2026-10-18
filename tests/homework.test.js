@@ -60,7 +60,7 @@ test("open homework comes first (soonest due, undated after, oldest first), then
   ];
   const rows = sortedHomework(list, "2026-10-17");
   assert.deepEqual(rows.map((h) => h.id), ["over", "soon", "late", "none-old", "none-new", "d2", "d1"]);
-  assert.deepEqual([rows[0].overdue, rows[0].countdown.label, rows[1].overdue, rows[1].countdown.label], [true, "Passed", false, "D-3"]);
+  assert.deepEqual([rows[0].overdue, rows[0].countdown.label, rows[1].overdue, rows[1].countdown.label], [true, "Passed", false, "3 days"]);
   assert.equal(rows.find((h) => h.id === "d2").overdue, false, "finished homework is never overdue");
   assert.equal(rows.find((h) => h.id === "none-old").countdown, null);
 });

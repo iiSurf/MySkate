@@ -21,7 +21,7 @@ function idle(ctx) {
         <div class="cluster"><button class="btn" type="button" data-action="start">Start session</button><button class="btn btn--glass" type="button" data-action="go-plan">Edit plan</button></div>`
       : html`<p class="dim">Pick a few skills first, then start your session here.</p><button class="btn" type="button" data-action="go-plan">Plan a session</button>`}
     </section>
-    <section class="card"><p class="eyebrow">What happens next</p><p class="dim">The clock counts only your time on ice, and you can pause it for a rest. Rate each skill with one to five skates. For jumps, tap Landed or Missed on every try. Your progress saves as you go.</p></section>`;
+    <section class="card"><p class="eyebrow">What happens next</p><p class="dim">The clock counts only your time on ice, and you can pause it for a rest. Rate each skill with one to five stars. For jumps, tap Landed or Missed on every try. Your progress saves as you go.</p></section>`;
 }
 
 function queue(ctx, a) {
@@ -75,7 +75,7 @@ export function renderSkate(ctx) {
         <section class="card skill-card">
           <div class="split"><p class="eyebrow">Skill ${a.index + 1} of ${a.order.length}</p><span class="chip">${catDot(sk.cat)}${catName(sk.cat)}</span></div>
           <h1 class="skill-title">${sk.name}</h1>
-          <p class="dim">${levelLabel(ctx.catalog, sk.levelKey)}${last ? `. Last time: ${last.stars ? last.stars + (last.stars === 1 ? " skate" : " skates") : "no rating"}${landedPct(st) !== null ? `, ${landedPct(st)}% landed overall` : ""}.` : ". First time on your ice."}</p>
+          <p class="dim">${levelLabel(ctx.catalog, sk.levelKey)}${last ? `. Last time: ${last.stars ? last.stars + (last.stars === 1 ? " star" : " stars") : "no rating"}${landedPct(st) !== null ? `, ${landedPct(st)}% landed overall` : ""}.` : ". First time you rate it."}</p>
         </section>
         ${counter}
         <section class="card ${isJump ? "" : "card--ice"}">

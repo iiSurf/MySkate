@@ -74,7 +74,7 @@ test("the free skate checklist is grouped and counts what you have ticked", () =
 });
 
 test("the countdown says how many days are left", () => {
-  assert.deepEqual(countdown("2026-10-29", "2026-10-17"), { days: 12, label: "D-12" });
+  assert.deepEqual(countdown("2026-10-29", "2026-10-17"), { days: 12, label: "12 days" });
   assert.equal(countdown("2026-10-18", "2026-10-17").label, "Tomorrow");
   assert.equal(countdown("2026-10-17", "2026-10-17").label, "Today");
   assert.deepEqual(countdown("2026-10-10", "2026-10-17"), { days: -7, label: "Passed" });

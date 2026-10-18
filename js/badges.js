@@ -5,7 +5,7 @@
 
 import { replayXp, levelFromXp, STREAK_MIN } from "./xp.js";
 import { EARNED_AT } from "./stats.js";
-import { addDays, daysBetween, todayISO, weekKey } from "./util.js";
+import { addDays, daysBetween, todayISO, weekKey, fmtMinutes } from "./util.js";
 import { offIceMilestones } from "./office.js";
 
 export const GROUPS = ["On the ice", "Skills", "Jumps", "Habits", "Levels"];
@@ -22,14 +22,14 @@ export const BADGES = [
   { id: "marathon", group: "On the ice", name: "Marathon", text: "Spend 26.2 hours on the ice, a marathon's worth.", icon: "up", goal: 1572, scale: 60, unit: "h", of: (a) => a.minutes },
   { id: "long-90", group: "On the ice", name: "Long haul", text: "Spend 90 minutes on the ice in one session.", icon: "play", goal: 90, unit: "min", of: (a) => a.longest },
 
-  { id: "skill-1", group: "Skills", name: "First skill earned", text: `Rate a skill ${EARNED_AT} skates or more.`, icon: "star", goal: 1, of: (a) => a.skillsEarned },
-  { id: "skill-5", group: "Skills", name: "Skill collector", text: `Earn 5 skills (${EARNED_AT} skates or more).`, icon: "star", goal: 5, of: (a) => a.skillsEarned },
-  { id: "skill-10", group: "Skills", name: "Ten skills", text: `Earn 10 skills (${EARNED_AT} skates or more).`, icon: "star", goal: 10, of: (a) => a.skillsEarned },
-  { id: "five-1", group: "Skills", name: "Five skates", text: "Rate a skill 5 skates.", icon: "star", goal: 1, of: (a) => a.fives },
-  { id: "five-5", group: "Skills", name: "Five alive", text: "Rate 5 different skills 5 skates.", icon: "star", goal: 5, of: (a) => a.fives },
+  { id: "skill-1", group: "Skills", name: "First skill earned", text: `Rate a skill ${EARNED_AT} stars or more.`, icon: "star", goal: 1, of: (a) => a.skillsEarned },
+  { id: "skill-5", group: "Skills", name: "Skill collector", text: `Earn 5 skills (${EARNED_AT} stars or more).`, icon: "star", goal: 5, of: (a) => a.skillsEarned },
+  { id: "skill-10", group: "Skills", name: "Ten skills", text: `Earn 10 skills (${EARNED_AT} stars or more).`, icon: "star", goal: 10, of: (a) => a.skillsEarned },
+  { id: "five-1", group: "Skills", name: "Five stars", text: "Rate a skill 5 stars.", icon: "star", goal: 1, of: (a) => a.fives },
+  { id: "five-5", group: "Skills", name: "Five alive", text: "Rate 5 different skills 5 stars.", icon: "star", goal: 5, of: (a) => a.fives },
   { id: "pb-1", group: "Skills", name: "Personal best", text: "Beat your best rating on a skill.", icon: "up", goal: 1, of: (a) => a.pbs },
   { id: "pb-10", group: "Skills", name: "Climber", text: "Beat your best rating 10 times.", icon: "up", goal: 10, of: (a) => a.pbs },
-  { id: "level-done", group: "Skills", name: "Level complete", text: `Earn every skill in a level (${EARNED_AT} skates or more).`, icon: "check", goal: 1, of: (a) => a.levelsDone },
+  { id: "level-done", group: "Skills", name: "Level complete", text: `Earn every skill in a level (${EARNED_AT} stars or more).`, icon: "check", goal: 1, of: (a) => a.levelsDone },
 
   { id: "landed-10", group: "Jumps", name: "Ten landed", text: "Land 10 jumps.", icon: "skate", goal: 10, of: (a) => a.landed },
   { id: "landed-100", group: "Jumps", name: "Hundred landed", text: "Land 100 jumps.", icon: "skate", goal: 100, of: (a) => a.landed },
@@ -186,6 +186,8 @@ export const badgeRatio = (b) => (b.earned ? 1 : Math.max(0, Math.min(1, b.value
 
 /* "35 of 60 min", "8.5 of 26.2 h", "3 of 5". */
 export function progressText(b) {
+  /* Time reads the same way it does everywhere else: hours and minutes. */
+  if (b.unit === "h" || b.unit === "min") return `${fmtMinutes(Math.min(b.value, b.goal))} of ${fmtMinutes(b.goal)}`;
   const scale = b.scale || 1;
   const round = (n) => Math.round((n / scale) * 10) / 10;
   return `${b.prefix || ""}${round(Math.min(b.value, b.goal))} of ${round(b.goal)}${b.unit ? " " + b.unit : ""}`;

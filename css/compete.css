@@ -554,13 +554,13 @@ select.cp-in {
 .cp-rink .cp-mark .dot {
   fill: #d9382c;
   stroke: #fff;
-  stroke-width: 2;
+  stroke-width: 1.5;
   transition: r 0.2s var(--spring);
 }
 
 .cp-rink .cp-mark text {
   fill: #fff;
-  font: 700 14px var(--font-display);
+  font: 700 11px var(--font-ui);
   text-anchor: middle;
   pointer-events: none;
 }
@@ -573,7 +573,7 @@ select.cp-in {
 
 .cp-rink .cp-mark.is-sel text {
   fill: #0e2347;
-  font-size: 17px;
+  font-size: 13px;
 }
 
 .cp-rink .cp-mark:focus-visible .dot {

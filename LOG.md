@@ -621,3 +621,27 @@ The skater saw the all-time total as 10.8 and wanted it as hours, minutes, and s
 ### Not verified
 
 A real phone and Safari. The older stats (hours this week, this month, and in all on Home and Progress) are still decimal hours, like 10.8.
+
+## 2026-10-18 (Sunday): fixes from trying it on a phone
+
+### Plan
+
+The skater tried everything on a phone and asked for, before any new look: smaller pins on the rink, a pass over awkward wording, times in hours and minutes everywhere (some places still said 10.8), stars instead of skates for ratings, a clearer name than "Me" for the last tab, and the badges somewhere prominent on Home. A restore point of the live version was tagged first (`before-zamboni`, local).
+
+### Changes
+
+- Rink: the marks are smaller (a dot of 17 instead of 26, 22 when selected), with the same finger-sized tap area, and their numbers are in the plain font.
+- Time: `fmtMinutes` now says "1 hr 5 mins" and is used for every time in the app (stats on Home and Progress, months, the calendar, the plan's minutes and slot, the event day, off-ice, friend cards, session rows, blade life, badge progress like "1 hr 10 mins of 10 hrs"). Number cells show big numbers with small units (`timeNum` in `js/ui/parts.js`), and the flap board spells "10 H 48 M 6 S".
+- Ratings are stars: the rating control on the ice, the small rows of stars in lists, and every word ("4 stars or more earns the skill", goals, badges such as "Five stars", the tour, the spreadsheet column). The saved data was already called `stars`, so nothing about saving changed. The skate picture stays for an earned skill on Home.
+- The last tab is Profile (the route is still `#/me`, so links keep working), and every "in Me" now says Profile.
+- Home: the Backstage board has a Badges row ("17 of 36") with a bar and a Trophy case line showing the badge closest to done. The separate badge tile lower down is gone, since it said the same thing.
+- Wording: "Let's get you set up", "How long is your ice time?", "First time you rate it", countdowns say "3 days" instead of "D-3", the program sheet is the "Practice list" (not "Protocol"), "Or pick your own on the Plan tab", "3 of its 4 skills are earned", and the high contrast note no longer mentions ice.
+- Also fixed: on 320 and 360-wide phones the plan panel and the session list ran off the screen with long skill names (it was there before). They now wrap.
+
+### Verified
+
+253 tests pass. In headless Chrome with made-up data: every screen at 320, 360, 390, and 1280 wide has no sideways scrolling and no console errors; the whole guided tour runs and leaves the stored data unchanged; looked at the rating stars, the rink, the Backstage board, and Plan on a desktop.
+
+### Not verified
+
+A real phone. The tab bar at 390 wide is snug with "Progress" and "Profile" side by side; the new look will rework navigation.

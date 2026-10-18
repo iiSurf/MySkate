@@ -33,7 +33,7 @@ export async function offerTour() {
         <button class="btn btn--glass btn--small" type="button" data-close="skip">Skip for now</button>
         <button class="btn btn--small" type="button" data-close="go" id="tour-go">Show me around</button>
       </div>
-      <p class="note">You can take it any time from Me, under Help.</p>`,
+      <p class="note">You can take it any time from Profile, under Help.</p>`,
     { label: "Guided tour" }
   );
   sheet.dialog.querySelector("#tour-go").focus({ preventScroll: true });
@@ -396,7 +396,7 @@ export function runGuide(ctx) {
     document.querySelectorAll("dialog[open]").forEach((d) => d.close());
     ctx.endPractice();
     ctx.go("home");
-    if (how === "skip") toast("Tour skipped. You can take it any time from Me, under Help.", 4500);
+    if (how === "skip") toast("Tour skipped. You can take it any time from Profile, under Help.", 4500);
     resolveDone(how);
   }
 

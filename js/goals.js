@@ -1,4 +1,4 @@
-/* Skill goals: "get Waltz jump to 4 skates by December 1". A goal is a skill, a target rating, and an optional date.
+/* Skill goals: "get Waltz jump to 4 stars by December 1". A goal is a skill, a target rating, and an optional date.
    It is met when the skill's latest rating reaches the target. Pure logic, no page code. */
 
 import { isDay } from "./ice.js";

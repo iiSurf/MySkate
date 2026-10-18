@@ -14,7 +14,7 @@ export function rinkInner(program, selectedId = null) {
   const label = sel && selEl ? `${roman(sel.n)}  ${selEl.label}` : "";
   const boxW = Math.min(RINK.w - 16, 40 + label.length * 6.4);
   const boxX = sel ? Math.max(8, Math.min(RINK.w - 8 - boxW, sel.x - boxW / 2)) : 0;
-  const boxY = sel ? (sel.y < 56 ? sel.y + 26 : sel.y - 52) : 0;
+  const boxY = sel ? (sel.y < 52 ? sel.y + 18 : sel.y - 44) : 0;
   return html`<rect class="cp-ice" x="2" y="2" width="${RINK.w - 4}" height="${RINK.h - 4}" rx="64"/>
     <line class="cp-mid" x1="${RINK.w / 2}" y1="2" x2="${RINK.w / 2}" y2="${RINK.h - 2}"/>
     <circle class="cp-mid" cx="${RINK.w / 2}" cy="${RINK.h / 2}" r="30" fill="none"/>
@@ -23,7 +23,7 @@ export function rinkInner(program, selectedId = null) {
     ${pts.map((p) => {
       const e = program.elements.find((x) => x.id === p.id);
       const on = p.id === selectedId;
-      return html`<g class="cp-mark${on ? " is-sel" : ""}" data-el="${p.id}" tabindex="0" role="button" aria-pressed="${on}" aria-label="${roman(p.n)}, ${e.label}. Press Enter to select, arrow keys to move."><circle class="hit" cx="${p.x}" cy="${p.y}" r="22"/><circle class="dot" cx="${p.x}" cy="${p.y}" r="${on ? 17 : 13}"/><text x="${p.x}" y="${p.y + 5}">${p.n}</text></g>`;
+      return html`<g class="cp-mark${on ? " is-sel" : ""}" data-el="${p.id}" tabindex="0" role="button" aria-pressed="${on}" aria-label="${roman(p.n)}, ${e.label}. Press Enter to select, arrow keys to move."><circle class="hit" cx="${p.x}" cy="${p.y}" r="20"/><circle class="dot" cx="${p.x}" cy="${p.y}" r="${on ? 11 : 8.5}"/><text x="${p.x}" y="${p.y + (on ? 4.5 : 3.8)}">${p.n}</text></g>`;
     })}
     ${sel ? html`<g class="cp-callout" pointer-events="none"><rect x="${boxX}" y="${boxY}" width="${boxW}" height="26" rx="8"/><text x="${boxX + boxW / 2}" y="${boxY + 17}">${label}</text></g>` : ""}`;
 }

@@ -1,5 +1,5 @@
 /* Test readiness: how ready you are for a U.S. Figure Skating test. The skating skills part is worked out from your ratings (a
-   skill is earned at EARNED_AT skates or more, like everywhere else in MySkate). The free skate part is a checklist you tick
+   skill is earned at EARNED_AT stars or more, like everywhere else in MySkate). The free skate part is a checklist you tick
    yourself, because MySkate cannot see a jump. Pure logic, no page code. */
 
 import { levelSkillIds } from "./catalog.js";
@@ -57,11 +57,11 @@ export function freeReadiness(test, checks) {
   return { groups, done, total: items.length, pct: items.length ? Math.round((done / items.length) * 100) : 0 };
 }
 
-/* Days to the test: null with no date, otherwise { days, label } where label is "D-12", "Tomorrow", "Today", or "Passed". */
+/* Days to the test: null with no date, otherwise { days, label } where label is "12 days", "Tomorrow", "Today", or "Passed". */
 export function countdown(date, today = todayISO()) {
   if (!isDay(date)) return null;
   const days = daysBetween(today, date);
-  return { days, label: days < 0 ? "Passed" : days === 0 ? "Today" : days === 1 ? "Tomorrow" : `D-${days}` };
+  return { days, label: days < 0 ? "Passed" : days === 0 ? "Today" : days === 1 ? "Tomorrow" : `${days} days` };
 }
 
 export const readinessLabel = (pct) => (pct >= 100 ? "Ready" : pct >= 75 ? "Almost there" : pct >= 40 ? "Getting there" : "Just starting");

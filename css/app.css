@@ -789,6 +789,18 @@ h2 {
   gap: var(--sp-3);
 }
 
+/* A time in a number cell: 10 hrs 48 mins, the units small beside the numbers. */
+.tn {
+  white-space: nowrap;
+}
+
+.tn small {
+  margin: 0 0.12em 0 0.14em;
+  font: 500 0.42em/1 var(--font-ui);
+  letter-spacing: 0.02em;
+  color: var(--text-dim);
+}
+
 .stat-n {
   font-size: 1.9rem;
   line-height: 1.1;
@@ -894,7 +906,37 @@ h2 {
 
 .plan-summary {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--sp-3);
+  min-width: 0;
+}
+
+/* Long skill names wrap inside the plan instead of pushing it off a narrow phone. */
+@media (max-width: 959px) {
+  .plan-grid,
+  .skate-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.plan-item .grow,
+.queue-btn .grow {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/* Stars on the paper of the plan: dark outlines and a deeper gold, so they show on the light paper. */
+.plan-summary .mini .star {
+  stroke: #8d8676;
+}
+
+.plan-summary .mini .star.on {
+  fill: #c98a1c;
+  stroke: #c98a1c;
+}
+
+.queue-btn {
+  min-width: 0;
 }
 
 .plan-list {
@@ -1162,7 +1204,7 @@ h2 {
   max-width: 320px;
 }
 
-/* Forms, sheets, and lists on the Me screen */
+/* Forms, sheets, and lists on the Profile screen */
 
 .choices {
   display: grid;
@@ -1236,7 +1278,7 @@ select.input {
   }
 }
 
-/* The Help card on Me (it starts the guided tour) */
+/* The Help card on Profile (it starts the guided tour) */
 
 .help-card {
   display: flex;
@@ -1954,4 +1996,22 @@ button.cal-day {
 .swatch.is-locked .swatch__name {
   color: var(--text-dim);
   font-weight: 500;
+}
+
+/* The narrowest phones: long skill names may break inside a word, and the plan's small buttons get a little smaller, so nothing runs
+   off the screen. */
+@media (max-width: 400px) {
+  .plan-item .grow,
+  .queue-btn .grow {
+    overflow-wrap: anywhere;
+  }
+
+  .plan-item {
+    gap: var(--sp-2);
+  }
+
+  .plan-tools .icon-btn--sm {
+    width: 34px;
+    height: 34px;
+  }
 }

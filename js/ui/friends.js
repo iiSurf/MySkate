@@ -1,6 +1,6 @@
 /* Friend sheets: look at a friend, and add (or refresh) one from a card. */
 
-import { html, daysBetween, todayISO, fmtDate } from "../util.js";
+import { html, daysBetween, todayISO, fmtDate, fmtMinutes } from "../util.js";
 import { openSheet, confirmSheet, toast, $ } from "./dom.js";
 import { upsertFriend } from "../friends.js";
 import { lookById } from "../looks.js";
@@ -31,7 +31,7 @@ const stats = (c) => html`<div class="stats">
   <div><p class="num stat-n">${c.xpWeek}</p><p class="dim">XP, last 7 days</p></div>
   <div><p class="num stat-n">${c.streak}</p><p class="dim">${c.streak === 1 ? "week" : "weeks"} in a row</p></div>
   <div><p class="num stat-n">${c.badges}</p><p class="dim">${c.badges === 1 ? "badge" : "badges"}</p></div>
-  <div><p class="num stat-n">${c.hours}</p><p class="dim">hours on ice</p></div>
+  <div><p class="num stat-n">${fmtMinutes(c.hours * 60)}</p><p class="dim">on ice</p></div>
 </div>`;
 
 /* A friend's numbers, with a way to remove them. */

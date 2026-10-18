@@ -29,7 +29,7 @@ export function runOnboarding(ctx) {
       html`
       <div data-step="0">
         <p class="eyebrow">Welcome</p>
-        <h2 class="sheet__title">Let's set up your ice</h2>
+        <h2 class="sheet__title">Let's get you set up</h2>
         <p class="note">Everything stays on this device. Choose how to start.</p>
         <div class="choices">
           <button class="choice choice--primary" type="button" data-go="1"><strong>Set up my skates</strong><span class="note">Takes about a minute.</span></button>

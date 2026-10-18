@@ -1,7 +1,7 @@
 /* Home: your week as a figure eight, your streak, your level, your blades, and what to do next. */
 
 import { html, fmtMinutes, fmtDate, fmtNum, fmt1, fmtClock, fmtDuration, fmtDurationShort, durationParts, todayISO, daysBetween, addDays } from "../util.js";
-import { icon, medal, bar, bladeArt, skateSvg } from "../ui/parts.js";
+import { icon, medal, bar, bladeArt, skateSvg, timeNum } from "../ui/parts.js";
 import { eightSvg } from "../ui/eight.js";
 import { weekEight, streakEights, weekStubs } from "../week.js";
 import { flapRow } from "../ui/flaps.js";
@@ -80,10 +80,10 @@ function protocol(ctx, d) {
   });
   const more = picks.length - rows.length;
   return html`<section class="protocol" aria-label="${planned.length ? "Tonight's plan" : "Suggested skills"}">
-    <div class="protocol__hdr"><b>Protocol</b><span>${planned.length ? "Tonight's plan" : "Suggested for you"}</span></div>
+    <div class="protocol__hdr"><b>Practice list</b><span>${planned.length ? "Tonight's plan" : "Suggested for you"}</span></div>
     <table><thead><tr><th></th><th>Element</th><th>Last</th><th>Goal</th></tr></thead><tbody>${rows}</tbody></table>
     ${more > 0 ? html`<p class="protocol__more">and ${more} more</p>` : ""}
-    <p class="protocol__foot">${planned.length ? html`${planned.length} ${planned.length === 1 ? "skill" : "skills"} for a ${state.plan.slotMin} minute slot. <button class="protocol__link" type="button" data-action="go-plan">Edit plan</button>` : html`Pick your own on <button class="protocol__link" type="button" data-action="go-plan">Plan</button>.`}</p>
+    <p class="protocol__foot">${planned.length ? html`${planned.length} ${planned.length === 1 ? "skill" : "skills"} for a ${state.plan.slotMin} minute slot. <button class="protocol__link" type="button" data-action="go-plan">Edit plan</button>` : html`Or pick your own on the <button class="protocol__link" type="button" data-action="go-plan">Plan</button> tab.`}</p>
   </section>`;
 }
 
@@ -93,7 +93,7 @@ function weekSection(ctx, d, week, animate) {
   const call = eightCall(state);
   const more = week.needed - week.count;
   const caption = state.active
-    ? `${fmtClock(elapsedMs(state.active) / 1000)} on ice of ${state.active.bookedMin} min. ${state.active.running ? "Running." : "Paused."}`
+    ? `${fmtClock(elapsedMs(state.active) / 1000)} on ice of ${fmtMinutes(state.active.bookedMin)}. ${state.active.running ? "Running." : "Paused."}`
     : week.complete
       ? "The eight is whole. Streak secured for this week."
       : more === 1
@@ -112,6 +112,16 @@ function weekSection(ctx, d, week, animate) {
   </section>`;
 }
 
+/* How many badges are earned, on the board near the top of Home, with a way into the trophy case and the one closest to done. */
+function badgeRow(ctx) {
+  const list = ctx.badges();
+  const earned = list.filter((b) => b.earned).length;
+  const next = list.filter((b) => !b.earned && badgeRatio(b) > 0).sort((a, b) => badgeRatio(b) - badgeRatio(a))[0];
+  return html`${flapRow("Badges", `${earned} of ${list.length}`)}
+    ${bar({ pct: list.length ? (earned / list.length) * 100 : 0, cls: "bar--xp", thin: true, label: "Badges earned" })}
+    <button class="line line--btn" type="button" data-action="go-badges"><span class="eyebrow">Trophy case</span><span class="line__name">${next ? `Next: ${next.name}, ${progressText(next)}` : "See every badge"}</span><span class="line__go">${icon("right")}</span></button>`;
+}
+
 /* Backstage: blades, level, and streak on flap tiles, with a line that fills for the level and the blades. */
 function backstage(ctx, d) {
   const L = d.level;
@@ -120,11 +130,12 @@ function backstage(ctx, d) {
   const nextSkill = next && ctx.catalog.skills.get(next.skillId);
   return html`<section class="backstage" aria-label="Level, blades, and what is next">
     <p class="cp-label">Backstage</p>
-    ${flapRow("Blades", `${fmt1(info.hours)} of ${fmtNum(info.limit)} h`, { hi: info.tone === "due" || info.tone === "dull" })}
+    ${flapRow("Blades", `${info.hours * 60 < 1 ? "0 H" : fmtDurationShort(Math.round(info.hours * 60) * 60)} OF ${fmtNum(info.limit)} H`, { hi: info.tone === "due" || info.tone === "dull", say: `${fmtMinutes(info.hours * 60)} of ${fmtNum(info.limit)} hours` })}
     ${bar({ pct: info.pct, cls: "bar--blade", thin: true, label: "Blade life used" })}
     ${flapRow("All time on skates", fmtDurationShort(lifetimeSeconds(ctx.state)), { say: fmtDuration(lifetimeSeconds(ctx.state)) })}
     ${flapRow(`Level ${L.level}`, `${L.into} / ${L.need} XP`)}
     ${bar({ pct: L.pct, cls: "bar--xp", thin: true, label: "XP to the next level" })}
+    ${badgeRow(ctx)}
     ${nextSkill ? html`<button class="line line--btn" type="button" data-action="go-plan"><span class="eyebrow">Next up</span><span class="line__name">${nextSkill.name}</span><span class="line__go">${icon("right")}</span></button>` : ""}
   </section>`;
 }
@@ -164,7 +175,7 @@ function bladeTile(ctx) {
       <p class="eyebrow" id="blade-title">Blade life</p>
       <button class="icon-btn icon-btn--sm" type="button" data-action="blade-edit" aria-expanded="${ui.bladeOpen}" aria-controls="blade-panel" aria-label="Edit blade settings">${icon("edit")}</button>
     </div>
-    <div class="hours"><span class="num" id="blade-hours">${fmt1(info.hours)}</span><span class="dim">of <span id="blade-limit">${fmtNum(info.limit)}</span> hours before sharpening</span></div>
+    <div class="hours"><span class="num" id="blade-hours">${timeNum(info.hours * 60)}</span><span class="dim">of <span id="blade-limit">${fmtNum(info.limit)}</span> hours before sharpening</span></div>
     ${bladeArt(info.pct)}
     <div class="split"><span class="chip ${info.tone === "due" ? "chip--coral" : info.tone === "dull" ? "chip--gold" : "chip--on"}" id="blade-state">${info.label}</span><span class="dim" id="blade-left"></span></div>
     ${bar({ pct: info.pct, cls: "bar--blade", thin: true, label: "Blade life used" })}
@@ -193,7 +204,7 @@ function bladeTile(ctx) {
         </div>
       </div>
       <p class="note" id="all-note">The all-time total never starts over when you sharpen. MySkate adds your on-ice time after every session. If you skated before MySkate, put in the hours you know about.</p>
-      <p class="note">Most skaters sharpen between 20 and 35 hours. Use what your coach or sharpener says. MySkate adds your on-ice time after every session.${last ? ` Last sharpened ${fmtDate(last.date, { month: "short", day: "numeric" })} at ${fmtNum(last.hours)} hours.` : ""}</p>
+      <p class="note">Most skaters sharpen between 20 and 35 hours. Use what your coach or sharpener says. MySkate adds your on-ice time after every session.${last ? ` Last sharpened ${fmtDate(last.date, { month: "short", day: "numeric" })} at ${fmtMinutes(last.hours * 60)}.` : ""}</p>
     </div>
     <button class="btn btn--glass btn--small" type="button" data-action="blade-log">I just got them sharpened</button>
   </section>`;
@@ -265,21 +276,6 @@ function friendsTile(ctx) {
 }
 
 /* How many badges, the latest ones, and the next one you are closest to. Only shown once there is a session or a badge. */
-function badgeTile(ctx) {
-  const list = ctx.badges();
-  const earned = list.filter((b) => b.earned);
-  if (!earned.length && !ctx.state.sessions.length) return "";
-  const recent = [...earned].sort((a, b) => (b.earnedOn || "").localeCompare(a.earnedOn || "")).slice(0, 4);
-  const next = list.filter((b) => !b.earned && badgeRatio(b) > 0).sort((a, b) => badgeRatio(b) - badgeRatio(a))[0];
-  return html`<section class="card tile" aria-labelledby="badge-title">
-    <div class="tile__head"><p class="eyebrow" id="badge-title">Badges</p></div>
-    <div class="hours"><span class="num">${earned.length}</span><span class="dim">of ${list.length} earned</span></div>
-    ${recent.length ? html`<div class="medals" role="img" aria-label="Latest badges: ${recent.map((b) => b.name).join(", ")}">${recent.map((b) => medal(b))}</div>` : ""}
-    ${next ? html`<p class="note">Next: <strong>${next.name}</strong>, ${progressText(next)}</p>` : ""}
-    <button class="btn btn--glass btn--small" type="button" data-action="go-badges">Trophy case</button>
-  </section>`;
-}
-
 /* The next few sessions you starred on the Ice tab. Only shown once you have added a rink. */
 function iceTile(ctx, d) {
   const { state } = ctx;
@@ -339,11 +335,11 @@ function weekTile(ctx, d) {
   const { streak, totals } = d;
   return html`<section class="card tile" aria-labelledby="week-title">
     <div class="tile__head"><p class="eyebrow" id="week-title">On the ice</p></div>
-    <div class="hours"><span class="num">${fmt1(totals.weekMin / 60)}</span><span class="dim">hours this week</span></div>
+    <div class="hours"><span class="num">${timeNum(totals.weekMin)}</span><span class="dim">this week</span></div>
     <div class="stats">
       <div><p class="num stat-n">${streak.thisWeek}</p><p class="dim">${streak.thisWeek === 1 ? "session" : "sessions"} this week</p></div>
-      <div><p class="num stat-n">${fmt1(totals.monthMin / 60)}</p><p class="dim">hours this month</p></div>
-      <div><p class="num stat-n">${fmt1(totals.allMin / 60)}</p><p class="dim">hours in all</p></div>
+      <div><p class="num stat-n">${timeNum(totals.monthMin)}</p><p class="dim">this month</p></div>
+      <div><p class="num stat-n">${timeNum(totals.allMin)}</p><p class="dim">in all</p></div>
     </div>
   </section>`;
 }
@@ -399,7 +395,7 @@ export function renderHome(ctx) {
     <div class="home__rest">
       ${weekSection(ctx, d, week, animate)}
       ${backstage(ctx, d)}
-      <div class="tiles">${competeTile(ctx, d)}${badgeTile(ctx)}${homeworkTile(ctx, d)}${goalsTile(ctx, d)}${offIceTile(ctx, d)}${testTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
+      <div class="tiles">${competeTile(ctx, d)}${homeworkTile(ctx, d)}${goalsTile(ctx, d)}${offIceTile(ctx, d)}${testTile(ctx, d)}${friendsTile(ctx)}${iceTile(ctx, d)}${levelTiles(ctx, d)}${bladeTile(ctx)}${weekTile(ctx, d)}${costTile(ctx, d)}</div>
       ${recent(ctx, d)}
       ${nudge(ctx)}
     </div>
@@ -415,11 +411,12 @@ export function paintBlade(ctx) {
     const n = $(sel, root);
     if (n) n.textContent = text;
   };
-  set("#blade-hours", fmt1(info.hours));
+  const bh = $("#blade-hours", root);
+  if (bh) bh.innerHTML = timeNum(info.hours * 60).text;
   const allEl = $("#blade-all", root);
   if (allEl) allEl.innerHTML = durationMarkup(lifetimeSeconds(ctx.state)).text;
   set("#blade-limit", fmtNum(info.limit));
-  set("#blade-left", info.left > 0 ? `${fmt1(info.left)} ${info.left === 1 ? "hour" : "hours"} left` : `Over by ${fmt1(-info.left)} ${-info.left === 1 ? "hour" : "hours"}`);
+  set("#blade-left", info.left > 0 ? `${fmtMinutes(info.left * 60)} left` : `Over by ${fmtMinutes(-info.left * 60)}`);
   const art = $(".blade", root);
   if (art) art.style.setProperty("--p", info.pct + "%");
   const fill = $(".bar > i", root);
